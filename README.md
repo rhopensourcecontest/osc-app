@@ -1,4 +1,4 @@
-# Red Hat Open Source Contest Application
+# Red Hat Open Source Contest Web Application
 
 ## Description
 Web application for open source contest providing capabilities for mentors and students. 
