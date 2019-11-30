@@ -1,7 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const graphqlHttp = require('express-graphql');
-const { buildSchema } = require('graphql');
 const mongoose = require('mongoose');
 
 const graphQlSchema = require('./graphql/schema/index');
@@ -17,6 +16,11 @@ app.use('/graphql', graphqlHttp({
     // interface for testing
     graphiql: true
 }));
+
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
+mongoose.set('useUnifiedTopology', true);
 
 mongoose
     .connect(
