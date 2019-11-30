@@ -9,6 +9,41 @@ const Mentor = require('./models/mentor');
 
 const app = express();
 
+app.use(bodyParser.json());
+
+const transformTask = task => {
+    return { 
+        ...task._doc, 
+        creator: mentor.bind(this, task.creator)
+        // registeredStudent: student.bind(this, task.registeredStudent)
+    };
+};
+
+// prevents infinite calls
+const tasks = async taskIds => {
+    try {
+        const tasks = await Task.find({ _id: { $in: taskIds } });
+        return tasks.map(task => {
+            return transformTask(task);      
+        });
+    } catch(err) {
+        throw err;
+    }
+};
+
+// prevents infinite calls
+const mentor = async mentorId => {
+    try {
+        const mentor = await Mentor.findById(mentorId);
+        return { 
+            ...mentor._doc,
+            createdTasks: tasks.bind(this, mentor._doc.createdTasks)
+        };
+    } catch (err) {
+        throw err;
+    }
+};
+
 app.use('/graphql', graphqlHttp({
     schema: buildSchema(`
         type Task {
@@ -63,16 +98,15 @@ app.use('/graphql', graphqlHttp({
         }
     `),
     rootValue: {
-        tasks: () => {
-            return Task.find()
-                .then(tasks => {
-                    return tasks.map(task => {
-                        return { ...task._doc };
-                    })
-                })
-                .catch(err => {
-                    console.log(err);
+        tasks: async () => {
+            try {
+                const tasks = await Task.find();
+                return tasks.map(task => {
+                    return transformTask(task);
                 });
+            } catch (err) {
+                throw err;
+            }
         },
         createTask: args => {
             const task = new Task({
@@ -83,6 +117,7 @@ app.use('/graphql', graphqlHttp({
                 isBeingSolved: false,
                 creator: '5dd9247dad05fd273b4e205f'
             });
+            
             let createdTask;
 
             return task
