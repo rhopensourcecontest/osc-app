@@ -2,10 +2,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const graphqlHttp = require('express-graphql');
 const { buildSchema } = require('graphql');
+const mongoose = require('mongoose');
+
+const Task = require('./models/task');
 
 const app = express();
-
-const tasks = [];
 
 app.use('/graphql', graphqlHttp({
     schema: buildSchema(`
@@ -61,24 +62,50 @@ app.use('/graphql', graphqlHttp({
     `),
     rootValue: {
         tasks: () => {
-            return tasks;
+            return Task.find()
+                .then(tasks => {
+                    return tasks.map(task => {
+                        return { ...task._doc };
+                    })
+                })
+                .catch(err => {
+                    console.log(err);
+                });
         },
-        createTask: (args) => {
-            const task = {
-                _id: Math.random().toString(),
+        createTask: args => {
+            const task = new Task({
                 title: args.taskInput.title,
                 details: args.taskInput.details,
                 // link: args.taskInput.link,
                 isSolved: false,
                 isBeingSolved: false
                 // creator: req.userId
-            }
-            tasks.push(task);
-            return task;
+            });
+            return task
+                .save()
+                .then(result => {
+                    console.log(result);
+                    return { ...result._doc };
+                })
+                .catch(err => {
+                    console.log(err);
+                    throw err;
+                });
         }
     },
     // interface for testing
     graphiql: true
 }));
 
-app.listen(5000);
+mongoose
+    .connect(
+        `mongodb+srv://${process.env.MONGO_USER}:${
+            process.env.MONGO_PASSWORD
+        }@cluster0-wzo9i.mongodb.net/${process.env.MONGO_DB}?retryWrites=true&w=majority`
+    )
+    .then(() => {
+        app.listen(5000);
+    })
+    .catch(err => {
+        console.log(err);
+    });
