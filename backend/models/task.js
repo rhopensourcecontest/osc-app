@@ -21,6 +21,14 @@ const taskSchema = new Schema({
     isBeingSolved: {
         type: Boolean,
         required: true
+    },
+    creator: {
+        type: Schema.Types.ObjectId,
+        ref: 'Mentor'
+    },
+    registeredStudent: {
+        type: Schema.Types.ObjectId,
+        ref: 'Student'
     }
 });
 

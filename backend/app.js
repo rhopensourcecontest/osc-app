@@ -5,6 +5,7 @@ const { buildSchema } = require('graphql');
 const mongoose = require('mongoose');
 
 const Task = require('./models/task');
+const Mentor = require('./models/mentor');
 
 const app = express();
 
@@ -53,6 +54,7 @@ app.use('/graphql', graphqlHttp({
 
         type RootMutation {
             createTask(taskInput: TaskInput): Task!
+            createMentor(mentorInput: MentorInput): Mentor!
         }
 
         schema {
@@ -78,19 +80,51 @@ app.use('/graphql', graphqlHttp({
                 details: args.taskInput.details,
                 // link: args.taskInput.link,
                 isSolved: false,
-                isBeingSolved: false
-                // creator: req.userId
+                isBeingSolved: false,
+                creator: '5dd9247dad05fd273b4e205f'
             });
+            let createdTask;
+
             return task
                 .save()
                 .then(result => {
-                    console.log(result);
-                    return { ...result._doc };
+                    createdTask = { ...result._doc };
+                    return Mentor.findById('5dd9247dad05fd273b4e205f');
+                })
+                .then(mentor => {
+                    if(!mentor) {
+                        throw new Error('Mentor not found.');
+                    }
+                    mentor.createdTasks.push(task);
+                    return mentor.save();
+                })
+                .then(result => {
+                    return createdTask;
                 })
                 .catch(err => {
                     console.log(err);
                     throw err;
                 });
+        },
+        createMentor: async args => {
+            try {
+                // don't create if he alredy exists
+                const existingMentor = await Mentor.findOne({
+                    email: args.mentorInput.email
+                });
+                if (existingMentor) {
+                    throw new Error('Mentor with email ' + args.mentorInput.email + ' already exists.');
+                }
+                const mentor = new Mentor({
+                    email: args.mentorInput.email
+                });
+                const result = await mentor.save();
+                return { 
+                    ...result._doc
+                };
+            } catch (err) {
+                throw err;
+            }
         }
     },
     // interface for testing
