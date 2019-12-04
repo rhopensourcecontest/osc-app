@@ -1,6 +1,8 @@
 const Task = require('../../models/task');
+const Mentor = require('../../models/mentor');
+const Student = require('../../models/student');
 
-const { transformTask } = require('./merge');
+const { transformTask, singleTask, tasks, mentor, student } = require('./merge');
 
 module.exports = {
     tasks: async () => {
@@ -30,6 +32,86 @@ module.exports = {
             return tasks.map(task => {
                 return transformTask(task);
             });
+        } catch (err) {
+            throw err;
+        }
+    },
+    // restricted
+    createTask: async (args, req) => {
+        if (!req.isAuth) {
+            throw new Error('Unauthenticated!');
+        }
+
+        const task = new Task({
+            title: args.taskInput.title,
+            details: args.taskInput.details,
+            // link: args.taskInput.link,
+            link: null,
+            isSolved: false,
+            isBeingSolved: false,
+            creator: req.userId,
+            registeredStudent: null
+        });
+        
+        let createdTask;
+        
+        try {
+            // mongoose save
+            const result = await task.save();
+            createdTask = transformTask(result);
+            const creator = await Mentor.findById(req.userId);
+
+            if (!creator) {
+                throw new Error('User not found');
+            }
+            creator.createdTasks.push(task);
+            await creator.save();
+            return createdTask;
+        } catch (err) {
+            console.log(err);
+            throw err;
+        }
+    },
+    // restricted
+    registerTask: async (args, req) => {
+        if (!req.isAuth) {
+            throw new Error('Unauthenticated!');
+        }
+
+        try {
+            const resultStudent = await Student.findByIdAndUpdate(
+                args.studentId, { registeredTask: args.taskId }
+            );
+            const resultTask = await Task.findByIdAndUpdate(
+                args.taskId, { registeredStudent: args.studentId }
+            );
+            return {
+                ...resultTask._doc,
+                creator: mentor.bind(this, resultTask._doc.creator),
+                registeredStudent: student.bind(this, resultStudent._id)
+            };   
+        } catch (err) {
+            throw err;
+        }
+    },
+    // restricted
+    unregisterTask: async (args, req) => {
+        if (!req.isAuth) {
+            throw new Error('Unauthenticated!');
+        }
+
+        try {
+            await Student.findByIdAndUpdate(
+                args.studentId, { registeredTask: null }
+            );
+            const resultTask = await Task.findByIdAndUpdate(
+                args.taskId, { registeredStudent: null }
+            );
+            return {
+                ...resultTask._doc,
+                creator: mentor.bind(this, resultTask._doc.creator),
+                registeredStudent: null
+            };
         } catch (err) {
             throw err;
         }
