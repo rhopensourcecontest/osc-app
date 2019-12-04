@@ -41,12 +41,16 @@ module.exports = buildSchema(`
         tasks: [Task!]!
         students: [Student!]!
         mentors: [Mentor!]!
+        freeTasks: [Task!]!
+        takenTasks: [Task!]!
     }
 
     type RootMutation {
         createTask(taskInput: TaskInput): Task!
         createStudent(studentInput: StudentInput): Student!
         createMentor(mentorInput: MentorInput): Mentor!
+        registerTask(studentId: ID!, taskId: ID!): Task!
+        unregisterTask(studentId: ID!, taskId: ID!): Task!
     }
 
     schema {

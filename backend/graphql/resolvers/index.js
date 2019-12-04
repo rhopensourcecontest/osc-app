@@ -59,7 +59,8 @@ const student = async studentId => {
     try {
         const student = await Student.findById(studentId);
         return { 
-            ...student._doc
+            ...student._doc,
+            registeredTask: singleTask.bind(this, student._doc.registeredTask)
         };
     } catch (err) {
         throw err;   
@@ -77,11 +78,33 @@ module.exports = {
             throw err;
         }
     },
+    freeTasks: async () => {
+        try {
+            const tasks = await Task.find({ registeredStudent: null });
+            return tasks.map(task => {
+                return transformTask(task);
+            });
+        } catch (err) {
+            throw err;
+        }
+    },
+    takenTasks: async () => {
+        try {
+            // select all tasks where registeredStudent is NOT null
+            const tasks = await Task.find({ registeredStudent: { $ne: null } });
+            return tasks.map(task => {
+                return transformTask(task);
+            });
+        } catch (err) {
+            throw err;
+        }
+    },
     createTask: async (args) => {
         const task = new Task({
             title: args.taskInput.title,
             details: args.taskInput.details,
             // link: args.taskInput.link,
+            link: null,
             isSolved: false,
             isBeingSolved: false,
             creator: '5dd9247dad05fd273b4e205f',
@@ -109,7 +132,7 @@ module.exports = {
     },
     createMentor: async args => {
         try {
-            // don't create if he alredy exists
+            // don't create mentor if he alredy exists
             const existingMentor = await Mentor.findOne({
                 email: args.mentorInput.email
             });
@@ -129,7 +152,7 @@ module.exports = {
     },
     createStudent: async args => {
         try {
-            // don't create if he alredy exists
+            // don't create student if he alredy exists
             const existingStudent = await Student.findOne({
                 email: args.studentInput.email
             });
@@ -170,6 +193,40 @@ module.exports = {
                     createdTasks: tasks.bind(this, mentor._doc.createdTasks)
                 };
             });
+        } catch (err) {
+            throw err;
+        }
+    },
+    registerTask: async (args) => {
+        try {
+            const resultStudent = await Student.findByIdAndUpdate(
+                args.studentId, { registeredTask: args.taskId }
+            );
+            const resultTask = await Task.findByIdAndUpdate(
+                args.taskId, { registeredStudent: args.studentId }
+            );
+            return {
+                ...resultTask._doc,
+                creator: mentor.bind(this, resultTask._doc.creator),
+                registeredStudent: student.bind(this, resultStudent._id)
+            };   
+        } catch (err) {
+            throw err;
+        }
+    },
+    unregisterTask: async (args) => {
+        try {
+            await Student.findByIdAndUpdate(
+                args.studentId, { registeredTask: null }
+            );
+            const resultTask = await Task.findByIdAndUpdate(
+                args.taskId, { registeredStudent: null }
+            );
+            return {
+                ...resultTask._doc,
+                creator: mentor.bind(this, resultTask._doc.creator),
+                registeredStudent: null
+            };
         } catch (err) {
             throw err;
         }
