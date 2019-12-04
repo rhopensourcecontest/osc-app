@@ -37,18 +37,26 @@ module.exports = buildSchema(`
         email: String!
     }
 
+    type AuthData {
+        userId: ID!
+        token: String!
+        tokenExpiration: Int!
+        isMentor: Boolean!
+    }
+
     type RootQuery {
         tasks: [Task!]!
         students: [Student!]!
         mentors: [Mentor!]!
         freeTasks: [Task!]!
         takenTasks: [Task!]!
+        login(email: String!, isMentor: Boolean!): AuthData!
     }
 
     type RootMutation {
-        createTask(taskInput: TaskInput): Task!
-        createStudent(studentInput: StudentInput): Student!
-        createMentor(mentorInput: MentorInput): Mentor!
+        createTask(taskInput: TaskInput): Task
+        createStudent(studentInput: StudentInput): Student
+        createMentor(mentorInput: MentorInput): Mentor
         registerTask(studentId: ID!, taskId: ID!): Task!
         unregisterTask(studentId: ID!, taskId: ID!): Task!
     }
