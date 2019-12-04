@@ -21,7 +21,6 @@ module.exports = buildSchema(`
         _id: ID!
         email: String!
         registeredTask: Task
-        wantedTask: Task
     }
 
     input StudentInput {
@@ -40,10 +39,13 @@ module.exports = buildSchema(`
 
     type RootQuery {
         tasks: [Task!]!
+        students: [Student!]!
+        mentors: [Mentor!]!
     }
 
     type RootMutation {
         createTask(taskInput: TaskInput): Task!
+        createStudent(studentInput: StudentInput): Student!
         createMentor(mentorInput: MentorInput): Mentor!
     }
 

@@ -17,6 +17,7 @@ app.use('/graphql', graphqlHttp({
     graphiql: true
 }));
 
+// handling deprecation calls
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
