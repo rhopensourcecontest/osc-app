@@ -1,26 +1,24 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { Component } from 'react';
+import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
+
+import AuthPage from './pages/Auth';
+import TasksPage from './pages/Tasks';
+
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          This application is currently under development.
-        </p>
-        <a
-          className="App-link"
-          href="https://research.redhat.com/red-hat-open-source-contest/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn About Open Source Contest!
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  render() {
+    return (
+      <BrowserRouter>
+        <Switch>
+          {/* without exact all pages with `/` prefix would be redirected */}
+          <Redirect from="/" to="/auth" exact />
+          <Route path="/auth" component={AuthPage} />
+          <Route path="/tasks" component={TasksPage} />
+        </Switch>
+      </BrowserRouter>
+    );
+  }
 }
 
 export default App;
