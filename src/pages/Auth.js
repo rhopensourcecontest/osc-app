@@ -3,7 +3,11 @@ import React, { Component } from 'react';
 
 class AuthPage extends Component {
     render() {
-        return <h1>The Auth Page</h1>;
+        return (
+            <div className="main-content">
+                <h1>The Auth Page</h1>
+            </div>
+        );
     }
 }
 
