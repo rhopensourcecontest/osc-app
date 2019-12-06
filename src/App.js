@@ -14,7 +14,7 @@ class App extends Component {
       <BrowserRouter>
         <React.Fragment>
           <MainNavigation />
-          <main>
+          <main className="main-content">
             <Switch>
               {/* without exact all pages with `/` prefix would be redirected */}
               <Route path="/" exact component={HomePage} />

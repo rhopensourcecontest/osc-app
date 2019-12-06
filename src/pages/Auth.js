@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 class AuthPage extends Component {
     render() {
         return (
-            <div className="main-content">
+            <div className="">
                 <h1>The Auth Page</h1>
             </div>
         );
