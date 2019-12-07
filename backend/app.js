@@ -11,10 +11,22 @@ const app = express();
 
 app.use(bodyParser.json());
 
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    // OPTIONS sent automatically before POST request
+    res.setHeader('Access-Control-Allow-Methods', 'POST,GET,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(200);
+    }
+
+    next();
+});
+
 app.use(isAuth);
 
 app.use(
-    '/graphql', 
+    '/graphql',
     graphqlHttp({
         schema: graphQlSchema,
         rootValue: graphQlResolvers,
@@ -31,8 +43,7 @@ mongoose.set('useUnifiedTopology', true);
 
 mongoose
     .connect(
-        `mongodb+srv://${process.env.MONGO_USER}:${
-            process.env.MONGO_PASSWORD
+        `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD
         }@cluster0-wzo9i.mongodb.net/${process.env.MONGO_DB}?retryWrites=true&w=majority`
     )
     .then(() => {
