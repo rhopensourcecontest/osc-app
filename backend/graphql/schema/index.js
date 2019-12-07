@@ -50,7 +50,7 @@ module.exports = buildSchema(`
         mentors: [Mentor!]!
         freeTasks: [Task!]!
         takenTasks: [Task!]!
-        login(email: String!, isMentor: Boolean!): AuthData!
+        login(email: String!, isMentor: Boolean!): AuthData
     }
 
     type RootMutation {
