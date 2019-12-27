@@ -4,7 +4,7 @@ import React from 'react';
 export default React.createContext({
   token: null,
   userId: null,
-  isStudent: null,
+  isMentor: null,
   login: () => { },
   logout: () => { },
   setIsMentor: () => { }

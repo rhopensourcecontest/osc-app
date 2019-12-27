@@ -28,6 +28,7 @@ class AuthPage extends Component {
         ],
         callbacks: {
             signInSuccessWithAuthResult: (result) => {
+                this.handleFirebase(result.user);
                 return false;
             },
             signInFailure: function (error) {
@@ -37,11 +38,7 @@ class AuthPage extends Component {
     };
 
     componentDidMount() {
-        this.unregisterAuthObserver = firebase.auth().onAuthStateChanged((currentUser) => {
-            if (currentUser) {
-                this.handleFirebase(currentUser);
-            }
-        });
+        this.unregisterAuthObserver = firebase.auth().onAuthStateChanged(() => { });
     }
 
     componentWillUnmount() {
@@ -69,7 +66,7 @@ class AuthPage extends Component {
         let requestBody = {
             query: `
                 query {
-                    login(email: "${email}", isMentor: true) {
+                    login(email: "${email}", isMentor: ${this.context.isMentor}) {
                         userId
                         token
                         tokenExpiration
@@ -127,10 +124,16 @@ class AuthPage extends Component {
                     );
                 } else if (resData.data) {
                     if (resData.data.createMentor) {
-                        alert("Created user " + resData.data.createMentor.email);
+                        alert("Created mentor " + resData.data.createMentor.email);
+                    } else if (resData.data.createStudent) {
+                        alert("Created student " + resData.data.createStudent.email);
                     }
 
-                    window.location.reload();
+                    // Login user after the account is created
+                    if (!this.state.isLogin) {
+                        this.switchModeHandler();
+                        this.handleFirebase(firebase.auth().currentUser);
+                    }
                 }
                 if (resData.errors) {
                     alert(resData.errors[0].message);

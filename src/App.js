@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 
 import HomePage from './components/pages/Home';
 import AuthPage from './components/pages/Auth';
@@ -55,6 +55,8 @@ class App extends Component {
               <Switch>
                 {/* without exact all pages with `/` prefix would be redirected */}
                 <Route path="/" exact component={HomePage} />
+                {/* /auth becomes accessible after role is chosen */}
+                {this.state.isMentor === null && <Redirect from="/auth" to="/" exact />}
                 <Route path="/auth" component={AuthPage} />
                 <Route path="/tasks" component={TasksPage} />
               </Switch>

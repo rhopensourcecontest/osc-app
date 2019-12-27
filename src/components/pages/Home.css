@@ -21,3 +21,8 @@
 .home-link {
     color: #09d3ac;
 }
+
+.btn {
+    font-size: calc(10px + 1vmin);
+    margin: 2rem;
+}

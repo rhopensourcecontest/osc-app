@@ -17,7 +17,7 @@ const mainNavigation = props => (
                     <nav className="main-navigation__items">
                         <ul>
                             {/* Show "Sign in" button only if user isn't logged in */}
-                            {!context.token && (
+                            {!context.token && context.isMentor !== null && (
                                 <li>
                                     <NavLink to="/auth">Sign in</NavLink>
                                 </li>
