@@ -36,39 +36,41 @@ module.exports = {
             throw err;
         }
     },
-    // restricted
+    // restricted to authenticated Mentors
     createTask: async (args, req) => {
         if (!req.isAuth) {
             throw new Error('Unauthenticated!');
         }
 
+        if (!req.isMentor) {
+            throw new Error('Only mentors can create tasks!');
+        }
+
         const task = new Task({
             title: args.taskInput.title,
             details: args.taskInput.details,
-            // link: args.taskInput.link,
             link: null,
             isSolved: false,
             isBeingSolved: false,
             creator: req.userId,
             registeredStudent: null
         });
-        
+
         let createdTask;
-        
+
         try {
-            // mongoose save
-            const result = await task.save();
-            createdTask = transformTask(result);
             const creator = await Mentor.findById(req.userId);
 
             if (!creator) {
-                throw new Error('User not found');
+                throw new Error('Mentor not found');
             }
+            // mongoose save
+            const result = await task.save();
+            createdTask = transformTask(result);
             creator.createdTasks.push(task);
             await creator.save();
             return createdTask;
         } catch (err) {
-            console.log(err);
             throw err;
         }
     },
@@ -89,7 +91,7 @@ module.exports = {
                 ...resultTask._doc,
                 creator: mentor.bind(this, resultTask._doc.creator),
                 registeredStudent: student.bind(this, resultStudent._id)
-            };   
+            };
         } catch (err) {
             throw err;
         }
