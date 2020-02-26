@@ -1,26 +1,71 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { Component } from 'react';
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
+
+import HomePage from './components/pages/Home';
+import AuthPage from './components/pages/Auth';
+import TasksPage from './components/pages/Tasks';
+import MainNavigation from './components/Navigation/MainNavigation';
+import AuthContext from './components/context/auth-context';
+
+import firebase from 'firebase';
+
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          This application is currently under development.
-        </p>
-        <a
-          className="App-link"
-          href="https://research.redhat.com/red-hat-open-source-contest/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn About Open Source Contest!
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  state = {
+    token: null,
+    userId: null,
+    isSignedIn: false,
+    isMentor: null
+  }
+
+  login = (token, userId, tokenExpiration, isSignedIn) => {
+    this.setState({ token: token, userId: userId, isSignedIn: isSignedIn });
+  };
+
+  logout = () => {
+    firebase.auth().signOut().then(function () {
+      console.log("Sign out successful");
+    }).catch(function (error) {
+      throw new Error(error);
+    });
+    this.setState({ token: null, userId: null, isSignedIn: false, isMentor: null });
+  };
+
+  setIsMentor = (choice) => {
+    this.setState({ isMentor: choice });
+  };
+
+  render() {
+    return (
+      <BrowserRouter>
+        <React.Fragment>
+          <AuthContext.Provider
+            value={{
+              token: this.state.token,
+              userId: this.state.userId,
+              isSignedIn: this.state.isSignedIn,
+              isMentor: this.state.isMentor,
+              login: this.login,
+              logout: this.logout,
+              setIsMentor: this.setIsMentor
+            }}>
+            <MainNavigation />
+            <main className="main-content">
+              <Switch>
+                {/* without exact all pages with `/` prefix would be redirected */}
+                <Route path="/" exact component={HomePage} />
+                {/* /auth becomes accessible after role is chosen */}
+                {this.state.isMentor === null && <Redirect from="/auth" to="/" exact />}
+                <Route path="/auth" component={AuthPage} />
+                <Route path="/tasks" component={TasksPage} />
+              </Switch>
+            </main>
+          </AuthContext.Provider>
+        </React.Fragment>
+      </BrowserRouter>
+    );
+  }
 }
 
 export default App;
