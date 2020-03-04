@@ -1,68 +1,68 @@
 const { buildSchema } = require('graphql');
 
 module.exports = buildSchema(`
-    type Task {
-        _id: ID!
-        title: String!
-        details: String!
-        link: String
-        isSolved: Boolean!
-        isBeingSolved: Boolean!
-        creator: Mentor!
-        registeredStudent: Student
-    }
+  type Task {
+    _id: ID!
+    title: String!
+    details: String!
+    link: String
+    isSolved: Boolean!
+    isBeingSolved: Boolean!
+    creator: Mentor!
+    registeredStudent: Student
+  }
 
-    input TaskInput {
-        title: String!
-        details: String!
-    }
+  input TaskInput {
+    title: String!
+    details: String!
+  }
 
-    type Student {
-        _id: ID!
-        email: String!
-        registeredTask: Task
-    }
+  type Student {
+    _id: ID!
+    email: String!
+    registeredTask: Task
+  }
 
-    input StudentInput {
-        email: String!
-    }
+  input StudentInput {
+    email: String!
+  }
 
-    type Mentor {
-        _id: ID!
-        email: String!
-        createdTasks: [Task!]
-    }
+  type Mentor {
+    _id: ID!
+    email: String!
+    createdTasks: [Task!]
+  }
 
-    input MentorInput {
-        email: String!
-    }
+  input MentorInput {
+    email: String!
+  }
 
-    type AuthData {
-        userId: ID!
-        token: String!
-        tokenExpiration: Int!
-        isMentor: Boolean!
-    }
+  type AuthData {
+    userId: ID!
+    token: String!
+    tokenExpiration: Int!
+    isMentor: Boolean!
+  }
 
-    type RootQuery {
-        tasks: [Task!]!
-        students: [Student!]!
-        mentors: [Mentor!]!
-        freeTasks: [Task!]!
-        takenTasks: [Task!]!
-        login(email: String!, isMentor: Boolean!): AuthData
-    }
+  type RootQuery {
+    tasks: [Task!]!
+    students: [Student!]!
+    mentors: [Mentor!]!
+    freeTasks: [Task!]!
+    takenTasks: [Task!]!
+    login(email: String!, isMentor: Boolean!): AuthData
+  }
 
-    type RootMutation {
-        createTask(taskInput: TaskInput): Task
-        createStudent(studentInput: StudentInput): Student
-        createMentor(mentorInput: MentorInput): Mentor
-        registerTask(studentId: ID!, taskId: ID!): Task!
-        unregisterTask(studentId: ID!, taskId: ID!): Task!
-    }
+  type RootMutation {
+    createTask(taskInput: TaskInput): Task
+    createStudent(studentInput: StudentInput): Student
+    createMentor(mentorInput: MentorInput): Mentor
+    registerTask(studentId: ID!, taskId: ID!): Task!
+    unregisterTask(studentId: ID!, taskId: ID!): Task!
+  }
 
-    schema {
-        query: RootQuery
-        mutation: RootMutation
-    }
+  schema {
+    query: RootQuery
+    mutation: RootMutation
+  }
 `);

@@ -4,10 +4,10 @@ const mentorsResolver = require('./mentors');
 const studentsResolver = require('./students');
 
 const rootResolver = {
-    ...authResolver,
-    ...tasksResolver,
-    ...mentorsResolver,
-    ...studentsResolver
+  ...authResolver,
+  ...tasksResolver,
+  ...mentorsResolver,
+  ...studentsResolver
 };
 
 module.exports = rootResolver;
