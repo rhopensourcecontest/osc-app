@@ -26,12 +26,11 @@
 .modal__actions {
     display: flex;
     justify-content: flex-end;
-    padding: 1rem;
 }
 
 @media (min-width: 768px) {
     .modal {
-        width: 30rem;
-        left: calc((100% - 30rem) / 2);
+        width: 35rem;
+        left: calc((100% - 35rem) / 2);
     }
 }
