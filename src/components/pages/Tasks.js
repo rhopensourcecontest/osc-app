@@ -30,7 +30,7 @@ class TasksPage extends Component {
     modalConfirmHandler = () => {
         this.setState({ creating: false });
         const title = this.titleRef.current.value;
-        const details = this.detailsRef.current.value;
+        const details = this.detailsRef.current.value.split(/\r?\n/).join("\\n");
 
         if (title.trim().length === 0 || details.trim().length === 0) {
             return;
@@ -136,7 +136,12 @@ class TasksPage extends Component {
             return (
                 <li key={task._id} className="tasks__list-item">
                     <b><h4>{task.title}</h4></b>
-                    {task.details}
+                    {/* Show first line of details if it has multiple lines, 20 chars otherwise */}
+                    {
+                        task.details.indexOf('\n', 0) >= 0
+                            ? task.details.slice(0, task.details.indexOf('\n', 0))
+                            : task.details.slice(0, 20)
+                    }
                 </li>
             );
         });
@@ -159,7 +164,7 @@ class TasksPage extends Component {
                             </div>
                             <div className="form-control">
                                 <label htmlFor="details">Details</label>
-                                <textarea id="details" rows="4" ref={this.detailsRef}></textarea>
+                                <textarea id="details" rows="10" ref={this.detailsRef}></textarea>
                             </div>
                         </form>
                     </Modal>
