@@ -22,13 +22,17 @@ module.exports = {
     try {
       // don't create mentor if he alredy exists
       const existingMentor = await Mentor.findOne({
-        email: args.mentorInput.email
+        email: args.mentorInput.email,
+        uid: args.mentorInput.uid
       });
       if (existingMentor) {
         throw new Error('Mentor with email ' + args.mentorInput.email + ' already exists.');
       }
       const mentor = new Mentor({
-        email: args.mentorInput.email
+        email: args.mentorInput.email,
+        uid: args.mentorInput.uid,
+        isVerified: false,
+        isAdmin: false
       });
       const result = await mentor.save();
       return {

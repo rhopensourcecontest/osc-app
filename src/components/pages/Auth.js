@@ -58,15 +58,16 @@ class AuthPage extends Component {
     }
 
     const email = user.email;
+    const uid = user.uid;
 
-    if (email.trim().length === 0) {
+    if (email.trim().length === 0 || uid.trim().length === 0) {
       return;
     }
 
     let requestBody = {
       query: `
       query {
-        login(email: "${email}", isMentor: ${this.context.isMentor}) {
+        login(email: "${email}", uid: "${uid}", isMentor: ${this.context.isMentor}) {
           userId
           token
           tokenExpiration
@@ -79,7 +80,7 @@ class AuthPage extends Component {
       requestBody = {
         query: `
         mutation {
-          createMentor(mentorInput: {email: "${email}"}) {
+          createMentor(mentorInput: {email: "${email}", uid: "${uid}"}) {
             _id
             email
           }
@@ -90,7 +91,7 @@ class AuthPage extends Component {
       requestBody = {
         query: `
         mutation {
-          createStudent(studentInput: {email: "${email}"}) {
+          createStudent(studentInput: {email: "${email}", uid: "${uid}"}) {
             _id
             email
           }
@@ -108,13 +109,13 @@ class AuthPage extends Component {
     })
       .then(res => {
         if (res.status !== 200 && res.status !== 201) {
-          // alert("Something went wrong.");
+          alert("Something went wrong.");
           throw new Error('Failed');
         }
         return res.json();
       })
       .then(resData => {
-        if (resData.data.login) {
+        if (resData.data.login.token) {
           this.setState({ isSignedIn: !!user });
           this.context.login(
             resData.data.login.token,

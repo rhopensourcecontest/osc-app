@@ -6,6 +6,16 @@ const mentorSchema = new Schema({
     type: String,
     required: true
   },
+  uid: {
+    type: String,
+    required: true
+  },
+  isVerified: {
+    type: Boolean
+  },
+  isAdmin: {
+    type: Boolean
+  },
   createdTasks: [
     {
       type: Schema.Types.ObjectId,

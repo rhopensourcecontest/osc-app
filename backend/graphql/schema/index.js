@@ -20,21 +20,25 @@ module.exports = buildSchema(`
   type Student {
     _id: ID!
     email: String!
+    uid: String!
     registeredTask: Task
   }
 
   input StudentInput {
     email: String!
+    uid: String!
   }
 
   type Mentor {
     _id: ID!
     email: String!
+    uid: String!
     createdTasks: [Task!]
   }
 
   input MentorInput {
     email: String!
+    uid: String!
   }
 
   type AuthData {
@@ -50,7 +54,7 @@ module.exports = buildSchema(`
     mentors: [Mentor!]!
     freeTasks: [Task!]!
     takenTasks: [Task!]!
-    login(email: String!, isMentor: Boolean!): AuthData
+    login(email: String!, uid: String!, isMentor: Boolean!): AuthData
   }
 
   type RootMutation {

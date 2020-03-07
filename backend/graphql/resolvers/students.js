@@ -22,13 +22,15 @@ module.exports = {
     try {
       // don't create student if he alredy exists
       const existingStudent = await Student.findOne({
-        email: args.studentInput.email
+        email: args.studentInput.email,
+        uid: args.studentInput.uid
       });
       if (existingStudent) {
         throw new Error('Student with email ' + args.studentInput.email + ' already exists.');
       }
       const student = new Student({
         email: args.studentInput.email,
+        uid: args.studentInput.uid,
         registeredTask: null
       });
       const result = await student.save();

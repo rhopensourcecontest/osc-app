@@ -6,6 +6,10 @@ const studentSchema = new Schema({
     type: String,
     required: true
   },
+  uid: {
+    type: String,
+    required: true
+  },
   registeredTask: {
     type: Schema.Types.ObjectId,
     ref: 'Task'
