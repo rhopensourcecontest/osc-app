@@ -53,12 +53,14 @@ class App extends Component {
             <MainNavigation />
             <main className="main-content">
               <Switch>
-                {/* without exact all pages with `/` prefix would be redirected */}
+                {/* without exact all pages with `/` prefix would show HomePage */}
                 <Route path="/" exact component={HomePage} />
                 {/* /auth becomes accessible after role is chosen */}
                 {this.state.isMentor === null && <Redirect from="/auth" to="/" exact />}
                 <Route path="/auth" component={AuthPage} />
                 <Route path="/tasks" component={TasksPage} />
+                {/* Redirect everything else to root */}
+                <Redirect to="/" />
               </Switch>
             </main>
           </AuthContext.Provider>
