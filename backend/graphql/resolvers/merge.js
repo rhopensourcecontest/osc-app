@@ -47,6 +47,7 @@ const mentor = async mentorId => {
     const mentor = await Mentor.findById(mentorId);
     return {
       ...mentor._doc,
+      uid: "*restricted*",
       createdTasks: tasks.bind(this, mentor._doc.createdTasks)
     };
   } catch (err) {
@@ -60,6 +61,7 @@ const student = async studentId => {
     const student = await Student.findById(studentId);
     return {
       ...student._doc,
+      uid: "*restricted*",
       registeredTask: singleTask.bind(this, student._doc.registeredTask)
     };
   } catch (err) {

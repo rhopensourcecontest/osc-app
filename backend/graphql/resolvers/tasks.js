@@ -64,6 +64,10 @@ module.exports = {
       if (!creator) {
         throw new Error('Mentor not found');
       }
+      if (!creator.isVerified) {
+        throw new Error('You are not verified mentor');
+      }
+
       // mongoose save
       const result = await task.save();
       createdTask = transformTask(result);

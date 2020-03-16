@@ -25,6 +25,13 @@ module.exports = {
       { expiresIn: '1h' }
     );
 
-    return { userId: user._id, token: token, tokenExpiration: 1, isMentor: isMentor };
+    return {
+      userId: user._id,
+      token: token,
+      tokenExpiration: 1,
+      isMentor: isMentor,
+      isAdmin: isMentor ? user.isAdmin : null,
+      isVerified: isMentor ? user.isVerified : null
+    };
   }
 };

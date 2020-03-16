@@ -11,6 +11,7 @@ module.exports = {
       return students.map(student => {
         return {
           ...student._doc,
+          uid: "*restricted*",
           registeredTask: singleTask.bind(this, student._doc.registeredTask)
         };
       });

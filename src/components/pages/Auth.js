@@ -71,6 +71,8 @@ class AuthPage extends Component {
           userId
           token
           tokenExpiration
+          isAdmin
+          isVerified
         }
       }
     `
@@ -121,7 +123,8 @@ class AuthPage extends Component {
             resData.data.login.token,
             resData.data.login.userId,
             resData.data.login.tokenExpiration,
-            this.state.isSignedIn
+            resData.data.login.isAdmin,
+            resData.data.login.isVerified
           );
         } else if (resData.data) {
           if (resData.data.createMentor) {
@@ -150,7 +153,7 @@ class AuthPage extends Component {
     return (
       <React.Fragment>
         <div className="auth-form">
-          {this.context.isSignedIn ? (
+          {this.state.isSignedIn ? (
             <center>
               <div>Signed in!</div>
 

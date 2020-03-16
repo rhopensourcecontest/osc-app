@@ -11,6 +11,7 @@ module.exports = {
       return mentors.map(mentor => {
         return {
           ...mentor._doc,
+          uid: "*restricted*",
           createdTasks: tasks.bind(this, mentor._doc.createdTasks)
         };
       });

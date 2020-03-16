@@ -34,6 +34,8 @@ module.exports = buildSchema(`
     email: String!
     uid: String!
     createdTasks: [Task!]
+    isVerified: Boolean!
+    isAdmin: Boolean!
   }
 
   input MentorInput {
@@ -46,6 +48,8 @@ module.exports = buildSchema(`
     token: String!
     tokenExpiration: Int!
     isMentor: Boolean!
+    isAdmin: Boolean
+    isVerified: Boolean
   }
 
   type RootQuery {
