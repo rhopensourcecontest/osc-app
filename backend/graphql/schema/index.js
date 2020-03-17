@@ -52,6 +52,11 @@ module.exports = buildSchema(`
     isVerified: Boolean
   }
 
+  type UnregData {
+    studentId: ID!
+    taskId: ID!
+  }
+
   type RootQuery {
     tasks: [Task!]!
     students: [Student!]!
@@ -70,7 +75,8 @@ module.exports = buildSchema(`
     createMentor(mentorInput: MentorInput): Mentor
     registerTask(studentId: ID!, taskId: ID!): Task!
     unregisterTask(studentId: ID!, taskId: ID!): Task!
-    deleteTask(taskId: ID!): Task 
+    deleteTask(taskId: ID!): Task
+    unregisterAllStudents: [UnregData]!
   }
 
   schema {
