@@ -5,6 +5,11 @@ const Student = require('../../models/student');
 const { transformTask, singleTask, tasks, mentor, student } = require('./merge');
 
 module.exports = {
+  /**
+   * Get all mentors with pre-loaded createdTasks.
+   * 
+   * @returns {Mentor[]} - Array of Mentor objects.
+   */
   mentors: async () => {
     try {
       const mentors = await Mentor.find();
@@ -19,7 +24,14 @@ module.exports = {
       throw err;
     }
   },
-  createMentor: async args => {
+  /**
+   * Create mentor.
+   * 
+   * @param {string} args.mentorInput.email
+   * @param {string} args.mentorInput.uid
+   * @returns {Mentor}
+   */
+  createMentor: async (args) => {
     try {
       // don't create mentor if he alredy exists
       const existingMentor = await Mentor.findOne({
@@ -39,6 +51,47 @@ module.exports = {
       return {
         ...result._doc
       };
+    } catch (err) {
+      throw err;
+    }
+  },
+  /**
+   * Get emails of students who are registered to 
+   * tasks of mentor with mentorId.
+   * 
+   * @param {ID} args.mentorId
+   * @returns {string[]} - Array of emails.
+   */
+  studentEmails: async (args) => {
+    try {
+      const mentor = await Mentor.findById(args.mentorId);
+      emails = [];
+
+      for (const taskId of mentor.createdTasks) {
+        const task = await Task.findById(taskId);
+
+        if (task.registeredStudent) {
+          const student = await Student.findById(task.registeredStudent);
+          emails.push(student.email);
+        }
+      }
+
+      return emails;
+    } catch (err) {
+      throw err;
+    }
+  },
+  /**
+   * Get emails of all mentors.
+   * 
+   * @returns {string[]} - Array of emails.
+   */
+  allMentorEmails: async () => {
+    try {
+      const mentors = await Mentor.find();
+      return mentors.map(mentor => {
+        return mentor.email;
+      });
     } catch (err) {
       throw err;
     }

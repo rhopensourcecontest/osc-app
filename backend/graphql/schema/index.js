@@ -59,6 +59,9 @@ module.exports = buildSchema(`
     freeTasks: [Task!]!
     takenTasks: [Task!]!
     login(email: String!, uid: String!, isMentor: Boolean!): AuthData
+    studentEmails(mentorId: ID!): [String]!
+    allStudentEmails: [String]!
+    allMentorEmails: [String]!
   }
 
   type RootMutation {
@@ -67,7 +70,7 @@ module.exports = buildSchema(`
     createMentor(mentorInput: MentorInput): Mentor
     registerTask(studentId: ID!, taskId: ID!): Task!
     unregisterTask(studentId: ID!, taskId: ID!): Task!
-    deleteTask(taskId: ID!): Task
+    deleteTask(taskId: ID!): Task 
   }
 
   schema {

@@ -5,6 +5,11 @@ const Student = require('../../models/student');
 const { transformTask, singleTask, tasks, mentor, student } = require('./merge');
 
 module.exports = {
+  /**
+   * Get all students with pre-loaded registeredTask.
+   *
+   * @returns {Student[]} - Array of Student objects.
+   */
   students: async () => {
     try {
       const students = await Student.find();
@@ -19,6 +24,13 @@ module.exports = {
       throw err;
     }
   },
+  /**
+   * Create student.
+   *
+   * @param {string} args.studentInput.email
+   * @param {string} args.studentInput.uid
+   * @returns {Student}
+   */
   createStudent: async args => {
     try {
       // don't create student if he alredy exists
@@ -38,6 +50,21 @@ module.exports = {
       return {
         ...result._doc
       };
+    } catch (err) {
+      throw err;
+    }
+  },
+  /**
+   * Get emails of all students.
+   * 
+   * @returns {string[]} - Array of emails.
+   */
+  allStudentEmails: async () => {
+    try {
+      const students = await Student.find();
+      return students.map(student => {
+        return student.email;
+      });
     } catch (err) {
       throw err;
     }
