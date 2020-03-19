@@ -21,19 +21,22 @@ body {
 }
 
 .form-actions button,
+.modal-actions button,
+.tasks-control button,
 .btn {
   background: rgb(253, 46, 38);
   font: inherit;
   border: 1px solid rgb(253, 46, 38);
   border-radius: 5px;
   padding: 0.25rem 1rem;
-  margin-right: 1rem;
-  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0);
+  margin: 1rem 0.25rem;
   color: white;
 }
 
 .form-actions button:hover,
 .form-actions button:active,
+.tasks-control button:hover,
+.tasks-control button:active,
 .btn:hover,
 .btn:active {
   color: black;

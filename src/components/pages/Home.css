@@ -22,7 +22,7 @@
   color: #09d3ac;
 }
 
-.btn {
-  font-size: calc(10px + 1vmin);
+.home button {
+  font-size: calc(8px + 2vmin);
   margin: 2rem;
 }

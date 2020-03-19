@@ -1,14 +1,17 @@
 .tasks-control {
   text-align: center;
-  border: 1px solid #5101d1;
-  padding: 1rem;
-  margin: 2rem auto;
-  width: 30rem;
-  max-width: 80%;
+  margin: -1rem auto;
+  width: 90%;
+  max-width: 90%;
+}
+
+.flex-container {
+  display: flex;
+  justify-content: space-between;
 }
 
 .tasks__list {
-  width: 50rem;
+  width: 90%;
   max-width: 90%;
   margin: auto;
   list-style: none;
@@ -18,6 +21,6 @@
 .tasks__list-item {
   margin: 1rem 0;
   padding: 1rem;
-  border: 1px solid #5101d1;
+  border: 1px solid black;
   white-space: pre;
 }
