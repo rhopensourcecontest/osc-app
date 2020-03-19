@@ -4,6 +4,7 @@ import Modal from '../Modal/Modal';
 import Backdrop from '../Backdrop/Backdrop';
 import AuthContext from '../context/auth-context';
 import './Tasks.css';
+import { TASKS } from '../../constants/tasks';
 
 class TasksPage extends Component {
   state = {
@@ -20,7 +21,7 @@ class TasksPage extends Component {
   }
 
   componentDidMount() {
-    this.fetchTasks();
+    this.fetchTasks(TASKS.ALL);
   }
 
   startCreateTaskHandler = () => {
@@ -73,7 +74,7 @@ class TasksPage extends Component {
       })
       .then(resData => {
         alert("Task " + title + " was created successfully.");
-        this.fetchTasks();
+        this.fetchTasks(TASKS.ALL);
       })
       .catch(err => {
         alert("Task creation failed.");
@@ -85,11 +86,18 @@ class TasksPage extends Component {
     this.setState({ creating: false });
   };
 
-  fetchTasks = () => {
+  /**
+   * Get tasks from db. queryName can have values from 
+   * {TASKS.ALL, TASKS.FREE, TASKS.TAKEN}
+   * 
+   * @param {string} queryName
+   * @returns {Task[]}
+   */
+  fetchTasks = (queryName) => {
     const requestBody = {
       query: `
         query {
-          tasks {
+          ${queryName} {
             _id
             title
             details
@@ -123,7 +131,8 @@ class TasksPage extends Component {
         return res.json();
       })
       .then(resData => {
-        const tasks = resData.data.tasks;
+        // get object with key queryName
+        const tasks = resData.data[queryName];
         this.setState({ tasks: tasks });
       })
       .catch(err => {
@@ -185,12 +194,26 @@ class TasksPage extends Component {
         {!this.context.token && (
           <p>Public content</p>
         )}
-        {this.context.token && this.context.isMentor && (
-          <div className="tasks-control">
-            <p>Add some new tasks</p>
-            <button className="btn" onClick={this.startCreateTaskHandler}>Create Task</button>
+        <div className="tasks-control flex-container">
+          <div>
+            <button onClick={() => this.fetchTasks(TASKS.ALL)}>
+              All Tasks
+            </button>
+            <button onClick={() => this.fetchTasks(TASKS.FREE)}>
+              Free Tasks
+            </button>
+            <button onClick={() => this.fetchTasks(TASKS.TAKEN)}>
+              Taken Tasks
+            </button>
           </div>
-        )}
+          {this.context.token && this.context.isMentor && (
+            <div>
+              <button onClick={this.startCreateTaskHandler}>
+                + New Task
+              </button>
+            </div>
+          )}
+        </div>
 
         <ul className="tasks__list">
           {taskList}

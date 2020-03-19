@@ -5,7 +5,7 @@ const Student = require('../../models/student');
 const { transformTask, singleTask, tasks, mentor, student } = require('./merge');
 
 module.exports = {
-  tasks: async () => {
+  allTasks: async () => {
     try {
       const tasks = await Task.find();
       return tasks.map(task => {
