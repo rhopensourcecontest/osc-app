@@ -87,11 +87,61 @@ class TasksPage extends Component {
   };
 
   /**
+   * Delete task from db.
+   *
+   * @param {ID} taskId
+   */
+  deleteTask = (taskId) => {
+    const requestBody = {
+      query: `
+        mutation {
+          deleteTask(taskId: "${taskId}") {
+            _id
+            title
+            details
+            link
+            isSolved
+            isBeingSolved
+          }
+        }
+      `
+    };
+
+    const token = this.context.token;
+
+    fetch('http://localhost:5000/graphql', {
+      method: 'POST',
+      body: JSON.stringify(requestBody),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      }
+    })
+      .then(res => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error('Failed');
+        }
+        return res.json();
+      })
+      .then(resData => {
+        if (resData.data.deleteTask) {
+          this.fetchTasks(TASKS.ALL);
+          alert("Successfully deleted task " + resData.data.deleteTask.title);
+        } else {
+          alert("Something went wrong.");
+          console.log(resData);
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
+  /**
    * Get tasks from db. queryName can have values from 
    * {TASKS.ALL, TASKS.FREE, TASKS.TAKEN}
    * 
    * @param {string} queryName
-   * @returns {Task[]}
    */
   fetchTasks = (queryName) => {
     const requestBody = {
@@ -144,16 +194,27 @@ class TasksPage extends Component {
     const taskList = this.state.tasks.map(task => {
       return (
         <li key={task._id} className="tasks__list-item">
-          <b><h4>{task.title}</h4></b>
-          {/* Show first line of details if it has multiple lines, 20 chars otherwise */}
-          {
-            task.details.indexOf('\n', 0) >= 0
-              ? task.details.slice(0, task.details.indexOf('\n', 0))
-              : task.details.slice(0, 20)
-          }
+          <div className="flex-container">
+            <div>
+              <h4>{task.title}</h4>
+              {/* Show first line of details if it has multiple lines, 20 chars otherwise */}
+              {
+                task.details.indexOf('\n', 0) >= 0
+                  ? task.details.slice(0, task.details.indexOf('\n', 0))
+                  : task.details.slice(0, 20)
+              }
+            </div>
+            {this.context.token && this.context.isMentor && (
+              <div>
+                <button
+                  className="btn" onClick={() => this.deleteTask(task._id)}>Delete</button>
+              </div>
+            )}
+          </div>
         </li>
       );
     });
+
     return (
       <React.Fragment>
         <h1>The Tasks Page</h1>
