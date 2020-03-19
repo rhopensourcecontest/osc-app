@@ -117,7 +117,7 @@ class AuthPage extends Component {
         return res.json();
       })
       .then(resData => {
-        if (resData.data.login.token) {
+        if (resData.data.login) {
           this.setState({ isSignedIn: !!user });
           this.context.login(
             resData.data.login.token,
