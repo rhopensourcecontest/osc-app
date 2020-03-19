@@ -14,13 +14,20 @@ import './App.css';
 class App extends Component {
   state = {
     token: null,
+    user: null,
     userId: null,
-    isSignedIn: false,
-    isMentor: null
-  }
+    isMentor: null,
+    isAdmin: null,
+    isVerified: null
+  };
 
-  login = (token, userId, tokenExpiration, isSignedIn) => {
-    this.setState({ token: token, userId: userId, isSignedIn: isSignedIn });
+  login = (token, userId, tokenExpiration, isAdmin, isVerified) => {
+    this.setState({
+      token: token,
+      userId: userId,
+      isAdmin: isAdmin,
+      isVerified: isVerified
+    });
   };
 
   logout = () => {
@@ -29,7 +36,14 @@ class App extends Component {
     }).catch(function (error) {
       throw new Error(error);
     });
-    this.setState({ token: null, userId: null, isSignedIn: false, isMentor: null });
+    this.setState({
+      token: null,
+      user: null,
+      userId: null,
+      isMentor: null,
+      isAdmin: null,
+      isVerified: null
+    });
   };
 
   setIsMentor = (choice) => {
@@ -42,10 +56,14 @@ class App extends Component {
         <React.Fragment>
           <AuthContext.Provider
             value={{
+              // State attributes
               token: this.state.token,
               userId: this.state.userId,
-              isSignedIn: this.state.isSignedIn,
+              user: this.state.user,
               isMentor: this.state.isMentor,
+              isAdmin: this.state.isAdmin,
+              isVerified: this.state.isVerified,
+              // App.js methods
               login: this.login,
               logout: this.logout,
               setIsMentor: this.setIsMentor
@@ -53,12 +71,14 @@ class App extends Component {
             <MainNavigation />
             <main className="main-content">
               <Switch>
-                {/* without exact all pages with `/` prefix would be redirected */}
+                {/* without exact all pages with `/` prefix would show HomePage */}
                 <Route path="/" exact component={HomePage} />
                 {/* /auth becomes accessible after role is chosen */}
                 {this.state.isMentor === null && <Redirect from="/auth" to="/" exact />}
                 <Route path="/auth" component={AuthPage} />
                 <Route path="/tasks" component={TasksPage} />
+                {/* Redirect everything else to root */}
+                <Redirect to="/" />
               </Switch>
             </main>
           </AuthContext.Provider>

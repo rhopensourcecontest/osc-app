@@ -7,35 +7,35 @@ body {
 .form-control label,
 .form-control input,
 .form-control textarea {
-    width: 100%;
-    display: block;
-    max-width: 100%;
+  width: 100%;
+  display: block;
+  max-width: 100%;
 }
 
 .form-control label {
-    margin-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .form-control {
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .form-actions button,
 .btn {
-    background: rgb(253, 46, 38);
-    font: inherit;
-    border: 1px solid rgb(253, 46, 38);
-    border-radius: 5px;
-    padding: 0.25rem 1rem;
-    margin-right: 1rem;
-    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0);
-    color: white;
+  background: rgb(253, 46, 38);
+  font: inherit;
+  border: 1px solid rgb(253, 46, 38);
+  border-radius: 5px;
+  padding: 0.25rem 1rem;
+  margin-right: 1rem;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0);
+  color: white;
 }
 
 .form-actions button:hover,
 .form-actions button:active,
 .btn:hover,
 .btn:active {
-    color: black;
-    cursor: pointer;
+  color: black;
+  cursor: pointer;
 }
