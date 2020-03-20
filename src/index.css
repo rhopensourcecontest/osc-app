@@ -20,9 +20,15 @@ body {
   margin-bottom: 1rem;
 }
 
+.flex-container {
+  display: flex;
+  justify-content: space-between;
+}
+
 .form-actions button,
 .modal-actions button,
-.tasks-control button,
+.task-control button,
+.task__list-item button,
 .btn {
   background: rgb(253, 46, 38);
   font: inherit;
@@ -35,8 +41,10 @@ body {
 
 .form-actions button:hover,
 .form-actions button:active,
-.tasks-control button:hover,
-.tasks-control button:active,
+.task-control button:hover,
+.task-control button:active,
+.task__list-item button:hover,
+.task__list-item button:active,
 .btn:hover,
 .btn:active {
   color: black;
