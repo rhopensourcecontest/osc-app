@@ -34,6 +34,10 @@ class TasksPage extends Component {
    * Set flag to show modal for Task creation.
    */
   startCreateTaskHandler = () => {
+    if (!this.context.isVerified) {
+      alert("You have to be verified by Admin to create Tasks.");
+      return;
+    }
     this.setState({ creating: true });
   }
 
