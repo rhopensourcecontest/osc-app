@@ -2,7 +2,7 @@ import React from 'react';
 
 import './Modal.css';
 
-const modal = props => (
+const modal = (props) => (
   <div className="modal">
     <header className="modal__header">
       <h1>
@@ -13,8 +13,18 @@ const modal = props => (
       {props.children}
     </section>
     <section className="modal__actions">
-      {props.canCancel && <button className="btn" onClick={props.onCancel}>Cancel</button>}
-      {props.canConfirm && <button className="btn" onClick={props.onConfirm}>Confirm</button>}
+      {/* Display Cancel button */}
+      {props.canCancel && (
+        <button className="btn" onClick={props.onCancel}>Cancel</button>
+      )}
+      {/* Display Confirm button */}
+      {props.canConfirm && (
+        <button className="btn" onClick={props.onConfirm}>Confirm</button>
+      )}
+      {/* Display Register button for authenticated Students */}
+      {props.canRegister && props.context.token && !props.context.isMentor && (
+        <button className="btn" onClick={props.onConfirm}>Register</button>
+      )}
     </section>
   </div>
 );

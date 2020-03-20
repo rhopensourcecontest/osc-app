@@ -80,13 +80,14 @@ class TaskItem extends Component {
                 : task.details.slice(0, 20)
             }
           </div>
-          {this.context.token && this.context.isMentor && (
-            <div>
-              <button onClick={() => this.deleteTask(task._id)}>
-                Delete
-              </button>
-            </div>
-          )}
+          <div>
+            <button onClick={this.props.onDetail.bind(this, task._id)}>Details</button>
+            {/* Display Delete button only to creator and admin */}
+            {((this.context.token && this.context.isMentor && this.context.userId === task.creator._id) ||
+              (this.context.token && this.context.isAdmin)) && (
+                <button onClick={() => this.deleteTask(task._id)}>Delete</button>
+              )}
+          </div>
         </div>
       </li>
     );
