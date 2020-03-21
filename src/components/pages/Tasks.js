@@ -214,7 +214,7 @@ class TasksPage extends Component {
             context={this.context}
           >
             <p>{this.state.selectedTask.details}</p>
-            <p>Link: {this.state.selectedTask.link}</p>
+            <p>Link: <a href={this.state.selectedTask.link} target="_blank" rel="noopener noreferrer">{this.state.selectedTask.link}</a></p>
             <br />
             <p>Mentor: {this.state.selectedTask.creator.email}</p>
             <p>
