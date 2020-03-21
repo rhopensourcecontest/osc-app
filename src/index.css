@@ -4,6 +4,10 @@ body {
   font-family: sans-serif;
 }
 
+p {
+  white-space: pre;
+}
+
 .form-control label,
 .form-control input,
 .form-control textarea {
