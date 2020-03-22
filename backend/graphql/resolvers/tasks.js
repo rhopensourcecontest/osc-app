@@ -81,20 +81,39 @@ module.exports = {
     }
   },
   /**
-   * restricted
+   * Register Task defined by taskId to Student defined by studentId.
+   * Restricted to authenticated Students and Admins.
+   * Student can register Task only for himself.
+   * 
+   * @param {string} args.studentId
+   * @param {string} args.taskId
+   * @returns {Task} Task with pre-loaded creator and registeredStudent.
    */
   registerTask: async (args, req) => {
     if (!req.isAuth) {
       throw new Error('Unauthenticated!');
     }
 
+    if (!req.isAdmin && req.isMentor) {
+      throw new Error('Only Students and Admins can register to Tasks!');
+    }
+
+    if (!req.isMentor && req.userId !== args.studentId) {
+      throw new Error('Students cannot register Tasks for others!');
+    }
+
     try {
-      const resultStudent = await Student.findByIdAndUpdate(
-        args.studentId, { registeredTask: args.taskId }
-      );
-      const resultTask = await Task.findByIdAndUpdate(
-        args.taskId, { registeredStudent: args.studentId }
-      );
+      const resultStudent = await Student.findById(args.studentId);
+      if (resultStudent.registeredTask) {
+        throw new Error("Student can only have one Task at a time.")
+      }
+      const resultTask = await Task.findById(args.taskId);
+      if (resultTask.registeredStudent) {
+        throw new Error("Task has already been taken.")
+      }
+
+      await resultStudent.updateOne({ registeredTask: args.taskId });
+      await resultTask.updateOne({ registeredStudent: args.studentId });
       return {
         ...resultTask._doc,
         creator: mentor.bind(this, resultTask._doc.creator),
@@ -105,20 +124,42 @@ module.exports = {
     }
   },
   /**
-   * restricted
+   * Unregister Task defined by taskId from Student defined by studentId.
+   * Restricted to authenticated Students and Admins.
+   * Student can unregister Task only for himself.
+   *
+   * @param {string} args.studentId
+   * @param {string} args.taskId
+   * @returns {Task} Task with pre-loaded creator and registeredStudent
    */
   unregisterTask: async (args, req) => {
     if (!req.isAuth) {
       throw new Error('Unauthenticated!');
     }
 
+    if (!req.isAdmin && req.isMentor) {
+      throw new Error('Only Students and Admins can unregister from Tasks!');
+    }
+
+    if (!req.isMentor && req.userId !== args.studentId) {
+      throw new Error('Students can unregister only their own Task!');
+    }
+
     try {
-      await Student.findByIdAndUpdate(
-        args.studentId, { registeredTask: null }
-      );
-      const resultTask = await Task.findByIdAndUpdate(
-        args.taskId, { registeredStudent: null }
-      );
+      const resultStudent = await Student.findById(args.studentId);
+      if (resultStudent.registeredTask != args.taskId) {
+        throw new Error("Student " + resultStudent._id + " is not registered " +
+          "to Task " + args.taskId);
+      }
+
+      const resultTask = await Task.findById(args.taskId);
+      if (resultTask.registeredStudent != args.studentId) {
+        throw new Error("Task " + resultTask._id +
+          " doesn't have registered Student " + args.studentId);
+      }
+      await resultStudent.updateOne({ registeredTask: null });
+      await resultTask.updateOne({ registeredStudent: null });
+
       return {
         ...resultTask._doc,
         creator: mentor.bind(this, resultTask._doc.creator),
@@ -129,13 +170,14 @@ module.exports = {
     }
   },
   /**
-   * restricted to authenticated Mentors and Admins
+   * Deletes Task defined by taskId.
+   * Deletes Task from Mentor.createdTasks defined by task.creator._id
+   * Mentor can delete only tasks that he created.
+   * Restricted to authenticated Mentors and Admins
    * 
-   * Mentor can delete only tasks that he created
-   * 
-   * Return deleted Task
+   * @param {string} args.taskId
+   * @returns {Task} Task with pre-loaded creator and registeredStudent
    * Deletes Task defined by taskId
-   * Deletes Task from createdTasks in Mentor defined by task.creator._id
    */
   deleteTask: async (args, req) => {
     if (!req.isAuth) {
@@ -150,6 +192,12 @@ module.exports = {
 
       if (!task) {
         throw new Error("Task " + args.taskId + " does not exist.");
+      }
+
+      if (task.registeredStudent) {
+        const registeredStudent = await Student.findOne({ _id: task.registeredStudent });
+        throw new Error("Student " + registeredStudent.email +
+          " is registered to this task");
       }
 
       const expectedCreator = await mentor(req.userId);

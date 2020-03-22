@@ -57,7 +57,7 @@ class TaskItem extends Component {
           this.props.fetchTasks(TASKS.ALL);
           alert("Successfully deleted task " + resData.data.deleteTask.title);
         } else {
-          alert("Something went wrong.");
+          alert(resData.errors[0].message);
           console.log(resData);
         }
       })

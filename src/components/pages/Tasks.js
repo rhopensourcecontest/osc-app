@@ -12,7 +12,8 @@ class TasksPage extends Component {
   state = {
     creating: false,
     tasks: [],
-    selectedTask: null
+    selectedTask: null,
+    regsCount: 0
   };
 
   static contextType = AuthContext;
@@ -108,9 +109,19 @@ class TasksPage extends Component {
   /**
    * Show detail of the task defined by taskId.
    * 
-   * @param {ID} taskId
+   * @param {string} taskId
    */
   showDetailHandler = (taskId) => {
+    // set registrations count for student
+    if (!this.context.isMentor) {
+      for (const task of this.state.tasks) {
+        if (task.registeredStudent &&
+          task.registeredStudent._id === this.context.userId) {
+          this.setState({ regsCount: 1 });
+          break;
+        }
+      }
+    }
     this.setState(prevState => {
       const selectedTask = prevState.tasks.find(e => e._id === taskId);
       return { selectedTask: selectedTask };
@@ -118,12 +129,69 @@ class TasksPage extends Component {
   };
 
   /**
-   * TODO
+   * Register Student to selectedTask if wasRegistered === false.
+   * Unregister Student from selectedTask if wasRegistered === true.
    * 
-   * Register student to task defined by taskId.
+   * @param {boolean} wasRegistered
+   * - States whether the current user was registered before calling the function.
    */
-  registerTaskHandler = () => {
-    console.log("Task registration attempt.");
+  taskRegistrationHandler = (wasRegistered) => {
+    const task = this.state.selectedTask;
+
+    const requestBody = {
+      query: `
+        mutation {
+          ${wasRegistered ? `unregisterTask` : `registerTask`}
+            (taskId: "${task._id}", studentId: "${this.context.userId}") {
+              registeredStudent {
+                _id
+                email
+              }
+          }
+        }
+      `
+    };
+
+    const token = this.context.token;
+
+    fetch('http://localhost:5000/graphql', {
+      method: 'POST',
+      body: JSON.stringify(requestBody),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      }
+    })
+      .then(res => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error('Failed');
+        }
+        return res.json();
+      })
+      .then(resData => {
+        var editedTask = task;
+        if (wasRegistered) {
+          editedTask.registeredStudent = null;
+          this.setState(prevState => {
+            const regsCount = prevState.regsCount - 1;
+            return { regsCount: regsCount };
+          });
+          alert("Task " + task.title + " was unregistered successfully.");
+        } else {
+          editedTask.registeredStudent = resData.data.registerTask.registeredStudent;
+          this.setState(prevState => {
+            const regsCount = prevState.regsCount + 1;
+            return { regsCount: regsCount };
+          });
+          alert("Task " + task.title + " was registered successfully.");
+        }
+        this.setState({ selectedTask: editedTask });
+        this.fetchTasks(TASKS.ALL);
+      })
+      .catch(err => {
+        alert((wasRegistered ? "Unregistration" : "Registration") + " failed.");
+        console.log(err);
+      });
   };
 
   /**
@@ -210,8 +278,11 @@ class TasksPage extends Component {
             canCancel
             canRegister
             onCancel={this.modalCancelHandler}
-            onConfirm={this.registerTaskHandler}
+            onRegister={() => this.taskRegistrationHandler(false)}
+            onUnregister={() => this.taskRegistrationHandler(true)}
             context={this.context}
+            task={this.state.selectedTask}
+            regsCount={this.state.regsCount}
           >
             <p>{this.state.selectedTask.details}</p>
             <p>Link: <a href={this.state.selectedTask.link} target="_blank" rel="noopener noreferrer">{this.state.selectedTask.link}</a></p>
