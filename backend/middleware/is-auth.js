@@ -28,5 +28,7 @@ module.exports = (req, res, next) => {
   req.isAuth = true;
   req.userId = decodedToken.userId;
   req.isMentor = decodedToken.isMentor;
+  req.isAdmin = decodedToken.isAdmin;
+  req.isVerified = decodedToken.isVerified;
   next();
 };

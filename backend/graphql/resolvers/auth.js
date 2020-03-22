@@ -19,10 +19,12 @@ module.exports = {
     const token = jwt.sign({
       userId: user._id,
       email: user.email,
-      isMentor: isMentor
+      isMentor: isMentor,
+      isAdmin: user.isAdmin,
+      isVerified: user.isVerified
     },
       'somesupersecretkey',
-      { expiresIn: '1h' }
+      { expiresIn: '8h' }
     );
 
     return {
