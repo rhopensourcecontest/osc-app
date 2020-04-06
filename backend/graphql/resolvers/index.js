@@ -5,6 +5,9 @@ const studentsResolver = require('./students');
 const adminsResolver = require('./admins');
 const emailsResolver = require('./emails');
 
+/**
+ * Connects all graphql resolvers
+ */
 const rootResolver = {
   ...authResolver,
   ...tasksResolver,

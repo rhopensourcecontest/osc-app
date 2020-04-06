@@ -7,6 +7,13 @@ const { sendEmail } = require('./emails');
 const { EMAILS } = require('../../constants/emails');
 
 module.exports = {
+  /**
+   * Returns all Tasks.
+   * Tasks can be used in recursive calls.
+   * 
+   * @throws {Error}
+   * @returns {Task[]}
+   */
   allTasks: async () => {
     try {
       const tasks = await Task.find();
@@ -17,6 +24,13 @@ module.exports = {
       throw err;
     }
   },
+  /**
+   * Returns free Tasks.
+   * Tasks can be used in recursive calls.
+   * 
+   * @throws {Error}
+   * @returns {Task[]}
+   */
   freeTasks: async () => {
     try {
       const tasks = await Task.find({ registeredStudent: null });
@@ -27,6 +41,13 @@ module.exports = {
       throw err;
     }
   },
+  /**
+   * Returns taken Tasks.
+   * Tasks can be used in recursive calls.
+   *
+   * @throws {Error}
+   * @returns {Task[]}
+   */
   takenTasks: async () => {
     try {
       // select all tasks where registeredStudent is NOT null
@@ -39,7 +60,16 @@ module.exports = {
     }
   },
   /**
-   * restricted to authenticated Mentors
+   * Creates Task with specified title and details
+   *
+   * @param {string} args.taskInput.title
+   * @param {string} args.taskInput.details
+   * @throws {Error} 
+   * 1. If user is not authenticated
+   * 2. If user is not Mentor
+   * 3. If Mentor wasn't found
+   * 4. If Mentor is not verified
+   * @returns {Task[]}
    */
   createTask: async (args, req) => {
     if (!req.isAuth) {
@@ -89,6 +119,12 @@ module.exports = {
    * 
    * @param {string} args.studentId
    * @param {string} args.taskId
+   * @throws {Error}
+   * 1. If user is not authenticated
+   * 2. If user isn't Student or Admin
+   * 3. If Student wants to register Task for someone else
+   * 4. If Students already has a Task registered
+   * 5. If the Task is already taken
    * @returns {Task} Task with pre-loaded creator and registeredStudent.
    */
   registerTask: async (args, req) => {
@@ -140,6 +176,12 @@ module.exports = {
    *
    * @param {string} args.studentId
    * @param {string} args.taskId
+   * @throws {Error}
+   * 1. If user is not authenticated
+   * 2. If user isn't Student or Admin
+   * 3. If Student wants to unregister Task for someone else
+   * 4. If Students is not registered to the Task
+   * 5. If the Task doesn't have a Student registered
    * @returns {Task} Task with pre-loaded creator and registeredStudent
    */
   unregisterTask: async (args, req) => {
@@ -186,6 +228,12 @@ module.exports = {
    * Restricted to authenticated Mentors and Admins
    * 
    * @param {string} args.taskId
+   * @throws {Error}
+   * 1. If user is not auuthenticated
+   * 2. If user isn't Mentor or Admin
+   * 3. If the Task doesn't exist
+   * 4. If there is a Student registered to the Task
+   * 5. If user isn't creator of the Task or Admin
    * @returns {Task} Task with pre-loaded creator and registeredStudent
    * Deletes Task defined by taskId
    */
@@ -205,7 +253,9 @@ module.exports = {
       }
 
       if (task.registeredStudent) {
-        const registeredStudent = await Student.findOne({ _id: task.registeredStudent });
+        const registeredStudent = await Student.findOne({
+          _id: task.registeredStudent
+        });
         throw new Error("Student " + registeredStudent.email +
           " is registered to this task");
       }

@@ -6,13 +6,22 @@ const { transformTask, singleTask, tasks, mentor, student } = require('./merge')
 const jwt = require('jsonwebtoken');
 
 module.exports = {
+  /**
+   * Login user (Mentor or Student)
+   * 
+   * @param {string} email
+   * @param {string} uid
+   * @param {boolean} isMentor
+   * @throws {Error} if user is not registered yet
+   */
   login: async ({ email, uid, isMentor }) => {
     // validate combination
     const user = isMentor
       ? await Mentor.findOne({ email: email, uid: uid })
       : await Student.findOne({ email: email, uid: uid });
     if (!user) {
-      throw new Error((isMentor ? 'Mentor' : 'Student') + ' with email ' + email + ' is not registered!');
+      throw new Error((isMentor ? 'Mentor' : 'Student') + ' with email ' +
+        email + ' is not registered!');
     }
 
     // generate token

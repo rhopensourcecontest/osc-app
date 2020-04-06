@@ -10,6 +10,7 @@ module.exports = {
   /**
    * Get all mentors with pre-loaded createdTasks.
    * 
+   * @throws {Error}
    * @returns {Mentor[]} - Array of Mentor objects.
    */
   mentors: async () => {
@@ -31,6 +32,7 @@ module.exports = {
    * 
    * @param {string} args.mentorInput.email
    * @param {string} args.mentorInput.uid
+   * @throws {Error} - if Mentor already exists.
    * @returns {Mentor}
    */
   createMentor: async (args) => {
@@ -67,6 +69,7 @@ module.exports = {
    * tasks of mentor with mentorId.
    * 
    * @param {ID} args.mentorId
+   * @throws {Error}
    * @returns {string[]} - Array of emails.
    */
   studentEmails: async (args) => {
@@ -91,6 +94,7 @@ module.exports = {
   /**
    * Get emails of all mentors.
    * 
+   * @throws {Error}
    * @returns {string[]} - Array of emails.
    */
   allMentorEmails: async () => {
