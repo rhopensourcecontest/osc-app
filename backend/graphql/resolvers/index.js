@@ -3,13 +3,15 @@ const tasksResolver = require('./tasks');
 const mentorsResolver = require('./mentors');
 const studentsResolver = require('./students');
 const adminsResolver = require('./admins');
+const emailsResolver = require('./emails');
 
 const rootResolver = {
   ...authResolver,
   ...tasksResolver,
   ...mentorsResolver,
   ...studentsResolver,
-  ...adminsResolver
+  ...adminsResolver,
+  ...emailsResolver
 };
 
 module.exports = rootResolver;

@@ -3,6 +3,8 @@ const Mentor = require('../../models/mentor');
 const Student = require('../../models/student');
 
 const { transformTask, singleTask, tasks, mentor, student } = require('./merge');
+const { sendEmail } = require('./emails');
+const { EMAILS } = require('../../constants/emails');
 
 module.exports = {
   allTasks: async () => {
@@ -114,6 +116,14 @@ module.exports = {
 
       await resultStudent.updateOne({ registeredTask: args.taskId });
       await resultTask.updateOne({ registeredStudent: args.studentId });
+      const creator = await Mentor.findById({ _id: resultTask.creator });
+      sendEmail(
+        creator.email,
+        EMAILS.TASK_REGISTRATION,
+        resultStudent.email,
+        resultTask.title
+      );
+
       return {
         ...resultTask._doc,
         creator: mentor.bind(this, resultTask._doc.creator),

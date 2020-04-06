@@ -3,6 +3,8 @@ const Mentor = require('../../models/mentor');
 const Student = require('../../models/student');
 
 const { transformTask, singleTask, tasks, mentor, student } = require('./merge');
+const { sendEmail } = require('./emails');
+const { EMAILS } = require('../../constants/emails');
 
 module.exports = {
   /**
@@ -47,6 +49,11 @@ module.exports = {
         registeredTask: null
       });
       const result = await student.save();
+      sendEmail(
+        student.email,
+        EMAILS.USER_REGISTRATION
+      );
+
       return {
         ...result._doc
       };
