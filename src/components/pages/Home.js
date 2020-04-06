@@ -95,9 +95,9 @@ class HomePage extends Component {
         <div className="home">
           <header className="home-header">
             <img src={logo} className="home-logo" alt="logo" />
-            {this.context.isMentor === null
-              && <button className="btn" onClick={this.startChooseRoleHandler}>Choose your role</button>
-            }
+            {this.context.isMentor === null && (
+              <button className="btn" onClick={this.startChooseRoleHandler}>Choose your role</button>
+            )}
             <p>
               This application is currently under development.
             </p>

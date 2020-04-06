@@ -58,11 +58,11 @@ module.exports = buildSchema(`
   }
 
   type RootQuery {
-    tasks: [Task!]!
-    students: [Student!]!
-    mentors: [Mentor!]!
+    allTasks: [Task!]!
     freeTasks: [Task!]!
     takenTasks: [Task!]!
+    students: [Student!]!
+    mentors: [Mentor!]!
     login(email: String!, uid: String!, isMentor: Boolean!): AuthData
     studentEmails(mentorId: ID!): [String]!
     allStudentEmails: [String]!

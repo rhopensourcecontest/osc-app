@@ -3,12 +3,17 @@ import React, { Component } from 'react';
 import Modal from '../Modal/Modal';
 import Backdrop from '../Backdrop/Backdrop';
 import AuthContext from '../context/auth-context';
+import TaskList from '../Tasks/TaskList';
+import TaskControl from '../Tasks/TaskControl';
 import './Tasks.css';
+import { TASKS } from '../../constants/tasks';
 
 class TasksPage extends Component {
   state = {
     creating: false,
-    tasks: []
+    tasks: [],
+    selectedTask: null,
+    regsCount: 0
   };
 
   static contextType = AuthContext;
@@ -19,14 +24,27 @@ class TasksPage extends Component {
     this.detailsRef = React.createRef();
   }
 
+  /**
+   * Fetch tasks after reload or state change.
+   */
   componentDidMount() {
-    this.fetchTasks();
+    this.fetchTasks(TASKS.ALL);
   }
 
+  /**
+   * Set flag to show modal for Task creation.
+   */
   startCreateTaskHandler = () => {
+    if (!this.context.isVerified) {
+      alert("You have to be verified by Admin to create Tasks.");
+      return;
+    }
     this.setState({ creating: true });
   }
 
+  /**
+   * Handle Task creation. Takes title and details input from form in the modal.
+   */
   modalConfirmHandler = () => {
     this.setState({ creating: false });
     const title = this.titleRef.current.value;
@@ -73,7 +91,7 @@ class TasksPage extends Component {
       })
       .then(resData => {
         alert("Task " + title + " was created successfully.");
-        this.fetchTasks();
+        this.fetchTasks(TASKS.ALL);
       })
       .catch(err => {
         alert("Task creation failed.");
@@ -81,15 +99,112 @@ class TasksPage extends Component {
       });
   };
 
+  /**
+   * Reset flags that handle state of modals.
+   */
   modalCancelHandler = () => {
-    this.setState({ creating: false });
+    this.setState({ creating: false, selectedTask: null });
   };
 
-  fetchTasks = () => {
+  /**
+   * Show detail of the task defined by taskId.
+   * 
+   * @param {string} taskId
+   */
+  showDetailHandler = (taskId) => {
+    // set registrations count for student
+    if (!this.context.isMentor) {
+      for (const task of this.state.tasks) {
+        if (task.registeredStudent &&
+          task.registeredStudent._id === this.context.userId) {
+          this.setState({ regsCount: 1 });
+          break;
+        }
+      }
+    }
+    this.setState(prevState => {
+      const selectedTask = prevState.tasks.find(e => e._id === taskId);
+      return { selectedTask: selectedTask };
+    });
+  };
+
+  /**
+   * Register Student to selectedTask if wasRegistered === false.
+   * Unregister Student from selectedTask if wasRegistered === true.
+   * 
+   * @param {boolean} wasRegistered
+   * - States whether the current user was registered before calling the function.
+   */
+  taskRegistrationHandler = (wasRegistered) => {
+    const task = this.state.selectedTask;
+
+    const requestBody = {
+      query: `
+        mutation {
+          ${wasRegistered ? `unregisterTask` : `registerTask`}
+            (taskId: "${task._id}", studentId: "${this.context.userId}") {
+              registeredStudent {
+                _id
+                email
+              }
+          }
+        }
+      `
+    };
+
+    const token = this.context.token;
+
+    fetch('http://localhost:5000/graphql', {
+      method: 'POST',
+      body: JSON.stringify(requestBody),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      }
+    })
+      .then(res => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error('Failed');
+        }
+        return res.json();
+      })
+      .then(resData => {
+        var editedTask = task;
+        if (wasRegistered) {
+          editedTask.registeredStudent = null;
+          this.setState(prevState => {
+            const regsCount = prevState.regsCount - 1;
+            return { regsCount: regsCount };
+          });
+          alert("Task " + task.title + " was unregistered successfully.");
+        } else {
+          editedTask.registeredStudent = resData.data.registerTask.registeredStudent;
+          this.setState(prevState => {
+            const regsCount = prevState.regsCount + 1;
+            return { regsCount: regsCount };
+          });
+          alert("Task " + task.title + " was registered successfully.");
+        }
+        this.setState({ selectedTask: editedTask });
+        this.fetchTasks(TASKS.ALL);
+      })
+      .catch(err => {
+        alert((wasRegistered ? "Unregistration" : "Registration") + " failed.");
+        console.log(err);
+      });
+  };
+
+  /**
+   * Get tasks from db. queryName can have values from 
+   * {TASKS.ALL, TASKS.FREE, TASKS.TAKEN}
+   * 
+   * @param {string} queryName
+   */
+  fetchTasks = (queryName) => {
     const requestBody = {
       query: `
         query {
-          tasks {
+          ${queryName} {
             _id
             title
             details
@@ -123,7 +238,8 @@ class TasksPage extends Component {
         return res.json();
       })
       .then(resData => {
-        const tasks = resData.data.tasks;
+        // get object with key queryName
+        const tasks = resData.data[queryName];
         this.setState({ tasks: tasks });
       })
       .catch(err => {
@@ -132,23 +248,10 @@ class TasksPage extends Component {
   };
 
   render() {
-    const taskList = this.state.tasks.map(task => {
-      return (
-        <li key={task._id} className="tasks__list-item">
-          <b><h4>{task.title}</h4></b>
-          {/* Show first line of details if it has multiple lines, 20 chars otherwise */}
-          {
-            task.details.indexOf('\n', 0) >= 0
-              ? task.details.slice(0, task.details.indexOf('\n', 0))
-              : task.details.slice(0, 20)
-          }
-        </li>
-      );
-    });
     return (
       <React.Fragment>
         <h1>The Tasks Page</h1>
-        {this.state.creating && <Backdrop />}
+        {(this.state.creating || this.state.selectedTask) && <Backdrop />}
         {this.state.creating && (
           <Modal
             title="Add Task"
@@ -169,6 +272,30 @@ class TasksPage extends Component {
             </form>
           </Modal>
         )}
+        {this.state.selectedTask && (
+          <Modal
+            title={this.state.selectedTask.title}
+            canCancel
+            canRegister
+            onCancel={this.modalCancelHandler}
+            onRegister={() => this.taskRegistrationHandler(false)}
+            onUnregister={() => this.taskRegistrationHandler(true)}
+            context={this.context}
+            task={this.state.selectedTask}
+            regsCount={this.state.regsCount}
+          >
+            <p>{this.state.selectedTask.details}</p>
+            <p>Link: <a href={this.state.selectedTask.link} target="_blank" rel="noopener noreferrer">{this.state.selectedTask.link}</a></p>
+            <br />
+            <p>Mentor: {this.state.selectedTask.creator.email}</p>
+            <p>
+              {this.state.selectedTask.registeredStudent
+                ? "Registered student: " + this.state.selectedTask.registeredStudent.email
+                : "Free"}
+            </p>
+            <p></p>
+          </Modal>
+        )}
         {/* TODO */}
         {this.context.token && this.context.isAdmin && (
           <p>Admin content</p>
@@ -185,16 +312,15 @@ class TasksPage extends Component {
         {!this.context.token && (
           <p>Public content</p>
         )}
-        {this.context.token && this.context.isMentor && (
-          <div className="tasks-control">
-            <p>Add some new tasks</p>
-            <button className="btn" onClick={this.startCreateTaskHandler}>Create Task</button>
-          </div>
-        )}
-
-        <ul className="tasks__list">
-          {taskList}
-        </ul>
+        <TaskControl
+          fetchTasks={this.fetchTasks}
+          startCreateTaskHandler={this.startCreateTaskHandler}
+        />
+        <TaskList
+          tasks={this.state.tasks}
+          fetchTasks={this.fetchTasks}
+          onDetail={this.showDetailHandler}
+        />
       </React.Fragment >
     );
   }

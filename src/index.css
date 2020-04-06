@@ -4,6 +4,10 @@ body {
   font-family: sans-serif;
 }
 
+p {
+  white-space: pre;
+}
+
 .form-control label,
 .form-control input,
 .form-control textarea {
@@ -20,20 +24,32 @@ body {
   margin-bottom: 1rem;
 }
 
+.flex-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .form-actions button,
+.modal-actions button,
+.task-control button,
+.task__list-item button,
 .btn {
   background: rgb(253, 46, 38);
   font: inherit;
   border: 1px solid rgb(253, 46, 38);
   border-radius: 5px;
   padding: 0.25rem 1rem;
-  margin-right: 1rem;
-  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0);
+  margin: 1rem 0.25rem;
   color: white;
 }
 
 .form-actions button:hover,
 .form-actions button:active,
+.task-control button:hover,
+.task-control button:active,
+.task__list-item button:hover,
+.task__list-item button:active,
 .btn:hover,
 .btn:active {
   color: black;
