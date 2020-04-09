@@ -11,6 +11,7 @@ class TaskItem extends Component {
    * Delete task from db.
    *
    * @param {ID} taskId
+   * @throws {Error} if the request status is not 200 or 201
    */
   deleteTask = (taskId) => {
     const requestBody = {

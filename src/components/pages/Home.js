@@ -16,10 +16,16 @@ class HomePage extends Component {
 
   static contextType = AuthContext;
 
+  /**
+   * Sets state.choosing to true
+   */
   startChooseRoleHandler = () => {
     this.setState({ choosing: true });
   };
 
+  /**
+   * Unsets state.choosing and triggers redirect to /auth page
+   */
   modalConfirmHandler = () => {
     this.setState({ choosing: false });
     console.log("You have submitted:", this.state.selectedOption);
@@ -27,16 +33,25 @@ class HomePage extends Component {
     this.context.setIsMentor(this.state.selectedOption === "mentor");
   };
 
+  /**
+   * Unsets state.choosing
+   */
   modalCancelHandler = () => {
     this.setState({ choosing: false });
   };
   
+  /**
+   * Sets state.selectedOption according to user choice in the modal
+   */
   handleOptionChange = changeEvent => {
     this.setState({
       selectedOption: changeEvent.target.value
     });
   };
 
+  /**
+   * Renders redirect element if state.redirect is true
+   */
   renderRedirect = () => {
     if (this.state.redirect) {
       return <Redirect to='/auth' />
