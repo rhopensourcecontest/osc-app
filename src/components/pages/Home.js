@@ -48,48 +48,47 @@ class HomePage extends Component {
       <React.Fragment>
         {this.state.choosing && <Backdrop />}
         {this.state.choosing && (
-        <Modal
-          title="Choose your role"
-          canCancel
-          canConfirm
-          onCancel={this.modalCancelHandler} 
-          onConfirm={this.modalConfirmHandler}
-        >
-          <form>
-            <div className="form-check">
-              <label title="You will choose a Task and Mentor
-              responsible for this task will help you complete it."
-              >
-              <input
-                type="radio"
-                name="react-tips"
-                value="student"
-                checked={this.state.selectedOption === "student"}
-                onChange={this.handleOptionChange}
-                className="form-check-input"
-              />
-              Student
-              </label>
-            </div>
+          <Modal
+            title="Choose your role"
+            canCancel
+            canConfirm
+            onCancel={this.modalCancelHandler} 
+            onConfirm={this.modalConfirmHandler}
+          >
+            <form>
+              <div className="form-check">
+                <label title="You will choose a Task and Mentor
+                  responsible for this task will help you complete it."
+                >
+                  <input
+                    type="radio"
+                    name="react-tips"
+                    value="student"
+                    checked={this.state.selectedOption === "student"}
+                    onChange={this.handleOptionChange}
+                    className="form-check-input"
+                  />
+                  Student
+                </label>
+              </div>
 
-            <div className="form-check">
-              <label title="You will create Tasks and help students 
-              who will work on these tasks."
-              >
-              <input
-                type="radio"
-                name="react-tips"
-                value="mentor"
-                checked={this.state.selectedOption === "mentor"}
-                onChange={this.handleOptionChange}
-                className="form-check-input"
-              />
-              Mentor
-              </label>
-            </div>
-
-          </form>
-        </Modal>
+              <div className="form-check">
+                <label title="You will create Tasks and help students 
+                  who will work on these tasks."
+                >
+                  <input
+                    type="radio"
+                    name="react-tips"
+                    value="mentor"
+                    checked={this.state.selectedOption === "mentor"}
+                    onChange={this.handleOptionChange}
+                    className="form-check-input"
+                  />
+                  Mentor
+                </label>
+              </div>
+            </form>
+          </Modal>
         )}
         { this.renderRedirect() }
         <div className="home">
