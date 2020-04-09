@@ -52,7 +52,7 @@ module.exports = {
         isAdmin: false
       });
       const result = await mentor.save();
-      sendEmail(
+      await sendEmail(
         result.email,
         EMAILS.USER_REGISTRATION
       );

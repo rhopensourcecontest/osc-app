@@ -64,29 +64,26 @@ const getMailOptions = (recipient) => {
   }
 };
 
-/**
- * Sends email notification based on parameters.
- * 
- * @param {string} recipient - email address of the recipient
- * @param {string} emailType - value from TASKS describing type of the email
- * @param {string} studentEmail - for Task registration only (null otherwise)
- * @param {string} taskTitle - for Task registration only (null otherwise)
- */
-const sendEmail = (recipient, emailType, studentEmail, taskTitle) => {
-  mailOptions = {
-    ...getMailOptions(recipient),
-    html: emailTemplate(emailType, studentEmail, taskTitle)
-  };
+module.exports = {
+  /**
+   * Sends email notification based on parameters.
+   * 
+   * @param {string} recipient - email address of the recipient
+   * @param {string} emailType - value from TASKS describing type of the email
+   * @param {string} studentEmail - for Task registration only (null otherwise)
+   * @param {string} taskTitle - for Task registration only (null otherwise)
+   */
+  sendEmail: async (recipient, emailType, studentEmail, taskTitle) => {
+    mailOptions = {
+      ...getMailOptions(recipient),
+      html: emailTemplate(emailType, studentEmail, taskTitle)
+    };
 
-  transporter.sendMail(mailOptions,
-    function (error, info) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log('Email sent: ' + info.response);
-      }
+    try {
+      let info = await transporter.sendMail(mailOptions);
+      console.log('Email sent: ' + info.response);
+    } catch (err) {
+      console.log('Sending email failed.');
     }
-  );
-}
-
-exports.sendEmail = sendEmail;
+  }
+};

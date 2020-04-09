@@ -153,7 +153,7 @@ module.exports = {
       await resultStudent.updateOne({ registeredTask: args.taskId });
       await resultTask.updateOne({ registeredStudent: args.studentId });
       const creator = await Mentor.findById({ _id: resultTask.creator });
-      sendEmail(
+      await sendEmail(
         creator.email,
         EMAILS.TASK_REGISTRATION,
         resultStudent.email,

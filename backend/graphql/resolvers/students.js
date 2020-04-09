@@ -51,7 +51,7 @@ module.exports = {
         registeredTask: null
       });
       const result = await student.save();
-      sendEmail(
+      await sendEmail(
         student.email,
         EMAILS.USER_REGISTRATION
       );
