@@ -2,6 +2,9 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
+/**
+ * Task schema with references to creator and registered student
+ */
 const taskSchema = new Schema({
   title: {
     type: String,
