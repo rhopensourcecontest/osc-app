@@ -58,7 +58,8 @@ module.exports = {
       );
 
       return {
-        ...result._doc
+        ...result._doc,
+        uid: "*restricted*"
       };
     } catch (err) {
       throw err;

@@ -43,7 +43,9 @@ module.exports = {
         uid: args.studentInput.uid
       });
       if (existingStudent) {
-        throw new Error('Student with email ' + args.studentInput.email + ' already exists.');
+        throw new Error(
+          'Student with email ' + args.studentInput.email + ' already exists.'
+        );
       }
       const student = new Student({
         email: args.studentInput.email,
@@ -57,7 +59,8 @@ module.exports = {
       );
 
       return {
-        ...result._doc
+        ...result._doc,
+        uid: "*restricted*"
       };
     } catch (err) {
       throw err;
