@@ -32,7 +32,7 @@ module.exports = {
       isAdmin: user.isAdmin,
       isVerified: user.isVerified
     },
-      'somesupersecretkey',
+      process.env.JWT_SECRET_KEY,
       { expiresIn: '8h' }
     );
 

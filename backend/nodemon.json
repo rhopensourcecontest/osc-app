@@ -4,6 +4,7 @@
     "MONGO_PASSWORD": "your-mongo-user-password",
     "MONGO_DB": "your-mongo-db",
     "NODEMAILER_EMAIL_ADDRESS": "your-email-address",
-    "NODEMAILER_EMAIL_PASSWORD": "your-email-address-password"
+    "NODEMAILER_EMAIL_PASSWORD": "your-email-address-password",
+    "JWT_SECRET_KEY": "somesupersecretkey"
   }
 }
