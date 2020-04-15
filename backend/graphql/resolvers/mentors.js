@@ -19,7 +19,7 @@ module.exports = {
       return mentors.map(mentor => {
         return {
           ...mentor._doc,
-          uid: "*restricted*",
+          uid: '*restricted*',
           createdTasks: tasks.bind(this, mentor._doc.createdTasks)
         };
       });
@@ -43,7 +43,9 @@ module.exports = {
         uid: args.mentorInput.uid
       });
       if (existingMentor) {
-        throw new Error('Mentor with email ' + args.mentorInput.email + ' already exists.');
+        throw new Error(
+          `Mentor with email ${args.mentorInput.email} already exists.`
+        );
       }
       const mentor = new Mentor({
         email: args.mentorInput.email,
@@ -59,7 +61,7 @@ module.exports = {
 
       return {
         ...result._doc,
-        uid: "*restricted*"
+        uid: '*restricted*'
       };
     } catch (err) {
       throw err;

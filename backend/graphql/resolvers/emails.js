@@ -83,7 +83,8 @@ module.exports = {
       let info = await transporter.sendMail(mailOptions);
       console.log('Email sent: ' + info.response);
     } catch (err) {
-      console.log('Sending email failed.');
+      console.log('Sending email failed. NODEMAILER_EMAIL_ADDRESS: '
+        + process.env.NODEMAILER_EMAIL_ADDRESS);
     }
   }
 };

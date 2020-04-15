@@ -19,7 +19,7 @@ module.exports = {
       return students.map(student => {
         return {
           ...student._doc,
-          uid: "*restricted*",
+          uid: '*restricted*',
           registeredTask: singleTask.bind(this, student._doc.registeredTask)
         };
       });
@@ -44,7 +44,7 @@ module.exports = {
       });
       if (existingStudent) {
         throw new Error(
-          'Student with email ' + args.studentInput.email + ' already exists.'
+          `Student with email ${args.studentInput.email} already exists.`
         );
       }
       const student = new Student({
@@ -60,7 +60,7 @@ module.exports = {
 
       return {
         ...result._doc,
-        uid: "*restricted*"
+        uid: '*restricted*'
       };
     } catch (err) {
       throw err;
