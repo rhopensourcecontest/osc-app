@@ -2,6 +2,12 @@ const Task = require('../../models/task');
 const Mentor = require('../../models/mentor');
 const Student = require('../../models/student');
 
+/**
+ * Tranforms Task by binding creator and registeredStudent to allow 
+ * recursive calls in graphql.
+ * 
+ * @param {Task} task 
+ */
 const transformTask = task => {
   if (!task.registeredStudent) {
     return {
@@ -16,9 +22,16 @@ const transformTask = task => {
   };
 };
 
-// prevents infinite calls
+/**
+ * Prevents infinite calls by transforming Tasks to depth of one 
+ * recursive call.
+ * 
+ * @param {string[]} taskIds
+ * @throws {Error}
+ */
 const tasks = async taskIds => {
   try {
+    // get only the Tasks that have ids in taskIds array
     const tasks = await Task.find({ _id: { $in: taskIds } });
     return tasks.map(task => {
       return transformTask(task);
@@ -28,7 +41,13 @@ const tasks = async taskIds => {
   }
 };
 
-// prevents infinite calls
+/**
+ * Prevents infinite calls by transforming Task to depth of one 
+ * recursive call.
+ *
+ * @param {string} taskId
+ * @throws {Error}
+ */
 const singleTask = async taskId => {
   try {
     const task = await Task.findById(taskId);
@@ -41,13 +60,20 @@ const singleTask = async taskId => {
   }
 };
 
-// prevents infinite calls
+/**
+ * Returns transformed Mentor.
+ * Prevents infinite calls by transforming createdTasks to depth 
+ * of one recursive call.
+ *
+ * @param {string} mentorId
+ * @throws {Error}
+ */
 const mentor = async mentorId => {
   try {
     const mentor = await Mentor.findById(mentorId);
     return {
       ...mentor._doc,
-      uid: "*restricted*",
+      uid: '*restricted*',
       createdTasks: tasks.bind(this, mentor._doc.createdTasks)
     };
   } catch (err) {
@@ -55,13 +81,20 @@ const mentor = async mentorId => {
   }
 };
 
-// prevents infinite calls
+/**
+ * Returns transformed Student.
+ * Prevents infinite calls by transforming registeredStudent 
+ * to depth of one recursive call.
+ *
+ * @param {string} studentId
+ * @throws {Error}
+ */
 const student = async studentId => {
   try {
     const student = await Student.findById(studentId);
     return {
       ...student._doc,
-      uid: "*restricted*",
+      uid: '*restricted*',
       registeredTask: singleTask.bind(this, student._doc.registeredTask)
     };
   } catch (err) {

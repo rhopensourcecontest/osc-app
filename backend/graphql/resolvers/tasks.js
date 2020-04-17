@@ -3,8 +3,17 @@ const Mentor = require('../../models/mentor');
 const Student = require('../../models/student');
 
 const { transformTask, singleTask, tasks, mentor, student } = require('./merge');
+const { sendEmail } = require('./emails');
+const { EMAILS } = require('../../constants/emails');
 
 module.exports = {
+  /**
+   * Returns all Tasks.
+   * Tasks can be used in recursive calls.
+   * 
+   * @throws {Error}
+   * @returns {Task[]}
+   */
   allTasks: async () => {
     try {
       const tasks = await Task.find();
@@ -15,6 +24,13 @@ module.exports = {
       throw err;
     }
   },
+  /**
+   * Returns free Tasks.
+   * Tasks can be used in recursive calls.
+   * 
+   * @throws {Error}
+   * @returns {Task[]}
+   */
   freeTasks: async () => {
     try {
       const tasks = await Task.find({ registeredStudent: null });
@@ -25,6 +41,13 @@ module.exports = {
       throw err;
     }
   },
+  /**
+   * Returns taken Tasks.
+   * Tasks can be used in recursive calls.
+   *
+   * @throws {Error}
+   * @returns {Task[]}
+   */
   takenTasks: async () => {
     try {
       // select all tasks where registeredStudent is NOT null
@@ -37,7 +60,17 @@ module.exports = {
     }
   },
   /**
-   * restricted to authenticated Mentors
+   * Creates Task with specified title and details
+   *
+   * @param {string} args.taskInput.title
+   * @param {string} args.taskInput.details
+   * @param {Object} req
+   * @throws {Error} 
+   * 1. If user is not authenticated
+   * 2. If user is not Mentor
+   * 3. If Mentor wasn't found
+   * 4. If Mentor is not verified
+   * @returns {Task[]}
    */
   createTask: async (args, req) => {
     if (!req.isAuth) {
@@ -45,7 +78,7 @@ module.exports = {
     }
 
     if (!req.isMentor) {
-      throw new Error('Only mentors can create tasks!');
+      throw new Error('Only Mentors can create Tasks!');
     }
 
     const task = new Task({
@@ -67,7 +100,7 @@ module.exports = {
         throw new Error('Mentor not found');
       }
       if (!creator.isVerified) {
-        throw new Error('You are not verified mentor');
+        throw new Error('You are not verified Mentor');
       }
 
       // mongoose save
@@ -87,6 +120,15 @@ module.exports = {
    * 
    * @param {string} args.studentId
    * @param {string} args.taskId
+   * @param {Object} req
+   * @throws {Error}
+   * 1. If user is not authenticated
+   * 2. If user isn't Student or Admin
+   * 3. If Student wants to register Task for someone else
+   * 4. If Student was not found
+   * 5. If Students already has a Task registered
+   * 6. If Task was not found
+   * 7. If the Task is already taken
    * @returns {Task} Task with pre-loaded creator and registeredStudent.
    */
   registerTask: async (args, req) => {
@@ -104,16 +146,30 @@ module.exports = {
 
     try {
       const resultStudent = await Student.findById(args.studentId);
+      if (!resultStudent) {
+        throw new Error('Student not found.');
+      }
       if (resultStudent.registeredTask) {
-        throw new Error("Student can only have one Task at a time.")
+        throw new Error('Student can only have one Task at a time.')
       }
       const resultTask = await Task.findById(args.taskId);
+      if (!resultTask) {
+        throw new Error('Task not found.');
+      }
       if (resultTask.registeredStudent) {
-        throw new Error("Task has already been taken.")
+        throw new Error('Task has already been taken.')
       }
 
       await resultStudent.updateOne({ registeredTask: args.taskId });
       await resultTask.updateOne({ registeredStudent: args.studentId });
+      const creator = await Mentor.findById({ _id: resultTask.creator });
+      await sendEmail(
+        creator.email,
+        EMAILS.TASK_REGISTRATION,
+        resultStudent.email,
+        resultTask.title
+      );
+
       return {
         ...resultTask._doc,
         creator: mentor.bind(this, resultTask._doc.creator),
@@ -130,6 +186,13 @@ module.exports = {
    *
    * @param {string} args.studentId
    * @param {string} args.taskId
+   * @param {Object} req
+   * @throws {Error}
+   * 1. If user is not authenticated
+   * 2. If user isn't Student or Admin
+   * 3. If Student wants to unregister Task for someone else
+   * 4. If Students is not registered to the Task
+   * 5. If the Task doesn't have a Student registered
    * @returns {Task} Task with pre-loaded creator and registeredStudent
    */
   unregisterTask: async (args, req) => {
@@ -147,15 +210,16 @@ module.exports = {
 
     try {
       const resultStudent = await Student.findById(args.studentId);
-      if (resultStudent.registeredTask != args.taskId) {
-        throw new Error("Student " + resultStudent._id + " is not registered " +
-          "to Task " + args.taskId);
+      if (resultStudent.registeredTask.toString() !== args.taskId.toString()) {
+        throw new Error(
+          `Student ${resultStudent._id} is not registered to Task ${args.taskId}`
+        );
       }
 
       const resultTask = await Task.findById(args.taskId);
-      if (resultTask.registeredStudent != args.studentId) {
-        throw new Error("Task " + resultTask._id +
-          " doesn't have registered Student " + args.studentId);
+      if (resultTask.registeredStudent.toString() !== args.studentId.toString()) {
+        throw new Error(`Task ${resultTask._id}` +
+          ` doesn't have registered Student ${args.studentId}`);
       }
       await resultStudent.updateOne({ registeredTask: null });
       await resultTask.updateOne({ registeredStudent: null });
@@ -176,6 +240,13 @@ module.exports = {
    * Restricted to authenticated Mentors and Admins
    * 
    * @param {string} args.taskId
+   * @param {Object} req
+   * @throws {Error}
+   * 1. If user is not auuthenticated
+   * 2. If user isn't Mentor or Admin
+   * 3. If the Task doesn't exist
+   * 4. If there is a Student registered to the Task
+   * 5. If user isn't creator of the Task or Admin
    * @returns {Task} Task with pre-loaded creator and registeredStudent
    * Deletes Task defined by taskId
    */
@@ -191,23 +262,25 @@ module.exports = {
       const task = await Task.findById(args.taskId);
 
       if (!task) {
-        throw new Error("Task " + args.taskId + " does not exist.");
+        throw new Error(`Task ${args.taskId} does not exist.`);
       }
 
       if (task.registeredStudent) {
-        const registeredStudent = await Student.findOne({ _id: task.registeredStudent });
-        throw new Error("Student " + registeredStudent.email +
-          " is registered to this task");
+        const registeredStudent = await Student.findOne({
+          _id: task.registeredStudent
+        });
+        throw new Error(
+          `Student ${registeredStudent.email} is registered to this Task`
+        );
       }
 
       const expectedCreator = await mentor(req.userId);
 
-      if (expectedCreator.isAdmin) {
-        // continue
-      } else if (task.creator._id !== expectedCreator._id) {
-        throw new Error("You aren't creator of this task.");
-      } else if (!expectedCreator.isAdmin) {
-        throw new Error("You do not have admin rights.");
+      if (!expectedCreator.isAdmin &&
+        task.creator._id.toString() !== expectedCreator._id.toString()) {
+        throw new Error(
+          `You aren't creator of this Task and don't have Admin rights.`
+        );
       }
 
       // remove Task from createdTasks of creator

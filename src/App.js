@@ -21,6 +21,15 @@ class App extends Component {
     isVerified: null
   };
 
+  /**
+   * Login user and change the state accordingly
+   * 
+   * @param {string} token
+   * @param {string} userId
+   * @param {string} tokenExpiration
+   * @param {boolean} isAdmin
+   * @param {boolean} isVerified
+   */
   login = (token, userId, tokenExpiration, isAdmin, isVerified) => {
     this.setState({
       token: token,
@@ -30,9 +39,14 @@ class App extends Component {
     });
   };
 
+  /**
+   * Logout user and reset the state
+   * 
+   * @throws {Error} - if logout was not successful
+   */
   logout = () => {
     firebase.auth().signOut().then(function () {
-      console.log("Sign out successful");
+      console.log("Logout successful");
     }).catch(function (error) {
       throw new Error(error);
     });
@@ -46,6 +60,11 @@ class App extends Component {
     });
   };
 
+  /**
+   * Sets isMentor value in the state
+   * 
+   * @param {boolean} choice
+   */
   setIsMentor = (choice) => {
     this.setState({ isMentor: choice });
   };

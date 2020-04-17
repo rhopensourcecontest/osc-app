@@ -3,11 +3,14 @@ const Mentor = require('../../models/mentor');
 const Student = require('../../models/student');
 
 const { transformTask, singleTask, tasks, mentor, student } = require('./merge');
+const { sendEmail } = require('./emails');
+const { EMAILS } = require('../../constants/emails');
 
 module.exports = {
   /**
    * Get all mentors with pre-loaded createdTasks.
    * 
+   * @throws {Error}
    * @returns {Mentor[]} - Array of Mentor objects.
    */
   mentors: async () => {
@@ -16,7 +19,7 @@ module.exports = {
       return mentors.map(mentor => {
         return {
           ...mentor._doc,
-          uid: "*restricted*",
+          uid: '*restricted*',
           createdTasks: tasks.bind(this, mentor._doc.createdTasks)
         };
       });
@@ -29,6 +32,7 @@ module.exports = {
    * 
    * @param {string} args.mentorInput.email
    * @param {string} args.mentorInput.uid
+   * @throws {Error} - if Mentor already exists.
    * @returns {Mentor}
    */
   createMentor: async (args) => {
@@ -39,7 +43,9 @@ module.exports = {
         uid: args.mentorInput.uid
       });
       if (existingMentor) {
-        throw new Error('Mentor with email ' + args.mentorInput.email + ' already exists.');
+        throw new Error(
+          `Mentor with email ${args.mentorInput.email} already exists.`
+        );
       }
       const mentor = new Mentor({
         email: args.mentorInput.email,
@@ -48,8 +54,14 @@ module.exports = {
         isAdmin: false
       });
       const result = await mentor.save();
+      await sendEmail(
+        result.email,
+        EMAILS.USER_REGISTRATION
+      );
+
       return {
-        ...result._doc
+        ...result._doc,
+        uid: '*restricted*'
       };
     } catch (err) {
       throw err;
@@ -60,6 +72,7 @@ module.exports = {
    * tasks of mentor with mentorId.
    * 
    * @param {ID} args.mentorId
+   * @throws {Error}
    * @returns {string[]} - Array of emails.
    */
   studentEmails: async (args) => {
@@ -84,6 +97,7 @@ module.exports = {
   /**
    * Get emails of all mentors.
    * 
+   * @throws {Error}
    * @returns {string[]} - Array of emails.
    */
   allMentorEmails: async () => {

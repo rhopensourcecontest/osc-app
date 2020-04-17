@@ -285,7 +285,10 @@ class TasksPage extends Component {
             regsCount={this.state.regsCount}
           >
             <p>{this.state.selectedTask.details}</p>
-            <p>Link: <a href={this.state.selectedTask.link} target="_blank" rel="noopener noreferrer">{this.state.selectedTask.link}</a></p>
+            <p>
+              Link: <a href={this.state.selectedTask.link} target="_blank"
+                rel="noopener noreferrer">{this.state.selectedTask.link}</a>
+            </p>
             <br />
             <p>Mentor: {this.state.selectedTask.creator.email}</p>
             <p>

@@ -11,7 +11,7 @@ module.exports = {
    *
    * @returns {{studentId: string, taskId: string}} unregData
    */
-  unregisterAllStudents: async (args, req) => {
+  unregisterAllStudents: async (req) => {
     if (!req.isAuth) {
       throw new Error('Unauthenticated!');
     }
@@ -40,5 +40,5 @@ module.exports = {
     } catch (err) {
       throw err;
     }
-  },
+  }
 };

@@ -16,10 +16,16 @@ class HomePage extends Component {
 
   static contextType = AuthContext;
 
+  /**
+   * Sets state.choosing to true
+   */
   startChooseRoleHandler = () => {
     this.setState({ choosing: true });
   };
 
+  /**
+   * Unsets state.choosing and triggers redirect to /auth page
+   */
   modalConfirmHandler = () => {
     this.setState({ choosing: false });
     console.log("You have submitted:", this.state.selectedOption);
@@ -27,16 +33,25 @@ class HomePage extends Component {
     this.context.setIsMentor(this.state.selectedOption === "mentor");
   };
 
+  /**
+   * Unsets state.choosing
+   */
   modalCancelHandler = () => {
     this.setState({ choosing: false });
   };
   
+  /**
+   * Sets state.selectedOption according to user choice in the modal
+   */
   handleOptionChange = changeEvent => {
     this.setState({
       selectedOption: changeEvent.target.value
     });
   };
 
+  /**
+   * Renders redirect element if state.redirect is true
+   */
   renderRedirect = () => {
     if (this.state.redirect) {
       return <Redirect to='/auth' />
@@ -48,48 +63,47 @@ class HomePage extends Component {
       <React.Fragment>
         {this.state.choosing && <Backdrop />}
         {this.state.choosing && (
-        <Modal
-          title="Choose your role"
-          canCancel
-          canConfirm
-          onCancel={this.modalCancelHandler} 
-          onConfirm={this.modalConfirmHandler}
-        >
-          <form>
-            <div className="form-check">
-              <label title="You will choose a Task and Mentor
-              responsible for this task will help you complete it."
-              >
-              <input
-                type="radio"
-                name="react-tips"
-                value="student"
-                checked={this.state.selectedOption === "student"}
-                onChange={this.handleOptionChange}
-                className="form-check-input"
-              />
-              Student
-              </label>
-            </div>
+          <Modal
+            title="Choose your role"
+            canCancel
+            canConfirm
+            onCancel={this.modalCancelHandler} 
+            onConfirm={this.modalConfirmHandler}
+          >
+            <form>
+              <div className="form-check">
+                <label title="You will choose a Task and Mentor
+                  responsible for this task will help you complete it."
+                >
+                  <input
+                    type="radio"
+                    name="react-tips"
+                    value="student"
+                    checked={this.state.selectedOption === "student"}
+                    onChange={this.handleOptionChange}
+                    className="form-check-input"
+                  />
+                  Student
+                </label>
+              </div>
 
-            <div className="form-check">
-              <label title="You will create Tasks and help students 
-              who will work on these tasks."
-              >
-              <input
-                type="radio"
-                name="react-tips"
-                value="mentor"
-                checked={this.state.selectedOption === "mentor"}
-                onChange={this.handleOptionChange}
-                className="form-check-input"
-              />
-              Mentor
-              </label>
-            </div>
-
-          </form>
-        </Modal>
+              <div className="form-check">
+                <label title="You will create Tasks and help students 
+                  who will work on these tasks."
+                >
+                  <input
+                    type="radio"
+                    name="react-tips"
+                    value="mentor"
+                    checked={this.state.selectedOption === "mentor"}
+                    onChange={this.handleOptionChange}
+                    className="form-check-input"
+                  />
+                  Mentor
+                </label>
+              </div>
+            </form>
+          </Modal>
         )}
         { this.renderRedirect() }
         <div className="home">

@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+/**
+ * Mentor schema with reference to createdTasks
+ */
 const mentorSchema = new Schema({
   email: {
     type: String,

@@ -45,12 +45,22 @@ class AuthPage extends Component {
     this.unregisterAuthObserver();
   }
 
+  /**
+   * Switch between login and registration
+   */
   switchModeHandler = () => {
     this.setState(prevState => {
       return { isLogin: !prevState.isLogin };
     });
   }
 
+  /**
+   * Handles login and registration based on state.isLogin.
+   * User is received from firebase.
+   * It can be Student or Mentor depending on context.isMentor.
+   * 
+   * @param {Object} user
+   */
   handleFirebase = (user) => {
     if (!user.email) {
       alert("Current user does not have an email address.");
