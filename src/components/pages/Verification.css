@@ -1,0 +1,15 @@
+.verif-flex-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.verif-form {
+  margin: 2rem;
+}
+
+.verif-form textarea {
+  font-size: large;
+}
