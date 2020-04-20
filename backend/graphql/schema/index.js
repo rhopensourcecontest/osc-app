@@ -67,6 +67,9 @@ module.exports = buildSchema(`
     studentEmails(mentorId: ID!): [String]!
     allStudentEmails: [String]!
     allMentorEmails: [String]!
+    sendVerificationEmail(
+      recipient: String!, emailType: String!, text: String!
+    ): String!
   }
 
   type RootMutation {
@@ -77,6 +80,9 @@ module.exports = buildSchema(`
     unregisterTask(studentId: ID!, taskId: ID!): Task!
     deleteTask(taskId: ID!): Task
     unregisterAllStudents: [UnregData]!
+    changeMentorRights(
+      mentorId: ID!, isVerified: Boolean!, isAdmin: Boolean!
+    ): Mentor!
   }
 
   schema {
