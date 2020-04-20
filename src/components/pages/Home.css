@@ -23,6 +23,10 @@
 }
 
 .home button {
-  font-size: calc(8px + 2vmin);
+  font-size: calc(2vmin);
   margin: 2rem;
+}
+
+.form-check label {
+  cursor: pointer;
 }
