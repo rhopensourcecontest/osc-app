@@ -1,0 +1,105 @@
+.p-component, .p-component * {
+  box-sizing: border-box;
+}
+
+.p-component {
+  text-decoration: none;
+}
+
+.p-growl {
+  border: 0 none;
+  color: #212121;
+}
+
+.p-growl .p-growl-item-container.p-growl-message-info {
+  background-color: #7fbcec;
+}
+
+.p-growl .p-growl-item-container.p-growl-message-success {
+  background-color: #60f067;
+}
+
+.p-growl .p-growl-item-container.p-growl-message-warn {
+  background-color: #e2ff62;
+}
+
+.p-growl .p-growl-item-container.p-growl-message-error {
+  background-color: #f07160;
+}
+
+.p-growl .p-growl-item-container .p-growl-item {
+  padding: 1em 2em;
+}
+
+.p-growl-item {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.p-growl-item-container {
+  position: relative;
+}
+
+.p-growl .p-growl-item-container {
+  margin: 0 0 1em 0;
+  -webkit-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+  -moz-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+  box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+}
+
+.p-growl {
+  display: block;
+  position: fixed;
+  opacity: 0.9;
+  filter: alpha(opacity=90);
+  width: 22em;
+}
+
+.p-growl.p-growl-topright {
+  top: 2rem;
+  bottom: auto;
+  right: calc(50% - (22rem / 2) );
+}
+
+.p-link {
+  text-align: left;
+  background-color: initial;
+  background: transparent;
+  margin: 0;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+}
+
+.p-growl-icon-close {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  cursor: pointer;
+}
+
+.p-growl-title {
+  font-weight: 700;
+  display: block;
+}
+
+.p-growl-message {
+  margin-left: 1em;
+  align-self: center;
+}
+
+.p-growl-image {
+  font-size: 2em;
+}
+
+.p-growl .p-growl-item-container .p-growl-item .p-growl-image {
+  font-size: 2.5em;
+}
+
+.pi {
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+}
