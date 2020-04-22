@@ -2,8 +2,11 @@ import React, { Component } from 'react';
 import { TASKS } from '../../constants/tasks';
 import AuthContext from '../context/auth-context';
 
-import './TaskItem.css'
+import './TaskItem.css';
 
+/**
+ * Task component with containg details
+ */
 class TaskItem extends Component {
   static contextType = AuthContext;
 

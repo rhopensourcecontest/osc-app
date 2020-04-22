@@ -4,6 +4,11 @@ import { NavLink } from 'react-router-dom';
 import AuthContext from '../context/auth-context';
 import './MainNavigation.css'
 
+/**
+ * Main navigation panel
+ * 
+ * @param {Object} props 
+ */
 const mainNavigation = props => (
   <AuthContext.Consumer>
     {(context) => {
@@ -25,6 +30,12 @@ const mainNavigation = props => (
               <li>
                 <NavLink to="/tasks">Tasks</NavLink>
               </li>
+              {context.token && context.isMentor && !context.isVerified && (
+                <li><NavLink to="/verification">Verification</NavLink></li>
+              )}
+              {context.token && context.isAdmin && (
+                <li><NavLink to="/admin">Administration</NavLink></li>
+              )}
               {context.token && (
                 <React.Fragment>
                   <li>

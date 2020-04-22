@@ -4,6 +4,8 @@ import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import HomePage from './components/pages/Home';
 import AuthPage from './components/pages/Auth';
 import TasksPage from './components/pages/Tasks';
+import VerificationPage from './components/pages/Verification';
+import AdminPage from './components/pages/Admin/Admin';
 import MainNavigation from './components/Navigation/MainNavigation';
 import AuthContext from './components/context/auth-context';
 
@@ -96,6 +98,14 @@ class App extends Component {
                 {this.state.isMentor === null && <Redirect from="/auth" to="/" exact />}
                 <Route path="/auth" component={AuthPage} />
                 <Route path="/tasks" component={TasksPage} />
+                {/* Restricted for not verified Mentors */}
+                {this.state.isMentor && !this.state.isVerified && !this.state.isAdmin && (
+                  <Route exact path="/verification" component={VerificationPage} />
+                )}
+                {/* Restricted for Admins */}
+                {this.state.isAdmin && (
+                  <Route exact path="/admin" component={AdminPage} />
+                )}
                 {/* Redirect everything else to root */}
                 <Redirect to="/" />
               </Switch>

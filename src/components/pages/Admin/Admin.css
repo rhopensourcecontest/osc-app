@@ -1,0 +1,11 @@
+.flex-col {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 10rem;
+}
+
+.header {
+  padding-bottom: 0.5rem;
+}

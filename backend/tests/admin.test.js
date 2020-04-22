@@ -4,19 +4,21 @@ const mongoose = require('mongoose');
 const adminService = require('../graphql/resolvers/admins');
 const Task = require('../models/task');
 const Student = require('../models/student');
+const Mentor = require('../models/mentor');
 
 const { STUDENTS } = require('./test-data/student');
 const { TASKS } = require('./test-data/task');
-const { NAUTH_REQ, NADMIN_REQ, ADMIN_REQ } = require('./test-data/mentor');
+const { MENTORS, NAUTH_REQ, NADMIN_REQ, ADMIN_REQ } = require('./test-data/mentor');
 
 /**
- * Add predefined Students and Tasks.
+ * Add predefined Students, Tasks and Mentors.
  * Register Students to Tasks.
  */
 beforeEach(async () => {
   for (let i = 0; i < STUDENTS.length; i++) {
     let task = new Task(TASKS[i]);
     let student = new Student(STUDENTS[i]);
+    await new Mentor(MENTORS[i]).save();
     student.registeredTask = task;
     task.registeredStudent = student;
     await student.save();
@@ -100,6 +102,64 @@ describe('admin', () => {
       expect(editedStudents[i].registeredTask).toBeNull();
       expect(editedTasks[i].registeredStudent).toBeNull();
     }
+  });
+
+  // ------------------------------------------------------------------------ \\
+
+  const CHANGE_RIGHTS_ARGS = {
+    mentorId: mongoose.Types.ObjectId(),
+    isVerified: true,
+    isAdmin: true
+  };
+
+  /**
+   * Authenticated Admin changing rights
+   */
+  it('changeMentorRights() does not throw error', async () => {
+    const mentor = await Mentor.findOne({ isVerified: false, isAdmin: false });
+    const args = { ...CHANGE_RIGHTS_ARGS, mentorId: mentor._id };
+    await expect(adminService.changeMentorRights(args, ADMIN_REQ))
+      .resolves.not.toThrow();
+  });
+
+  /**
+   * Authenticated Mentor without Admin rights attempting to change rights
+   */
+  it('changeMentorRights() throws error', async () => {
+    const mentor = await Mentor.findOne({ isVerified: false, isAdmin: false });
+    await expect(adminService.changeMentorRights(CHANGE_RIGHTS_ARGS, NADMIN_REQ))
+      .rejects.toThrow('You do not have Admin rights!');
+  });
+
+  /**
+   * Unathenticated
+   */
+  it('changeMentorRights() throws error', async () => {
+    const mentor = await Mentor.findOne({ isVerified: false, isAdmin: false });
+    await expect(adminService.changeMentorRights(CHANGE_RIGHTS_ARGS, NAUTH_REQ))
+      .rejects.toThrow('Unauthenticated!');
+  });
+
+  /**
+   * Authenticated Admin
+   */
+  it('changeMentorRights() works correctly', async () => {
+    const filter = { isVerified: false, isAdmin: false };
+    const mentor = await Mentor.findOne(filter);
+    expect(mentor.isVerified).toBe(filter.isVerified);
+    expect(mentor.isAdmin).toBe(filter.isAdmin);
+    const args = {
+      mentorId: mentor._id,
+      isVerified: true,
+      isAdmin: mentor.isAdmin
+    }
+    const resultMentor = await adminService.changeMentorRights(args, ADMIN_REQ);
+
+    // changeMentorRights returns correct data
+    expect(resultMentor.isAdmin).toBe(args.isAdmin);
+    expect(resultMentor.isVerified).toBe(args.isVerified);
+    expect(resultMentor._id).toEqual(args.mentorId);
+    expect(resultMentor.uid).toBe('*restricted*');
   });
 
 });

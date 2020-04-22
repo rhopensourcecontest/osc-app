@@ -7,7 +7,11 @@ import TaskList from '../Tasks/TaskList';
 import TaskControl from '../Tasks/TaskControl';
 import './Tasks.css';
 import { TASKS } from '../../constants/tasks';
+import Notification from '../Notification/Notification';
 
+/**
+ * Page displaying all Tasks
+ */
 class TasksPage extends Component {
   state = {
     creating: false,
@@ -195,8 +199,7 @@ class TasksPage extends Component {
   };
 
   /**
-   * Get tasks from db. queryName can have values from 
-   * {TASKS.ALL, TASKS.FREE, TASKS.TAKEN}
+   * Get tasks from db. queryName can have values from TASKS enum
    * 
    * @param {string} queryName
    */
@@ -250,6 +253,9 @@ class TasksPage extends Component {
   render() {
     return (
       <React.Fragment>
+        {(this.context.isMentor && !this.context.isVerified) && (
+          <Notification msg="You are not verified yet." type="info" />
+        )}
         <h1>The Tasks Page</h1>
         {(this.state.creating || this.state.selectedTask) && <Backdrop />}
         {this.state.creating && (
