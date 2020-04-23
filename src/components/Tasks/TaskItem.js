@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { TASKS } from '../../constants/tasks';
 import AuthContext from '../context/auth-context';
+import { Free, Taken, NotStarted, InProgress, Done } from '../Tags/Tags';
 
 import './TaskItem.css';
 
@@ -75,8 +76,8 @@ class TaskItem extends Component {
     const taskItem = (
       <li key={task._id} className="task__list-item">
         <div className="flex-container">
-          <div>
-            <h4>{task.title}</h4>
+          <div className="left">
+            <h3>{task.title}</h3>
             {/* Show first line of details if it has multiple lines, 20 chars otherwise */}
             {
               task.details.indexOf('\n', 0) >= 0
@@ -91,6 +92,15 @@ class TaskItem extends Component {
               (this.context.token && this.context.isAdmin)) && (
                 <button onClick={() => this.deleteTask(task._id)}>Delete</button>
               )}
+          </div>
+          <div>
+            <div>
+              {task.registeredStudent ? <Taken /> : <Free />}
+            </div>
+            <div>
+              {!task.isSolved && (task.isBeingSolved ? <InProgress /> : <NotStarted />)}
+              {task.isSolved && <Done />}
+            </div>
           </div>
         </div>
       </li>

@@ -4,3 +4,16 @@
   border: 1px solid black;
   white-space: pre;
 }
+
+.left {
+  width: 330px;
+}
+
+.title {
+  text-decoration: none;
+  color: black;
+}
+
+.title:hover {
+  color: gray;
+}
