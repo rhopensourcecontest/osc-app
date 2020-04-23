@@ -192,7 +192,7 @@ class AuthPage extends Component {
                 <br />
                 <div className="form-actions">
                   <center>
-                    <button type="button" onClick={this.switchModeHandler}>
+                    <button className="btn" onClick={this.switchModeHandler}>
                       Switch to {this.state.isLogin ? 'Sign up' : 'Sign in'}
                     </button>
                   </center>

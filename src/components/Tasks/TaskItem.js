@@ -75,7 +75,7 @@ class TaskItem extends Component {
     const task = this.props.task;
     const taskItem = (
       <li key={task._id} className="task__list-item">
-        <div className="flex-container">
+        <div className="task-container">
           <div className="left">
             <h3>{task.title}</h3>
             {/* Show first line of details if it has multiple lines, 20 chars otherwise */}
@@ -85,15 +85,7 @@ class TaskItem extends Component {
                 : task.details.slice(0, 20)
             }
           </div>
-          <div>
-            <button onClick={this.props.onDetail.bind(this, task._id)}>Details</button>
-            {/* Display Delete button only to creator and admin */}
-            {((this.context.token && this.context.isMentor && this.context.userId === task.creator._id) ||
-              (this.context.token && this.context.isAdmin)) && (
-                <button onClick={() => this.deleteTask(task._id)}>Delete</button>
-              )}
-          </div>
-          <div>
+          <div className="">
             <div>
               {task.registeredStudent ? <Taken /> : <Free />}
             </div>
@@ -101,6 +93,18 @@ class TaskItem extends Component {
               {!task.isSolved && (task.isBeingSolved ? <InProgress /> : <NotStarted />)}
               {task.isSolved && <Done />}
             </div>
+          </div>
+          <div className="">
+            <button className="btn" onClick={this.props.onDetail.bind(this, task._id)}>
+              Details
+            </button>
+            {/* Display Delete button only to creator and admin */}
+            {((this.context.token && this.context.isMentor && this.context.userId === task.creator._id) ||
+              (this.context.token && this.context.isAdmin)) && (
+                <button className="btn" onClick={() => this.deleteTask(task._id)}>
+                  Delete
+                </button>
+              )}
           </div>
         </div>
       </li>

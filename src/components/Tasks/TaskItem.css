@@ -3,10 +3,19 @@
   padding: 1rem;
   border: 1px solid black;
   white-space: pre;
+  min-width: min-content;
+}
+
+.task-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .left {
   width: 330px;
+  min-width: max-content;
 }
 
 .title {

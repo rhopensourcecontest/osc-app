@@ -11,19 +11,19 @@ class TaskControl extends Component {
     const taskControl = (
       <div className="task-control flex-container">
         <div>
-          <button onClick={() => this.props.fetchTasks(TASKS.ALL)}>
+          <button className="btn" onClick={() => this.props.fetchTasks(TASKS.ALL)}>
             All Tasks
           </button>
-          <button onClick={() => this.props.fetchTasks(TASKS.FREE)}>
+          <button className="btn" onClick={() => this.props.fetchTasks(TASKS.FREE)}>
             Free Tasks
           </button>
-          <button onClick={() => this.props.fetchTasks(TASKS.TAKEN)}>
+          <button className="btn" onClick={() => this.props.fetchTasks(TASKS.TAKEN)}>
             Taken Tasks
           </button>
         </div>
         {this.context.token && this.context.isMentor && (
           <div>
-            <button onClick={this.props.startCreateTaskHandler}>
+            <button className="btn" onClick={this.props.startCreateTaskHandler}>
               + New Task
             </button>
           </div>
