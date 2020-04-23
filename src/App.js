@@ -8,6 +8,8 @@ import VerificationPage from './components/pages/Verification';
 import AdminPage from './components/pages/Admin/Admin';
 import MainNavigation from './components/Navigation/MainNavigation';
 import AuthContext from './components/context/auth-context';
+import { fetchMentor } from './components/api-calls/Mentors';
+import { fetchStudent } from './components/api-calls/Students';
 
 import firebase from 'firebase';
 
@@ -39,6 +41,29 @@ class App extends Component {
       isAdmin: isAdmin,
       isVerified: isVerified
     });
+    if (token && this.state.isMentor) {
+      // fetch Mentor
+      fetchMentor(userId)
+        .then(resData => {
+          const mentor = resData.data.mentor;
+          this.setState({ user: mentor });
+        })
+        .catch(err => {
+          alert('Failed to fetch mentor.');
+          console.log(err);
+        });
+    } else {
+      // fetch Student
+      fetchStudent(userId)
+        .then(resData => {
+          const student = resData.data.student;
+          this.setState({ user: student });
+        })
+        .catch(err => {
+          alert('Failed to fetch student.');
+          console.log(err);
+        });
+    }
   };
 
   /**
