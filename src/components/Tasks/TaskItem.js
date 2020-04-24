@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { TASKS } from '../../constants/tasks';
 import AuthContext from '../context/auth-context';
+import { NavLink } from 'react-router-dom';
 import { Free, Taken, NotStarted, InProgress, Done } from '../Tags/Tags';
 
 import './TaskItem.css';
@@ -77,7 +78,14 @@ class TaskItem extends Component {
       <li key={task._id} className="task__list-item">
         <div className="task-container">
           <div className="left">
-            <h3>{task.title}</h3>
+            <NavLink className="title" title="Open task detail" to={{
+              pathname: `/task/${task._id}`,
+              state: {
+                task: task
+              }
+            }}>
+              <h3>{task.title}</h3>
+            </NavLink>
             {/* Show first line of details if it has multiple lines, 20 chars otherwise */}
             {
               task.details.indexOf('\n', 0) >= 0

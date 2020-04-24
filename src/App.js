@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import HomePage from './components/pages/Home';
 import AuthPage from './components/pages/Auth';
 import TasksPage from './components/pages/Tasks';
+import TaskPage from './components/pages/Task';
 import VerificationPage from './components/pages/Verification';
 import AdminPage from './components/pages/Admin/Admin';
 import MainNavigation from './components/Navigation/MainNavigation';
@@ -131,6 +132,10 @@ class App extends Component {
                 {this.state.isAdmin && (
                   <Route exact path="/admin" component={AdminPage} />
                 )}
+                {/* Dynamic Task route with unique key to force component remount */}
+                <Route exact path="/task/:taskId" render={(props) => (
+                  <TaskPage key={props.match.params.taskId} {...props} />)}
+                />
                 {/* Redirect everything else to root */}
                 <Redirect to="/" />
               </Switch>
