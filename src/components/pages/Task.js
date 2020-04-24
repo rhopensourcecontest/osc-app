@@ -88,9 +88,11 @@ class TaskPage extends Component {
         var editedTask = task;
         if (wasRegistered) {
           editedTask.registeredStudent = null;
+          this.context.setRegisteredTask(null);
           alert("Task " + task.title + " was unregistered successfully.");
         } else {
           editedTask.registeredStudent = resData.data.registerTask.registeredStudent;
+          this.context.setRegisteredTask(editedTask);
           alert("Task " + task.title + " was registered successfully.");
         }
         this.setState({ task: editedTask });

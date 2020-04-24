@@ -10,5 +10,6 @@ export default React.createContext({
   isVerified: null,
   login: () => { },
   logout: () => { },
-  setIsMentor: () => { }
+  setIsMentor: () => { },
+  setRegisteredTask: () => { }
 });

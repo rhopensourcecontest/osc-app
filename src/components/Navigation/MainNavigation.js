@@ -36,6 +36,13 @@ const mainNavigation = props => (
               {context.token && context.isAdmin && (
                 <li><NavLink to="/admin">Administration</NavLink></li>
               )}
+              {context.token && !context.isMentor && context.user && context.user.registeredTask && (
+                <li>
+                  <NavLink to={`/task/${context.user.registeredTask._id}`}>
+                    My Task
+                  </NavLink>
+                </li>
+              )}
               {context.token && (
                 <React.Fragment>
                   <li>

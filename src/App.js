@@ -97,6 +97,11 @@ class App extends Component {
     this.setState({ isMentor: choice });
   };
 
+  setRegisteredTask = (task) => {
+    const user = { ...this.state.user, registeredTask: task };
+    this.setState({ user: user });
+  }
+
   render() {
     return (
       <BrowserRouter>
@@ -113,7 +118,8 @@ class App extends Component {
               // App.js methods
               login: this.login,
               logout: this.logout,
-              setIsMentor: this.setIsMentor
+              setIsMentor: this.setIsMentor,
+              setRegisteredTask: this.setRegisteredTask
             }}>
             <MainNavigation />
             <main className="main-content">

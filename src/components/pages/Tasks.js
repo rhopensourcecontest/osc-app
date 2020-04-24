@@ -180,6 +180,7 @@ class TasksPage extends Component {
             const regsCount = prevState.regsCount - 1;
             return { regsCount: regsCount };
           });
+          this.context.setRegisteredTask(null);
           alert("Task " + task.title + " was unregistered successfully.");
         } else {
           editedTask.registeredStudent = resData.data.registerTask.registeredStudent;
@@ -187,6 +188,7 @@ class TasksPage extends Component {
             const regsCount = prevState.regsCount + 1;
             return { regsCount: regsCount };
           });
+          this.context.setRegisteredTask(editedTask);
           alert("Task " + task.title + " was registered successfully.");
         }
         this.setState({ selectedTask: editedTask });
