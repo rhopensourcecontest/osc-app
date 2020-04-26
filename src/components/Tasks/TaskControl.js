@@ -7,22 +7,45 @@ import './TaskControl.css';
 class TaskControl extends Component {
   static contextType = AuthContext;
 
+  handleActiveButtons = (e) => {
+    let element = document.getElementById("task-control-btns");
+    let btns = element.getElementsByClassName("active");
+    for (let button of btns) {
+      button.classList.remove("active");
+    }
+    e.target.classList.add("active");
+  }
+
   render() {
     const taskControl = (
       <div className="task-control flex-container">
-        <div>
+        <div id="task-control-btns">
           {this.context.token && this.context.isMentor && (
-            <button className="btn" onClick={() => this.props.filterTasks(TASKS.MINE)}>
+            <button className="btn active" onClick={(e) => {
+              this.props.filterTasks(TASKS.MINE);
+              this.handleActiveButtons(e);
+            }}>
               My Tasks
             </button>
           )}
-          <button className="btn" onClick={() => this.props.filterTasks(TASKS.ALL)}>
+          <button
+            className={`${(this.context.token && this.context.isMentor) ? "btn" : "btn active"}`}
+            onClick={(e) => {
+              this.props.filterTasks(TASKS.ALL);
+              this.handleActiveButtons(e);
+            }}>
             All Tasks
           </button>
-          <button className="btn" onClick={() => this.props.filterTasks(TASKS.FREE)}>
+          <button className="btn" onClick={(e) => {
+            this.props.filterTasks(TASKS.FREE);
+            this.handleActiveButtons(e);
+          }}>
             Free Tasks
           </button>
-          <button className="btn" onClick={() => this.props.filterTasks(TASKS.TAKEN)}>
+          <button className="btn" onClick={(e) => {
+            this.props.filterTasks(TASKS.TAKEN);
+            this.handleActiveButtons(e);
+          }}>
             Taken Tasks
           </button>
         </div>

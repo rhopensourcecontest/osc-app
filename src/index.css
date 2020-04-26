@@ -49,3 +49,7 @@ p {
   color: black;
   cursor: pointer;
 }
+
+.active {
+  color:black;
+}

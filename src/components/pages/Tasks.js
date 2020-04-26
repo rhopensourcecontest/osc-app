@@ -325,6 +325,7 @@ class TasksPage extends Component {
           <p>Public content</p>
         )}
         <TaskControl
+          key={this.state.regsCount + this.state.allTasks.length}
           filterTasks={this.filterTasks}
           startCreateTaskHandler={this.startCreateTaskHandler}
         />

@@ -2,5 +2,5 @@
   text-align: center;
   margin: -1rem auto;
   width: 90%;
-  min-width: max-content;
+  min-width: min-content;
 }

@@ -129,7 +129,9 @@ class App extends Component {
                 {/* /auth becomes accessible after role is chosen */}
                 {this.state.isMentor === null && <Redirect from="/auth" to="/" exact />}
                 <Route path="/auth" component={AuthPage} />
-                <Route path="/tasks" component={TasksPage} />
+                <Route path="/tasks" render={(props) => (
+                  <TasksPage key={this.state.userId} {...props} />)}
+                />
                 {/* Restricted for not verified Mentors */}
                 {this.state.isMentor && !this.state.isVerified && !this.state.isAdmin && (
                   <Route exact path="/verification" component={VerificationPage} />
