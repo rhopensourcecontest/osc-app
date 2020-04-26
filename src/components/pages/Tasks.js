@@ -5,9 +5,11 @@ import Backdrop from '../Backdrop/Backdrop';
 import AuthContext from '../context/auth-context';
 import TaskList from '../Tasks/TaskList';
 import TaskControl from '../Tasks/TaskControl';
-import './Tasks.css';
 import { TASKS } from '../../constants/tasks';
 import Notification from '../Notification/Notification';
+import { fetchAuth, fetchNoAuth } from '../api-calls/Fetch';
+
+import './Tasks.css';
 
 /**
  * Page displaying all Tasks
@@ -80,20 +82,7 @@ class TasksPage extends Component {
 
     const token = this.context.token;
 
-    fetch('http://localhost:5000/graphql', {
-      method: 'POST',
-      body: JSON.stringify(requestBody),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      }
-    })
-      .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error('Failed');
-        }
-        return res.json();
-      })
+    fetchAuth(token, requestBody)
       .then(resData => {
         alert("Task " + title + " was created successfully.");
         this.fetchTasks(TASKS.ALL);
@@ -159,20 +148,7 @@ class TasksPage extends Component {
 
     const token = this.context.token;
 
-    fetch('http://localhost:5000/graphql', {
-      method: 'POST',
-      body: JSON.stringify(requestBody),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      }
-    })
-      .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error('Failed');
-        }
-        return res.json();
-      })
+    fetchAuth(token, requestBody)
       .then(resData => {
         var editedTask = task;
         if (wasRegistered) {
@@ -258,19 +234,7 @@ class TasksPage extends Component {
       `
     };
 
-    fetch('http://localhost:5000/graphql', {
-      method: 'POST',
-      body: JSON.stringify(requestBody),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error('Failed');
-        }
-        return res.json();
-      })
+    fetchNoAuth(requestBody)
       .then(resData => {
         // get object with key queryName
         const tasks = resData.data[queryName];

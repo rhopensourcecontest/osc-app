@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { TASKS } from '../../constants/tasks';
 import AuthContext from '../context/auth-context';
 import { fetchTasks } from '../api-calls/Tasks';
+import { fetchAuth } from '../api-calls/Fetch';
 
 import './Task.css';
 
@@ -70,20 +71,7 @@ class TaskPage extends Component {
 
     const token = this.context.token;
 
-    fetch('http://localhost:5000/graphql', {
-      method: 'POST',
-      body: JSON.stringify(requestBody),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      }
-    })
-      .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error('Failed');
-        }
-        return res.json();
-      })
+    fetchAuth(token, requestBody)
       .then(resData => {
         var editedTask = task;
         if (wasRegistered) {

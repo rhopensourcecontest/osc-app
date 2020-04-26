@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-
-import "./Auth.css";
 import AuthContext from '../context/auth-context';
-
 import firebase from 'firebase';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
+import { fetchNoAuth } from '../api-calls/Fetch';
+
+import "./Auth.css";
 import 'firebaseui/dist/firebaseui.css';
 
 firebase.initializeApp({
@@ -112,20 +112,7 @@ class AuthPage extends Component {
       };
     }
 
-    fetch('http://localhost:5000/graphql', {
-      method: 'POST',
-      body: JSON.stringify(requestBody),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          alert("Something went wrong.");
-          throw new Error('Failed');
-        }
-        return res.json();
-      })
+    fetchNoAuth(requestBody)
       .then(resData => {
         if (resData.data.login) {
           this.setState({ isSignedIn: !!user });

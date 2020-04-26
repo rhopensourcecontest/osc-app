@@ -3,6 +3,7 @@ import { TASKS } from '../../constants/tasks';
 import AuthContext from '../context/auth-context';
 import { NavLink } from 'react-router-dom';
 import { Free, Taken, NotStarted, InProgress, Done } from '../Tags/Tags';
+import { fetchAuth } from '../api-calls/Fetch';
 
 import './TaskItem.css';
 
@@ -44,20 +45,7 @@ class TaskItem extends Component {
 
     const token = this.context.token;
 
-    fetch('http://localhost:5000/graphql', {
-      method: 'POST',
-      body: JSON.stringify(requestBody),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      }
-    })
-      .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error('Failed');
-        }
-        return res.json();
-      })
+    fetchAuth(token, requestBody)
       .then(resData => {
         if (resData.data.deleteTask) {
           this.props.fetchTasks(TASKS.ALL);

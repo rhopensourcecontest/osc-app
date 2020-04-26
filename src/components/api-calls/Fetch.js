@@ -1,5 +1,5 @@
 /**
- * Fetch from graphql without auth header
+ * Fetch from http://localhost:5000/graphql without auth header
  * @param {Object} requestBody defines query
  * @returns {Promise} response
  */
@@ -13,6 +13,32 @@ export const fetchNoAuth = (requestBody) => {
   })
     .then(res => {
       if (res.status !== 200 && res.status !== 201) {
+        alert("Something went wrong.");
+        throw new Error('Failed');
+      }
+      return res.json();
+    });
+};
+
+/**
+ * Fetch from http://localhost:5000/graphql with auth header
+ * 
+ * @param {string} token
+ * @param {Object} requestBody defines query
+ * @returns {Promise} response
+ */
+export const fetchAuth = (token, requestBody) => {
+  return fetch('http://localhost:5000/graphql', {
+    method: 'POST',
+    body: JSON.stringify(requestBody),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    }
+  })
+    .then(res => {
+      if (res.status !== 200 && res.status !== 201) {
+        alert("Something went wrong.");
         throw new Error('Failed');
       }
       return res.json();
