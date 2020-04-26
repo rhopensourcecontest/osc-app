@@ -15,6 +15,7 @@ import Notification from '../Notification/Notification';
 class TasksPage extends Component {
   state = {
     creating: false,
+    allTasks: [],
     tasks: [],
     selectedTask: null,
     regsCount: 0
@@ -201,6 +202,34 @@ class TasksPage extends Component {
   };
 
   /**
+   * Filter state.allTasks according to filter provided and save to state.tasks
+   * 
+   * @param {string} filter - value from TASKS enum
+   */
+  filterTasks = (filter) => {
+    switch (filter) {
+      case TASKS.ALL:
+        this.setState({ tasks: this.state.allTasks });
+        break;
+      case TASKS.TAKEN:
+        this.setState({
+          tasks: this.state.allTasks.filter(task => {
+            return task.registeredStudent !== null;
+          })
+        });
+        break;
+      case TASKS.FREE:
+        this.setState({
+          tasks: this.state.allTasks.filter(task => {
+            return task.registeredStudent === null;
+          })
+        });
+        break;
+      default: break;
+    }
+  };
+
+  /**
    * Get tasks from db. queryName can have values from TASKS enum
    * 
    * @param {string} queryName
@@ -245,7 +274,7 @@ class TasksPage extends Component {
       .then(resData => {
         // get object with key queryName
         const tasks = resData.data[queryName];
-        this.setState({ tasks: tasks });
+        this.setState({ tasks: tasks, allTasks: tasks });
       })
       .catch(err => {
         console.log(err);
@@ -324,7 +353,7 @@ class TasksPage extends Component {
           <p>Public content</p>
         )}
         <TaskControl
-          fetchTasks={this.fetchTasks}
+          filterTasks={this.filterTasks}
           startCreateTaskHandler={this.startCreateTaskHandler}
         />
         <TaskList

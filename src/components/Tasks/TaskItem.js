@@ -78,7 +78,7 @@ class TaskItem extends Component {
       <li key={task._id} className="task__list-item">
         <div className="task-container">
           <div className="left">
-            <NavLink className="title" title="Open task detail" to={{
+            <NavLink className="title" title="Navigate to task" to={{
               pathname: `/task/${task._id}`,
               state: {
                 task: task

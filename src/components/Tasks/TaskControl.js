@@ -11,13 +11,13 @@ class TaskControl extends Component {
     const taskControl = (
       <div className="task-control flex-container">
         <div>
-          <button className="btn" onClick={() => this.props.fetchTasks(TASKS.ALL)}>
+          <button className="btn" onClick={() => this.props.filterTasks(TASKS.ALL)}>
             All Tasks
           </button>
-          <button className="btn" onClick={() => this.props.fetchTasks(TASKS.FREE)}>
+          <button className="btn" onClick={() => this.props.filterTasks(TASKS.FREE)}>
             Free Tasks
           </button>
-          <button className="btn" onClick={() => this.props.fetchTasks(TASKS.TAKEN)}>
+          <button className="btn" onClick={() => this.props.filterTasks(TASKS.TAKEN)}>
             Taken Tasks
           </button>
         </div>
