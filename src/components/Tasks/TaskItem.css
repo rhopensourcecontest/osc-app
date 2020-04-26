@@ -18,6 +18,15 @@
   min-width: max-content;
 }
 
+.button-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.button-col button {
+  margin: 0.25rem;
+}
+
 .title {
   text-decoration: none;
   color: black;

@@ -11,6 +11,11 @@ class TaskControl extends Component {
     const taskControl = (
       <div className="task-control flex-container">
         <div>
+          {this.context.token && this.context.isMentor && (
+            <button className="btn" onClick={() => this.props.filterTasks(TASKS.MINE)}>
+              My Tasks
+            </button>
+          )}
           <button className="btn" onClick={() => this.props.filterTasks(TASKS.ALL)}>
             All Tasks
           </button>

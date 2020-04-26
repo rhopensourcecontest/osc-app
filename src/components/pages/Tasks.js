@@ -184,6 +184,13 @@ class TasksPage extends Component {
    */
   filterTasks = (filter) => {
     switch (filter) {
+      case TASKS.MINE:
+        this.setState({
+          tasks: this.state.allTasks.filter(task => {
+            return task.creator._id === this.context.userId;
+          })
+        });
+        break;
       case TASKS.ALL:
         this.setState({ tasks: this.state.allTasks });
         break;
@@ -238,7 +245,8 @@ class TasksPage extends Component {
       .then(resData => {
         // get object with key queryName
         const tasks = resData.data[queryName];
-        this.setState({ tasks: tasks, allTasks: tasks });
+        this.setState({ allTasks: tasks });
+        this.filterTasks(this.context.isMentor ? TASKS.MINE : TASKS.ALL);
       })
       .catch(err => {
         console.log(err);

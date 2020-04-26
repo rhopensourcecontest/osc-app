@@ -90,7 +90,7 @@ class TaskItem extends Component {
               {task.isSolved && <Done />}
             </div>
           </div>
-          <div className="">
+          <div className="button-col">
             <button className="btn" onClick={this.props.onDetail.bind(this, task._id)}>
               Details
             </button>
