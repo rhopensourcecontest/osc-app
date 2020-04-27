@@ -12,7 +12,8 @@ import AuthContext from './components/context/auth-context';
 import { fetchMentor } from './components/api-calls/Mentors';
 import { fetchStudent } from './components/api-calls/Students';
 
-import firebase from 'firebase';
+import firebase from 'firebase/app';
+import 'firebase/auth';
 
 import './App.css';
 
