@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { TASKS } from '../../constants/tasks';
-import AuthContext from '../context/auth-context';
-import { fetchTasks } from '../api-calls/Tasks';
-import { fetchAuth } from '../api-calls/Fetch';
+import { TASKS } from '../../../constants/tasks';
+import AuthContext from '../../context/auth-context';
+import { fetchTasks } from '../../api-calls/Tasks';
+import { fetchAuth } from '../../api-calls/Fetch';
 
 import './Task.css';
 

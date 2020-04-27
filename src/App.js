@@ -3,8 +3,8 @@ import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 
 import HomePage from './components/pages/Home';
 import AuthPage from './components/pages/Auth';
-import TasksPage from './components/pages/Tasks';
-import TaskPage from './components/pages/Task';
+import TasksPage from './components/pages/Tasks/Tasks';
+import TaskPage from './components/pages/Tasks/Task';
 import VerificationPage from './components/pages/Verification';
 import AdminPage from './components/pages/Admin/Admin';
 import MainNavigation from './components/Navigation/MainNavigation';

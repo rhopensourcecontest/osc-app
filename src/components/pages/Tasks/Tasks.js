@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 
-import Modal from '../Modal/Modal';
-import Backdrop from '../Backdrop/Backdrop';
-import AuthContext from '../context/auth-context';
-import TaskList from '../Tasks/TaskList';
-import TaskControl from '../Tasks/TaskControl';
-import { TASKS } from '../../constants/tasks';
-import Notification from '../Notification/Notification';
-import { fetchAuth, fetchNoAuth } from '../api-calls/Fetch';
+import Modal from '../../Modal/Modal';
+import Backdrop from '../../Backdrop/Backdrop';
+import AuthContext from '../../context/auth-context';
+import TaskList from './TaskList';
+import TaskControl from './TaskControl';
+import { TASKS } from '../../../constants/tasks';
+import Notification from '../../Notification/Notification';
+import { fetchAuth, fetchNoAuth } from '../../api-calls/Fetch';
 
 import './Tasks.css';
 

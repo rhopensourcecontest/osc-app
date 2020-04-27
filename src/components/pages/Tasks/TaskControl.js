@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { TASKS } from '../../constants/tasks';
-import AuthContext from '../context/auth-context';
+import { TASKS } from '../../../constants/tasks';
+import AuthContext from '../../context/auth-context';
 
 import './TaskControl.css';
 

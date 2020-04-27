@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { TASKS } from '../../constants/tasks';
-import AuthContext from '../context/auth-context';
+import { TASKS } from '../../../constants/tasks';
+import AuthContext from '../../context/auth-context';
 import { NavLink } from 'react-router-dom';
-import { Free, Taken, NotStarted, InProgress, Done } from '../Tags/Tags';
-import { fetchAuth } from '../api-calls/Fetch';
+import { Free, Taken, NotStarted, InProgress, Done } from '../../Tags/Tags';
+import { fetchAuth } from '../../api-calls/Fetch';
 
 import './TaskItem.css';
 
