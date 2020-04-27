@@ -4,9 +4,17 @@ import AuthContext from '../../context/auth-context';
 
 import './TaskControl.css';
 
+/**
+ * Component with buttons to control displayed Tasks
+ */
 class TaskControl extends Component {
   static contextType = AuthContext;
 
+  /**
+   * Removes active class from all active buttons and adds it to input
+   * 
+   * @param {Object} e
+   */
   handleActiveButtons = (e) => {
     let element = document.getElementById("task-control-btns");
     let btns = element.getElementsByClassName("active");

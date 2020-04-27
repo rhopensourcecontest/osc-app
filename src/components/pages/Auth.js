@@ -13,6 +13,9 @@ firebase.initializeApp({
   authDomain: process.env.REACT_APP_FIREBASE_AUTHDOMAIN
 });
 
+/**
+ * Auth page for login and registration
+ */
 class AuthPage extends Component {
   state = {
     isLogin: true

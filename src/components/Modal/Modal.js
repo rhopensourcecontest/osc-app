@@ -2,6 +2,11 @@ import React from 'react';
 
 import './Modal.css';
 
+/**
+ * Pop-up window that can be parametrized
+ *  
+ * @param {Object} props 
+ */
 const modal = (props) => (
   <div className="modal">
     <header className="modal__header">

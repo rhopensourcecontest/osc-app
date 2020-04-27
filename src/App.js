@@ -17,6 +17,9 @@ import 'firebase/auth';
 
 import './App.css';
 
+/**
+ * Main component
+ */
 class App extends Component {
   state = {
     token: null,

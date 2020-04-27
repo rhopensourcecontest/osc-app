@@ -7,6 +7,9 @@ import Backdrop from '../Backdrop/Backdrop';
 import AuthContext from '../context/auth-context';
 import './Home.css'
 
+/**
+ * Home Page of the application
+ */
 class HomePage extends Component {
   state = {
     choosing: false,

@@ -8,7 +8,7 @@ import { fetchAuth } from '../../api-calls/Fetch';
 import './TaskItem.css';
 
 /**
- * Task component with containg details
+ * Component with details about the Task
  */
 class TaskItem extends Component {
   static contextType = AuthContext;
