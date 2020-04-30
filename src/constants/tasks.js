@@ -4,5 +4,6 @@
 export const TASKS = {
   ALL: "allTasks",
   FREE: "freeTasks",
-  TAKEN: "takenTasks"
+  TAKEN: "takenTasks",
+  MINE: "myTasks"
 }

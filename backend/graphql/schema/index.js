@@ -58,6 +58,8 @@ module.exports = buildSchema(`
   }
 
   type RootQuery {
+    mentor(mentorId: ID!): Mentor!
+    student(studentId: ID!): Student!
     allTasks: [Task!]!
     freeTasks: [Task!]!
     takenTasks: [Task!]!

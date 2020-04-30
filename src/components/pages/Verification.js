@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import AuthContext from '../context/auth-context';
 import { fetchMentors } from '../api-calls/Mentors';
+import { fetchAuth } from '../api-calls/Fetch';
 
 import './Verification.css';
 
@@ -64,20 +65,7 @@ class VerificationPage extends Component {
 
     const token = this.context.token;
 
-    fetch('http://localhost:5000/graphql', {
-      method: 'POST',
-      body: JSON.stringify(requestBody),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      }
-    })
-      .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error('Failed');
-        }
-        return res.json();
-      })
+    fetchAuth(token, requestBody)
       .then(resData => {
         alert('Message sent.');
         this.setState({ isSubmitted: true });

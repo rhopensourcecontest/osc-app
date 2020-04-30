@@ -2,6 +2,11 @@ import React from 'react';
 
 import './Modal.css';
 
+/**
+ * Pop-up window that can be parametrized
+ *  
+ * @param {Object} props 
+ */
 const modal = (props) => (
   <div className="modal">
     <header className="modal__header">
@@ -13,16 +18,6 @@ const modal = (props) => (
       {props.children}
     </section>
     <section className="modal__actions">
-      {/* Display Cancel button */}
-      {props.canCancel && (
-        <button className="btn" onClick={props.onCancel}>Cancel</button>
-      )}
-
-      {/* Display Confirm button */}
-      {props.canConfirm && (
-        <button className="btn" onClick={props.onConfirm}>Confirm</button>
-      )}
-
       {/* Display Register button for authenticated Student on free Tasks 
       only if he doesn't have any Task registered yet */}
       {props.canRegister && props.context.token && !props.context.isMentor &&
@@ -36,6 +31,16 @@ const modal = (props) => (
         props.context.userId === props.task.registeredStudent._id && (
           <button className="btn" onClick={props.onUnregister}>Unregister</button>
         )}
+
+      {/* Display Cancel button */}
+      {props.canCancel && (
+        <button className="btn" onClick={props.onCancel}>Cancel</button>
+      )}
+
+      {/* Display Confirm button */}
+      {props.canConfirm && (
+        <button className="btn" onClick={props.onConfirm}>Confirm</button>
+      )}
     </section>
   </div>
 );

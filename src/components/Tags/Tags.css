@@ -1,0 +1,20 @@
+.tag {
+  text-align: center;
+  width: 110px;
+  padding: 3px;
+  margin: 5px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.free {
+  border: 2px solid #00ff0d;
+}
+
+.taken {
+  border: 2px solid red;
+}
+
+.default {
+  border: 2px solid black;
+}

@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 
-import Modal from '../Modal/Modal';
-import Backdrop from '../Backdrop/Backdrop';
-import AuthContext from '../context/auth-context';
-import TaskList from '../Tasks/TaskList';
-import TaskControl from '../Tasks/TaskControl';
+import Modal from '../../Modal/Modal';
+import Backdrop from '../../Backdrop/Backdrop';
+import AuthContext from '../../context/auth-context';
+import TaskList from './TaskList';
+import TaskControl from './TaskControl';
+import { TASKS } from '../../../constants/tasks';
+import Notification from '../../Notification/Notification';
+import { fetchAuth, fetchNoAuth } from '../../api-calls/Fetch';
+
 import './Tasks.css';
-import { TASKS } from '../../constants/tasks';
-import Notification from '../Notification/Notification';
 
 /**
  * Page displaying all Tasks
@@ -15,6 +17,7 @@ import Notification from '../Notification/Notification';
 class TasksPage extends Component {
   state = {
     creating: false,
+    allTasks: [],
     tasks: [],
     selectedTask: null,
     regsCount: 0
@@ -79,20 +82,7 @@ class TasksPage extends Component {
 
     const token = this.context.token;
 
-    fetch('http://localhost:5000/graphql', {
-      method: 'POST',
-      body: JSON.stringify(requestBody),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      }
-    })
-      .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error('Failed');
-        }
-        return res.json();
-      })
+    fetchAuth(token, requestBody)
       .then(resData => {
         alert("Task " + title + " was created successfully.");
         this.fetchTasks(TASKS.ALL);
@@ -158,20 +148,7 @@ class TasksPage extends Component {
 
     const token = this.context.token;
 
-    fetch('http://localhost:5000/graphql', {
-      method: 'POST',
-      body: JSON.stringify(requestBody),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      }
-    })
-      .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error('Failed');
-        }
-        return res.json();
-      })
+    fetchAuth(token, requestBody)
       .then(resData => {
         var editedTask = task;
         if (wasRegistered) {
@@ -180,6 +157,7 @@ class TasksPage extends Component {
             const regsCount = prevState.regsCount - 1;
             return { regsCount: regsCount };
           });
+          this.context.setRegisteredTask(null);
           alert("Task " + task.title + " was unregistered successfully.");
         } else {
           editedTask.registeredStudent = resData.data.registerTask.registeredStudent;
@@ -187,6 +165,7 @@ class TasksPage extends Component {
             const regsCount = prevState.regsCount + 1;
             return { regsCount: regsCount };
           });
+          this.context.setRegisteredTask(editedTask);
           alert("Task " + task.title + " was registered successfully.");
         }
         this.setState({ selectedTask: editedTask });
@@ -196,6 +175,41 @@ class TasksPage extends Component {
         alert((wasRegistered ? "Unregistration" : "Registration") + " failed.");
         console.log(err);
       });
+  };
+
+  /**
+   * Filter state.allTasks according to filter provided and save to state.tasks
+   * 
+   * @param {string} filter - value from TASKS enum
+   */
+  filterTasks = (filter) => {
+    switch (filter) {
+      case TASKS.MINE:
+        this.setState({
+          tasks: this.state.allTasks.filter(task => {
+            return task.creator._id === this.context.userId;
+          })
+        });
+        break;
+      case TASKS.ALL:
+        this.setState({ tasks: this.state.allTasks });
+        break;
+      case TASKS.TAKEN:
+        this.setState({
+          tasks: this.state.allTasks.filter(task => {
+            return task.registeredStudent !== null;
+          })
+        });
+        break;
+      case TASKS.FREE:
+        this.setState({
+          tasks: this.state.allTasks.filter(task => {
+            return task.registeredStudent === null;
+          })
+        });
+        break;
+      default: break;
+    }
   };
 
   /**
@@ -227,23 +241,12 @@ class TasksPage extends Component {
       `
     };
 
-    fetch('http://localhost:5000/graphql', {
-      method: 'POST',
-      body: JSON.stringify(requestBody),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error('Failed');
-        }
-        return res.json();
-      })
+    fetchNoAuth(requestBody)
       .then(resData => {
         // get object with key queryName
         const tasks = resData.data[queryName];
-        this.setState({ tasks: tasks });
+        this.setState({ allTasks: tasks });
+        this.filterTasks(this.context.isMentor ? TASKS.MINE : TASKS.ALL);
       })
       .catch(err => {
         console.log(err);
@@ -322,7 +325,8 @@ class TasksPage extends Component {
           <p>Public content</p>
         )}
         <TaskControl
-          fetchTasks={this.fetchTasks}
+          key={this.state.regsCount + this.state.allTasks.length}
+          filterTasks={this.filterTasks}
           startCreateTaskHandler={this.startCreateTaskHandler}
         />
         <TaskList

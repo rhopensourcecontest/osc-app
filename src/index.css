@@ -11,6 +11,9 @@ p {
 .form-control label,
 .form-control input,
 .form-control textarea {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   width: 100%;
   display: block;
   max-width: 100%;
@@ -28,12 +31,9 @@ p {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
 }
 
-.form-actions button,
-.modal-actions button,
-.task-control button,
-.task__list-item button,
 .btn {
   background: rgb(253, 46, 38);
   font: inherit;
@@ -44,14 +44,12 @@ p {
   color: white;
 }
 
-.form-actions button:hover,
-.form-actions button:active,
-.task-control button:hover,
-.task-control button:active,
-.task__list-item button:hover,
-.task__list-item button:active,
 .btn:hover,
 .btn:active {
   color: black;
   cursor: pointer;
+}
+
+.active {
+  color:black;
 }

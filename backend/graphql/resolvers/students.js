@@ -8,6 +8,20 @@ const { EMAILS } = require('../../constants/emails');
 
 module.exports = {
   /**
+   * Get student with pre-loaded registeredTask.
+   * 
+   * @param {string} args.studentId
+   * @throws {Error}
+   * @returns {Mentor}
+   */
+  student: async (args) => {
+    try {
+      return await student(args.studentId);
+    } catch (err) {
+      throw err;
+    }
+  },
+  /**
    * Get all students with pre-loaded registeredTask.
    *
    * @throws {Error}

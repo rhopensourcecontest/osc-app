@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
+import AuthContext from '../context/auth-context';
+import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import { fetchNoAuth } from '../api-calls/Fetch';
 
 import "./Auth.css";
-import AuthContext from '../context/auth-context';
-
-import firebase from 'firebase';
-import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import 'firebaseui/dist/firebaseui.css';
 
 firebase.initializeApp({
@@ -12,6 +13,9 @@ firebase.initializeApp({
   authDomain: process.env.REACT_APP_FIREBASE_AUTHDOMAIN
 });
 
+/**
+ * Auth page for login and registration
+ */
 class AuthPage extends Component {
   state = {
     isLogin: true
@@ -112,20 +116,7 @@ class AuthPage extends Component {
       };
     }
 
-    fetch('http://localhost:5000/graphql', {
-      method: 'POST',
-      body: JSON.stringify(requestBody),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          alert("Something went wrong.");
-          throw new Error('Failed');
-        }
-        return res.json();
-      })
+    fetchNoAuth(requestBody)
       .then(resData => {
         if (resData.data.login) {
           this.setState({ isSignedIn: !!user });
@@ -192,7 +183,7 @@ class AuthPage extends Component {
                 <br />
                 <div className="form-actions">
                   <center>
-                    <button type="button" onClick={this.switchModeHandler}>
+                    <button className="btn" onClick={this.switchModeHandler}>
                       Switch to {this.state.isLogin ? 'Sign up' : 'Sign in'}
                     </button>
                   </center>

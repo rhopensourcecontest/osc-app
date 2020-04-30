@@ -8,6 +8,20 @@ const { EMAILS } = require('../../constants/emails');
 
 module.exports = {
   /**
+   * Get mentor with pre-loaded createdTasks.
+   * 
+   * @param {string} args.mentorId
+   * @throws {Error}
+   * @returns {Mentor}
+   */
+  mentor: async (args) => {
+    try {
+      return await mentor(args.mentorId);
+    } catch (err) {
+      throw err;
+    }
+  },
+  /**
    * Get all mentors with pre-loaded createdTasks.
    * 
    * @throws {Error}
