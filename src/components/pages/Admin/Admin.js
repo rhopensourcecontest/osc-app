@@ -4,6 +4,8 @@ import MentorItem from './MentorItem';
 import { fetchMentors } from '../../api-calls/Mentors';
 import { fetchNoAuth, fetchAuth } from '../../api-calls/Fetch';
 import Notification from '../../Notification/Notification';
+import Backdrop from '../../Backdrop/Backdrop';
+import Modal from '../../Modal/Modal';
 
 import './Admin.css';
 
@@ -16,6 +18,7 @@ class AdminPage extends Component {
   state = {
     mentors: [],
     queryName: 'allMentorEmails',
+    confirming: false,
     notify: null,
     error: null
   };
@@ -60,7 +63,13 @@ class AdminPage extends Component {
       });
   };
 
+  /**
+   * Unregisters all Students from all Tasks.
+   * Displays notification with count of cancelled registrations.
+   */
   unregisterAllStudents = () => {
+    // clear object to be able to notify
+    this.setState({ notify: null });
     const requestBody = {
       query: `mutation { unregisterAllStudents { studentId taskId } }`
     };
@@ -70,9 +79,8 @@ class AdminPage extends Component {
     fetchAuth(token, requestBody)
       .then(resData => {
         const response = resData.data.unregisterAllStudents;
-        alert(`Unregistered ${response.length} students.`);
-        let notification = { type: 'success', msg: 'All registrations removed.' };
-        this.setState({ notify: notification });
+        let notification = { type: 'success', msg: `Removed ${response.length} registrations.` };
+        this.setState({ confirming: false, notify: notification });
       })
       .catch(err => {
         this.setState({ error: true });
@@ -80,9 +88,21 @@ class AdminPage extends Component {
       });
   }
 
+  /**
+   * Change state.queryName to selected value after selected option changed
+   * 
+   * @param {Object} event
+   */
   handleOptionChange = (event) => {
     const val = event.target.value;
     this.setState({ queryName: val });
+  }
+
+  /**
+   * Cancel modal by changing state.confirming to false
+   */
+  modalCancelHandler = () => {
+    this.setState({ confirming: false });
   }
 
   render() {
@@ -93,6 +113,20 @@ class AdminPage extends Component {
         )}
         {this.state.error && (
           <Notification msg="Something went wrong." type="error" />
+        )}
+        {this.state.confirming && (
+          <React.Fragment>
+            <Backdrop />
+            <Modal
+              title="Are you sure?"
+              canCancel
+              canConfirm
+              onCancel={this.modalCancelHandler}
+              onConfirm={this.unregisterAllStudents}
+            >
+              Do you really want to unregister all Students from all Tasks?
+            </Modal>
+          </React.Fragment>
         )}
         <div className="">
           <h1>Administration Page</h1>
@@ -116,10 +150,12 @@ class AdminPage extends Component {
             </div>
 
             <div className="col">
-              <label>Unregister all Students from all Tasks</label>
+              <label style={{ color: "red", fontWeight: "bold" }}>
+                Unregister all Students from all Tasks
+              </label>
               <button
                 className="btn"
-                onClick={() => this.unregisterAllStudents()}
+                onClick={() => this.setState({ confirming: true })}
               >
                 Unregister
               </button>
