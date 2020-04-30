@@ -2,7 +2,6 @@ const Task = require('../../models/task');
 const Mentor = require('../../models/mentor');
 const Student = require('../../models/student');
 
-const { transformTask, singleTask, tasks, mentor, student } = require('./merge');
 const { EMAILS } = require('../../constants/emails');
 const { sendVerificationEmail } = require('./emails');
 
