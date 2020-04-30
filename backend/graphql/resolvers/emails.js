@@ -31,10 +31,21 @@ const getMailOptions = (recipient, emailType, email, taskTitle, text) => {
       message = `<p>You have successfully created a new account!</p>`;
       break;
     case EMAILS.TASK_REGISTRATION:
-      subject = 'Open Source Contest - New registration';
+      subject = 'Open Source Contest - New Task registration';
       header = `Your Task has a Student now!`;
       message = `<p>Student ${email} has registered to your ` +
-        `task ${taskTitle}.</p>`;
+        `task <b>${taskTitle}</b>.</p>`;
+      break;
+    case EMAILS.STUDENT_REGISTRATION:
+      subject = 'Open Source Contest - New Task registration';
+      header = `You successfully registered to new Task!`;
+      message = `<p>Task<b> ${taskTitle}</b> now belongs to you. Happy coding!</p>`;
+      break;
+    case EMAILS.STUDENT_UNREGISTRATION:
+      subject = 'Open Source Contest - Task registration cancelled';
+      header = `Your Task is now free.`;
+      message = `<p>Student ${email} has unregistered the task ` +
+        `<b>${taskTitle}</b>.</p>`;
       break;
     case EMAILS.MENTOR_VERIFICATION:
       subject = 'Open Source Contest - Mentor Verification Request';
@@ -109,9 +120,7 @@ module.exports = {
    * @param {Object} req
    * @throws {Error}
    * EMAILS.ADMIN_VERIFIED || EMAILS.MENTOR_VERIFIED:
-   * 1. For not authenticated users
-   * 2. For Students
-   * 3. For Mentors without Admin rights
+   * 1. For Mentors without Admin rights
    * 
    * else:
    * 1. For not authenticated users

@@ -170,6 +170,13 @@ module.exports = {
         resultTask.title
       );
 
+      await sendEmail(
+        resultStudent.email,
+        EMAILS.STUDENT_REGISTRATION,
+        null,
+        resultTask.title
+      );
+
       return {
         ...resultTask._doc,
         creator: mentor.bind(this, resultTask._doc.creator),
@@ -223,6 +230,15 @@ module.exports = {
       }
       await resultStudent.updateOne({ registeredTask: null });
       await resultTask.updateOne({ registeredStudent: null });
+
+      const creator = await Mentor.findById(resultTask.creator);
+
+      await sendEmail(
+        creator.email,
+        EMAILS.STUDENT_UNREGISTRATION,
+        resultStudent.email,
+        resultTask.title
+      );
 
       return {
         ...resultTask._doc,
