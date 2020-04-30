@@ -24,6 +24,7 @@ const transporter = nodemailer.createTransport({
  * @returns {Object} - email options
  */
 const getMailOptions = (recipient, emailType, email, taskTitle, text) => {
+  let subject, header, message;
   switch (emailType) {
     case EMAILS.USER_REGISTRATION:
       subject = 'Open Source Contest - New registration';
@@ -65,8 +66,7 @@ const getMailOptions = (recipient, emailType, email, taskTitle, text) => {
       header = `Admin verification completed`;
       message = `<p>${text}</p>`;
       break;
-    default:
-      subject = 'Open Source Contest - New registration';
+    default: break;
   }
   return {
     from: '"Open Source Contest" <' + process.env.NODEMAILER_EMAIL_ADDRESS + '>',

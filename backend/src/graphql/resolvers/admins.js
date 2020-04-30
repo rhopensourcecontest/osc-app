@@ -24,11 +24,12 @@ module.exports = {
 
     try {
       const students = await Student.find();
-      unregData = [];
+      let unregData = [];
 
       for (const student of students) {
-        if (taskId = student.registeredTask) {
-          studentId = student._id;
+        const taskId = student.registeredTask;
+        if (taskId) {
+          const studentId = student._id;
           student.registeredTask = null;
           await Task.findByIdAndUpdate(
             taskId, { registeredStudent: null }

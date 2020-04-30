@@ -92,7 +92,7 @@ module.exports = {
   studentEmails: async (args) => {
     try {
       const mentor = await Mentor.findById(args.mentorId);
-      emails = [];
+      let emails = [];
 
       for (const taskId of mentor.createdTasks) {
         const task = await Task.findById(taskId);
