@@ -94,7 +94,8 @@ class TasksPage extends Component {
   };
 
   /**
-   * Reset flags that handle state of modals.
+   * Reset state of modals by changing state.creating to false 
+   * and state.selectedTask to null
    */
   modalCancelHandler = () => {
     this.setState({ creating: false, selectedTask: null });
