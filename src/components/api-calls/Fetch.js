@@ -13,7 +13,6 @@ export const fetchNoAuth = (requestBody) => {
   })
     .then(res => {
       if (res.status !== 200 && res.status !== 201) {
-        alert("Something went wrong.");
         throw new Error('Failed');
       }
       return res.json();
@@ -38,7 +37,6 @@ export const fetchAuth = (token, requestBody) => {
   })
     .then(res => {
       if (res.status !== 200 && res.status !== 201) {
-        alert("Something went wrong.");
         throw new Error('Failed');
       }
       return res.json();

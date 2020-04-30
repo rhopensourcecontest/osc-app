@@ -19,8 +19,9 @@ class Notification extends Component {
   showSuccess(msg) {
     this.growl.show({
       severity: 'success',
-      summary: 'Success Message',
-      detail: msg
+      summary: 'Success',
+      detail: msg,
+      life: 1000
     });
   };
 
