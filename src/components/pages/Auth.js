@@ -118,15 +118,17 @@ class AuthPage extends Component {
 
     fetchNoAuth(requestBody)
       .then(resData => {
-        if (resData.data.login) {
+        const response = resData.data.login;
+        if (response) {
           this.setState({ isSignedIn: !!user });
           this.context.login(
-            resData.data.login.token,
-            resData.data.login.userId,
-            resData.data.login.tokenExpiration,
-            resData.data.login.isAdmin,
-            resData.data.login.isVerified
+            response.token,
+            response.userId,
+            response.isAdmin,
+            response.isVerified
           );
+
+          localStorage.setItem("token", response.token);
         } else if (resData.data) {
           if (resData.data.createMentor) {
             alert("Created mentor " + resData.data.createMentor.email);

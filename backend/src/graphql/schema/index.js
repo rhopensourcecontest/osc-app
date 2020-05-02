@@ -66,6 +66,7 @@ module.exports = buildSchema(`
     students: [Student!]!
     mentors: [Mentor!]!
     login(email: String!, uid: String!, isMentor: Boolean!): AuthData
+    verify: AuthData
     studentEmails(mentorId: ID!): [String]!
     allStudentEmails: [String]!
     allMentorEmails: [String]!

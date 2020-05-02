@@ -11,6 +11,7 @@ import MainNavigation from './components/Navigation/MainNavigation';
 import AuthContext from './components/context/auth-context';
 import { fetchMentor } from './components/api-calls/Mentors';
 import { fetchStudent } from './components/api-calls/Students';
+import { fetchAuth } from './components/api-calls/Fetch';
 
 import firebase from 'firebase/app';
 import 'firebase/auth';
@@ -30,16 +31,53 @@ class App extends Component {
     isVerified: null
   };
 
+  componentDidMount() {
+    const token = localStorage.token;
+    if (token) {
+      this.refreshLoginWithToken(token);
+    }
+  }
+
+  /**
+   * Verify validity of the token and login user if it's still valid
+   * 
+   * @param {string} token
+   */
+  refreshLoginWithToken = (token) => {
+    const requestBody = {
+      query: `query { verify { userId, token, isMentor, isAdmin, isVerified } }`
+    };
+
+    if (token) {
+      fetchAuth(token, requestBody)
+        .then(resData => {
+          if (resData.data && resData.data.verify) {
+            const response = resData.data.verify;
+            this.setState({ isMentor: response.isMentor });
+            this.login(
+              response.token,
+              response.userId,
+              response.isAdmin,
+              response.isVerified
+            );
+          }
+        })
+        .catch(err => {
+          localStorage.removeItem("token");
+          console.log(err);
+        })
+    }
+  }
+
   /**
    * Login user and change the state accordingly
    * 
    * @param {string} token
    * @param {string} userId
-   * @param {string} tokenExpiration
    * @param {boolean} isAdmin
    * @param {boolean} isVerified
    */
-  login = (token, userId, tokenExpiration, isAdmin, isVerified) => {
+  login = (token, userId, isAdmin, isVerified) => {
     this.setState({
       token: token,
       userId: userId,
@@ -72,7 +110,7 @@ class App extends Component {
   };
 
   /**
-   * Logout user and reset the state
+   * Logout user, reset the state and remove token from localStorage
    * 
    * @throws {Error} - if logout was not successful
    */
@@ -82,6 +120,7 @@ class App extends Component {
     }).catch(function (error) {
       throw new Error(error);
     });
+    localStorage.removeItem("token");
     this.setState({
       token: null,
       user: null,
@@ -134,7 +173,7 @@ class App extends Component {
                 {this.state.isMentor === null && <Redirect from="/auth" to="/" exact />}
                 <Route path="/auth" component={AuthPage} />
                 <Route path="/tasks" render={(props) => (
-                  <TasksPage key={this.state.userId} {...props} />)}
+                  <TasksPage {...props} />)}
                 />
                 {/* Restricted for not verified Mentors */}
                 {this.state.isMentor && !this.state.isVerified && !this.state.isAdmin && (
