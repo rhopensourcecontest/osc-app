@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
-import { TASKS } from '../../../constants/tasks';
 import AuthContext from '../../context/auth-context';
-import { fetchTasks } from '../../api-calls/Tasks';
+import { fetchTasks, fetchTask } from '../../api-calls/Tasks';
 import { fetchAuth } from '../../api-calls/Fetch';
-
+import { Taken, Free, InProgress, NotStarted, Done } from '../../Tags/Tags';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faLink, faFileAlt, faUserTie, faUser, faEdit, faTags
+} from "@fortawesome/free-solid-svg-icons";
 import './Task.css';
 
 /**
@@ -18,13 +21,22 @@ class TaskPage extends Component {
   }
 
   componentDidMount() {
-    // Prevent fetching if task is passed to props
-    const propState = this.props.location.state;
-    if (propState && propState.task) {
-      this.setState({ task: propState.task });
-    } else {
-      this.fetchTasks(TASKS.ALL);
-    }
+    // fetch Task with id from url
+    this.fetchTask(this.props.match.params.taskId);
+  }
+
+  /**
+   * Fetch single Task
+   */
+  fetchTask = (taskId) => {
+    fetchTask(taskId)
+      .then(resData => {
+        const task = resData.data.task;
+        this.setState({ task: task });
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
 
   /**
@@ -84,7 +96,7 @@ class TaskPage extends Component {
           alert("Task " + task.title + " was registered successfully.");
         }
         this.setState({ task: editedTask });
-        this.fetchTasks(TASKS.ALL);
+        this.fetchTask(editedTask._id);
       })
       .catch(err => {
         alert((wasRegistered ? "Unregistration" : "Registration") + " failed.");
@@ -109,37 +121,54 @@ class TaskPage extends Component {
           <div className="flex-center">
             <div className="task-box">
               <h2><b>{task.title}</b></h2>
-              <p><b>ID: </b>{task._id}</p>
-              <p><b>Details: <br /></b>{task.details}</p>
-              <p>
-                Link: <a href={task.link} target="_blank"
-                  rel="noopener noreferrer">{task.link}</a>
-              </p>
-              <p>Mentor: {task.creator.email}</p>
-              <p>
-                {task.registeredStudent
-                  ? "Registered student: " + task.registeredStudent.email
-                  : "Free"}
-              </p>
-              <p></p>
-            </div>
 
-            {/* Display Register button for authenticated Student on free Tasks 
+              <FontAwesomeIcon icon={faEdit} />Actions:<br />
+              {/* Display Register button for authenticated Student on free Tasks 
               only if he doesn't have any Task registered yet */}
-            {this.context.token && !this.context.isMentor && !task.registeredStudent &&
-              !this.context.user.registeredTask && (
-                <button className="btn" onClick={() => this.taskRegistrationHandler(false)}>
-                  Register
+              {this.context.token && !this.context.isMentor && !task.registeredStudent &&
+                (this.context.user && !this.context.user.registeredTask) && (
+                  <button className="btn" onClick={() => this.taskRegistrationHandler(false)}>
+                    Register
                 </button>
-              )}
+                )}
+              {/* Display Unregister button for authenticated students on their Tasks */}
+              {this.context.token && !this.context.isMentor && task.registeredStudent &&
+                this.context.userId === task.registeredStudent._id && (
+                  <button className="btn" onClick={() => this.taskRegistrationHandler(true)}>
+                    Unregister
+                </button>
+                )}
 
-            {/* Display Unregister button for authenticated students on their Tasks */}
-            {this.context.token && !this.context.isMentor && task.registeredStudent &&
-              this.context.userId === task.registeredStudent._id && (
-                <button className="btn" onClick={() => this.taskRegistrationHandler(true)}>
-                  Unregister
-                </button>
-              )}
+              <p><FontAwesomeIcon icon={faTags} />Tags:</p>
+              <div className="tags">
+                {task.registeredStudent ? <Taken /> : <Free />}
+                {!task.isSolved && (task.isBeingSolved ? <InProgress /> : <NotStarted />)}
+                {task.isSolved && <Done />}
+              </div>
+
+              <p>
+                <FontAwesomeIcon icon={faLink} />Link to open-source project:
+                <a href={task.link} target="_blank" rel="noopener noreferrer"> {task.link}</a>
+              </p>
+
+              <p>
+                <FontAwesomeIcon icon={faUserTie} />Mentor:&nbsp;
+                <a href={`mailto: ${task.creator.email}`}>{task.creator.email}</a>
+              </p>
+
+              <p><FontAwesomeIcon icon={faUser} />Registered student:&nbsp;
+              {task.registeredStudent
+                  ? (<a href={`mailto: ${task.registeredStudent.email}`}>
+                    {task.registeredStudent.email}
+                  </a>
+                  ) : ""}
+              </p>
+
+              <p>
+                <FontAwesomeIcon icon={faFileAlt} /><b>Description: <br /></b>
+                {task.details}
+              </p>
+            </div>
           </div>
         )}
       </React.Fragment>

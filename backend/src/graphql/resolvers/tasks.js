@@ -2,11 +2,25 @@ const Task = require('../../models/task');
 const Mentor = require('../../models/mentor');
 const Student = require('../../models/student');
 
-const { transformTask, mentor, student } = require('./merge');
+const { transformTask, mentor, student, singleTask } = require('./merge');
 const { sendEmail } = require('./emails');
 const { EMAILS } = require('../../constants/emails');
 
 module.exports = {
+  /**
+   * Get task with pre-loaded registeredStudent.
+   * 
+   * @param {string} args.taskId
+   * @throws {Error}
+   * @returns {Mentor}
+   */
+  task: async (args) => {
+    try {
+      return await singleTask(args.taskId);
+    } catch (err) {
+      throw err;
+    }
+  },
   /**
    * Returns all Tasks.
    * Tasks can be used in recursive calls.

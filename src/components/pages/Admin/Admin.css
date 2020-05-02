@@ -6,6 +6,10 @@
   width: 10rem;
 }
 
+.flex-col input {
+  cursor: pointer;
+}
+
 .header {
   padding-bottom: 0.5rem;
 }
