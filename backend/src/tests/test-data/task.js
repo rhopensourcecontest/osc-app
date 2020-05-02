@@ -8,7 +8,7 @@ const TASKS = [{
   details: 'AAA',
   link: null,
   isSolved: false,
-  isBeingSolved: false,
+  isBeingSolved: true,
   creator: mongoose.Types.ObjectId(),
   registeredStudent: null
 }, {
@@ -23,7 +23,7 @@ const TASKS = [{
   title: 'Task-3',
   details: 'CCC',
   link: null,
-  isSolved: false,
+  isSolved: true,
   isBeingSolved: false,
   creator: mongoose.Types.ObjectId(),
   registeredStudent: null

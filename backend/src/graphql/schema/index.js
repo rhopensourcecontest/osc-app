@@ -87,6 +87,9 @@ module.exports = buildSchema(`
     changeMentorRights(
       mentorId: ID!, isVerified: Boolean!, isAdmin: Boolean!
     ): Mentor!
+    editTaskProgress(
+      taskId: ID!, isSolved: Boolean!, isBeingSolved: Boolean!
+    ): Task!
   }
 
   schema {

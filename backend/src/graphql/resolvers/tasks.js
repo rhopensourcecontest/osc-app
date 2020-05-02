@@ -243,7 +243,9 @@ module.exports = {
           ` doesn't have registered Student ${args.studentId}`);
       }
       await resultStudent.updateOne({ registeredTask: null });
-      await resultTask.updateOne({ registeredStudent: null });
+      await resultTask.updateOne({
+        registeredStudent: null, isSolved: false, isBeingSolved: false
+      });
 
       const creator = await Mentor.findById(resultTask.creator);
 
@@ -325,5 +327,41 @@ module.exports = {
     } catch (err) {
       throw err;
     }
+  },
+  /**
+   * Edit isSolved and isBeingSolved values of Task
+   * 
+   * @param {string} args.taskId
+   * @param {bool} args.isSolved
+   * @param {bool} args.isBeingSolved
+   * @throws {Error}
+   * 1. For unauthenticated users
+   * 2. For Students attempting to edit Task that they are not registered to
+   */
+  editTaskProgress: async (args, req) => {
+    if (!req.isAuth) {
+      throw new Error('Unauthenticated!');
+    }
+    if (req.isMentor) {
+      throw new Error('Only for Students.');
+    }
+
+    const student = await Student.findById(req.userId);
+    if (!student.registeredTask ||
+      student.registeredTask.toString() !== args.taskId.toString()) {
+      throw new Error('You are not registered to this Task!');
+    }
+
+    const resultTask = await Task.findById(args.taskId);
+    await resultTask.updateOne(
+      { isSolved: args.isSolved, isBeingSolved: args.isBeingSolved }
+    );
+
+    return {
+      ...resultTask._doc,
+      creator: mentor.bind(this, resultTask._doc.creator),
+      isSolved: args.isSolved,
+      isBeingSolved: args.isBeingSolved
+    };
   }
 };
