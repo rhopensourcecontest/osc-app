@@ -29,6 +29,7 @@ class TasksPage extends Component {
   constructor(props) {
     super(props);
     this.titleRef = React.createRef();
+    this.linkRef = React.createRef();
     this.detailsRef = React.createRef();
   }
 
@@ -56,16 +57,24 @@ class TasksPage extends Component {
   modalConfirmHandler = () => {
     this.setState({ creating: false });
     const title = this.titleRef.current.value;
+    const link = this.linkRef.current.value;
     const details = this.detailsRef.current.value.split(/\r?\n/).join("\\n");
 
     if (title.trim().length === 0 || details.trim().length === 0) {
       return;
     }
 
+    if (link.trim().length === 0) {
+      alert("You have to provide link to project!");
+      return;
+    }
+
     const requestBody = {
       query: `
         mutation {
-          createTask(taskInput: {title: "${title}", details: "${details}"}) {
+          createTask(taskInput: {
+            title: "${title}", details: "${details}", link: "${link}"
+          }) {
             _id
             title
             details
@@ -256,7 +265,11 @@ class TasksPage extends Component {
                 <input type="text" id="title" ref={this.titleRef}></input>
               </div>
               <div className="form-control">
-                <label htmlFor="details">Details</label>
+                <label htmlFor="link">Link to open-source project</label>
+                <input type="text" id="link" ref={this.linkRef}></input>
+              </div>
+              <div className="form-control">
+                <label htmlFor="details">Description</label>
                 <textarea id="details" rows="10" ref={this.detailsRef}></textarea>
               </div>
             </form>
@@ -284,7 +297,7 @@ class TasksPage extends Component {
             <p>
               {this.state.selectedTask.registeredStudent
                 ? "Registered student: " + this.state.selectedTask.registeredStudent.email
-                : "Free"}
+                : ""}
             </p>
             <p></p>
           </Modal>

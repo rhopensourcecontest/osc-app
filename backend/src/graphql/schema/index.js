@@ -15,6 +15,7 @@ module.exports = buildSchema(`
   input TaskInput {
     title: String!
     details: String!
+    link: String!
   }
 
   type Student {

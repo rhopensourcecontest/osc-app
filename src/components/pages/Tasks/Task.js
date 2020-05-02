@@ -240,10 +240,8 @@ class TaskPage extends Component {
                 ) : ""}
             </p>
 
-            <p>
-              <FontAwesomeIcon icon={faFileAlt} /><b>Description: <br /></b>
-              {task.details}
-            </p>
+            <p><FontAwesomeIcon icon={faFileAlt} />Description:</p>
+            <p>{task.details}</p>
           </div>
         </div>
       )

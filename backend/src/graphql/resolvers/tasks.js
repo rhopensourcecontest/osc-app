@@ -78,6 +78,7 @@ module.exports = {
    *
    * @param {string} args.taskInput.title
    * @param {string} args.taskInput.details
+   * @param {string} args.taskInput.link
    * @param {Object} req
    * @throws {Error} 
    * 1. If user is not authenticated
@@ -98,7 +99,7 @@ module.exports = {
     const task = new Task({
       title: args.taskInput.title,
       details: args.taskInput.details,
-      link: null,
+      link: args.taskInput.link,
       isSolved: false,
       isBeingSolved: false,
       creator: req.userId,

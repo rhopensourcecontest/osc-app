@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const TASKS = [{
   title: 'Task-1',
   details: 'AAA',
-  link: null,
+  link: 'https://www.github.com',
   isSolved: false,
   isBeingSolved: true,
   creator: mongoose.Types.ObjectId(),
@@ -22,7 +22,7 @@ const TASKS = [{
 }, {
   title: 'Task-3',
   details: 'CCC',
-  link: null,
+  link: 'htpps://www.test.com',
   isSolved: true,
   isBeingSolved: false,
   creator: mongoose.Types.ObjectId(),
@@ -34,8 +34,9 @@ const TASKS = [{
  */
 const NEX_ARGS = {
   taskInput: {
-    title: "Difficult task",
-    details: "Create automated test to test suite."
+    title: 'Difficult task',
+    details: 'Create automated test to test suite.',
+    link: 'https://www.github.com'
   }
 };
 

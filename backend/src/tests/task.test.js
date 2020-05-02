@@ -232,7 +232,8 @@ describe('task', () => {
     expect(resultTask._id).toEqual(response._id);
     expect(resultTask.title).toBe(NEX_ARGS.taskInput.title);
     expect(resultTask.details).toBe(NEX_ARGS.taskInput.details);
-    expect(resultTask.link).toBeNull();
+    expect(resultTask.link).not.toBeNull();
+    expect(resultTask.link).toBe(NEX_ARGS.taskInput.link);
     expect(resultTask.isSolved).toBe(false);
     expect(resultTask.isBeingSolved).toBe(false);
     expect(resultTask.creator).not.toBeNull();
