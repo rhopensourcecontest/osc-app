@@ -24,11 +24,16 @@ class TaskControl extends Component {
     e.target.classList.add("active");
   }
 
+  /** Checks context whether the user has token, is Mentor and is verified */
+  isVerifiedMentor = () => {
+    return this.context.token && this.context.isMentor && this.context.isVerified;
+  }
+
   render() {
     const taskControl = (
       <div className="task-control flex-container">
         <div id="task-control-btns">
-          {this.context.token && this.context.isMentor && (
+          {this.isVerifiedMentor() && (
             <button className="btn active" onClick={(e) => {
               this.props.filterTasks(TASKS.MINE);
               this.handleActiveButtons(e);
@@ -37,7 +42,7 @@ class TaskControl extends Component {
             </button>
           )}
           <button
-            className={`${(this.context.token && this.context.isMentor) ? "btn" : "btn active"}`}
+            className={`${this.isVerifiedMentor() ? "btn" : "btn active"}`}
             onClick={(e) => {
               this.props.filterTasks(TASKS.ALL);
               this.handleActiveButtons(e);

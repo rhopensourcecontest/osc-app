@@ -7,7 +7,8 @@ import TaskList from './TaskList';
 import TaskControl from './TaskControl';
 import { TASKS } from '../../../constants/tasks';
 import Notification from '../../Notification/Notification';
-import { fetchAuth, fetchNoAuth } from '../../api-calls/Fetch';
+import { fetchAuth } from '../../api-calls/Fetch';
+import { fetchTasks } from '../../api-calls/Tasks';
 
 import './Tasks.css';
 
@@ -219,35 +220,14 @@ class TasksPage extends Component {
    * @param {string} queryName
    */
   fetchTasks = (queryName) => {
-    const requestBody = {
-      query: `
-        query {
-          ${queryName} {
-            _id
-            title
-            details
-            link
-            isSolved
-            isBeingSolved
-            registeredStudent{
-              _id
-              email
-            }
-            creator {
-              _id
-              email
-            }
-          }
-        }
-      `
-    };
-
-    fetchNoAuth(requestBody)
+    fetchTasks(queryName)
       .then(resData => {
         // get object with key queryName
         const tasks = resData.data[queryName];
         this.setState({ allTasks: tasks });
-        this.filterTasks(this.context.isMentor ? TASKS.MINE : TASKS.ALL);
+        this.filterTasks(
+          this.context.token && this.context.isMentor && this.context.isVerified
+            ? TASKS.MINE : TASKS.ALL);
       })
       .catch(err => {
         console.log(err);
@@ -257,7 +237,7 @@ class TasksPage extends Component {
   render() {
     return (
       <React.Fragment>
-        {(this.context.isMentor && !this.context.isVerified) && (
+        {this.context.token && this.context.isMentor && !this.context.isVerified && (
           <Notification msg="You are not verified yet." type="info" />
         )}
         <h1>The Tasks Page</h1>
