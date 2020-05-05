@@ -100,14 +100,20 @@ class TaskItem extends Component {
                 state: {
                   task: task
                 }
-              }}>
-                <h3>{task.title}</h3>
+              }}
+              >
+                {/* Display maximum of 40 chars of title */}
+                <h3>
+                  {task.title.length > 40
+                    ? (task.title.slice(0, 40) + "...")
+                    : task.title}
+                </h3>
               </NavLink>
-              {/* Show first line of details if it has multiple lines, 20 chars otherwise */}
-              {
-                task.details.indexOf('\n', 0) >= 0
-                  ? task.details.slice(0, task.details.indexOf('\n', 0))
-                  : task.details.slice(0, 20)
+              {/* Show only the first line of details if it has multiple lines, 
+                50 chars otherwise */}
+              {task.details.indexOf('\n', 0) <= 50
+                ? task.details.slice(0, task.details.indexOf('\n', 0))
+                : (task.details.slice(0, 50) + "...")
               }
             </div>
             <div className="">
@@ -115,16 +121,21 @@ class TaskItem extends Component {
                 {task.registeredStudent ? <Taken /> : <Free />}
               </div>
               <div>
-                {!task.isSolved && (task.isBeingSolved ? <InProgress /> : <NotStarted />)}
+                {!task.isSolved &&
+                  (task.isBeingSolved ? <InProgress /> : <NotStarted />)}
                 {task.isSolved && <Done />}
               </div>
             </div>
             <div className="button-col">
-              <button className="btn" onClick={this.props.onDetail.bind(this, task._id)}>
+              <button
+                className="btn"
+                onClick={this.props.onDetail.bind(this, task._id)}
+              >
                 Details
-            </button>
+              </button>
               {/* Display Delete button only to creator and admin */}
-              {((this.context.token && this.context.isMentor && this.context.userId === task.creator._id) ||
+              {((this.context.token && this.context.isMentor &&
+                this.context.userId === task.creator._id) ||
                 (this.context.token && this.context.isAdmin)) && (
                   <button className="btn" onClick={() => {
                     this.setState({ confirming: true });
