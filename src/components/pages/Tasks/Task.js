@@ -7,6 +7,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faLink, faFileAlt, faUserTie, faUser, faEdit, faTags
 } from "@fortawesome/free-solid-svg-icons";
+import Backdrop from '../../Backdrop/Backdrop';
+import Modal from '../../Modal/Modal';
 
 import './Task.css';
 
@@ -16,8 +18,16 @@ import './Task.css';
 class TaskPage extends Component {
   static contextType = AuthContext;
 
+  constructor(props) {
+    super(props);
+    this.titleRef = React.createRef();
+    this.linkRef = React.createRef();
+    this.detailsRef = React.createRef();
+  }
+
   state = {
     task: null,
+    editing: false,
     error: null
   }
 
@@ -139,6 +149,50 @@ class TaskPage extends Component {
       })
   }
 
+  /**
+   * Reset state of modal by changing state.editing to false 
+   */
+  modalCancelHandler = () => {
+    this.setState({ editing: false });
+  }
+
+  editTask = () => {
+    const title = this.titleRef.current.value;
+    const link = this.linkRef.current.value;
+    const details = this.detailsRef.current.value.split(/\r?\n/).join("\\n");
+
+    const requestBody = {
+      query: `mutation { 
+        updateTask( taskInput: {
+          _id: "${this.state.task._id}"
+          title: "${title}"
+          link: "${link}"
+          details: "${details}"
+        } ) { 
+          title 
+          details 
+          link 
+        }
+      }`
+    };
+    const token = this.context.token;
+
+    fetchAuth(token, requestBody)
+      .then(resData => {
+        const result = resData.data.updateTask;
+        const resultTask = {
+          ...this.state.task,
+          title: result.title,
+          link: result.link,
+          details: result.details
+        };
+        this.setState({ task: resultTask, editing: false });
+      })
+      .catch(err => {
+        console.log(err);
+      })
+  }
+
   /** Decide whether the User is a Student registered to displayed Task */
   isRegisteredToTask = () => {
     return this.context.token && !this.context.isMentor
@@ -159,91 +213,140 @@ class TaskPage extends Component {
 
     return (
       task && (
-        <div className="flex-center">
-          <div className="task-box">
-            <h2><b>{task.title}</b></h2>
+        <React.Fragment>
+          {this.state.editing && <Backdrop />}
+          {this.state.editing && (
+            <Modal
+              title="Edit Task"
+              canCancel
+              canConfirm
+              onCancel={() => this.modalCancelHandler()}
+              onConfirm={() => this.editTask()}
+            >
+              <form>
+                <div className="form-control">
+                  <label htmlFor="title">Title</label>
+                  <input
+                    type="text"
+                    id="title"
+                    ref={this.titleRef}
+                    defaultValue={task.title}
+                  />
+                </div>
+                <div className="form-control">
+                  <label htmlFor="link">Link to open-source project</label>
+                  <input
+                    type="text"
+                    id="link"
+                    ref={this.linkRef}
+                    defaultValue={task.link}
+                  />
+                </div>
+                <div className="form-control">
+                  <label htmlFor="details">Description</label>
+                  <textarea
+                    id="details"
+                    rows="10"
+                    ref={this.detailsRef}
+                    defaultValue={task.details}
+                  />
+                </div>
+              </form>
+            </Modal>
+          )}
+          <div className="flex-center">
+            <div className="task-box">
+              <h2><b>{task.title}</b></h2>
 
-            <FontAwesomeIcon icon={faEdit} />Actions:<br />
-            {/* Display Register button for authenticated Student on free Tasks 
-              only if he doesn't have any Task registered yet */}
-            {this.context.token && !this.context.isMentor && !task.registeredStudent &&
-              (this.context.user && !this.context.user.registeredTask) && (
-                <button
-                  className="btn"
-                  onClick={() => this.taskRegistrationHandler(false)}
-                >
-                  Register
+              <FontAwesomeIcon icon={faEdit} />Actions:<br />
+              {this.context.token && (this.context.isAdmin ||
+                this.context.userId === task.creator._id) && (
+                  <button
+                    className="btn"
+                    onClick={() => this.setState({ editing: true })}
+                  >
+                    Edit
                 </button>
-              )}
-            {/* Display Unregister button for authenticated students on their Tasks */}
-            {this.context.token && !this.context.isMentor && task.registeredStudent &&
-              this.context.userId === task.registeredStudent._id && (
+                )}
+              {/* Display Register button for authenticated Student on free Tasks 
+              only if he doesn't have any Task registered yet */}
+              {this.context.token && !this.context.isMentor && !task.registeredStudent &&
+                (this.context.user && !this.context.user.registeredTask) && (
+                  <button
+                    className="btn"
+                    onClick={() => this.taskRegistrationHandler(false)}
+                  >
+                    Register
+                </button>
+                )}
+              {this.isRegisteredToTask() && (
                 <button
                   className="btn"
                   onClick={() => this.taskRegistrationHandler(true)}
                 >
                   Unregister
-                </button>
+              </button>
               )}
-            {this.isRegisteredToTask() && task.isBeingSolved && (
-              <button
-                className="btn"
-                onClick={() => this.editTaskProgress(task._id, false, false)}
-              >Stop progress</button>
-            )}
-            {this.isRegisteredToTask() && !task.isSolved && !task.isBeingSolved && (
-              <button
-                className="btn"
-                onClick={() => this.editTaskProgress(task._id, true, false)}
-              >Start progress</button>
-            )}
-            {this.isRegisteredToTask() && task.isSolved && (
-              <button
-                className="btn"
-                onClick={() => this.editTaskProgress(task._id, false, false)}
-              >Reopen</button>
-            )}
-            {this.isRegisteredToTask() && !task.isSolved && (
-              <button
-                className="btn"
-                onClick={() => this.editTaskProgress(task._id, false, true)}
-              >Close</button>
-            )}
+              {this.isRegisteredToTask() && task.isBeingSolved && (
+                <button
+                  className="btn"
+                  onClick={() => this.editTaskProgress(task._id, false, false)}
+                >Stop progress</button>
+              )}
+              {this.isRegisteredToTask() && !task.isSolved && !task.isBeingSolved && (
+                <button
+                  className="btn"
+                  onClick={() => this.editTaskProgress(task._id, true, false)}
+                >Start progress</button>
+              )}
+              {this.isRegisteredToTask() && task.isSolved && (
+                <button
+                  className="btn"
+                  onClick={() => this.editTaskProgress(task._id, false, false)}
+                >Reopen</button>
+              )}
+              {this.isRegisteredToTask() && !task.isSolved && (
+                <button
+                  className="btn"
+                  onClick={() => this.editTaskProgress(task._id, false, true)}
+                >Close</button>
+              )}
 
-            <p><FontAwesomeIcon icon={faTags} />Tags:</p>
-            <div className="tags">
-              {task.registeredStudent ? <Taken /> : <Free />}
-              {!task.isSolved && (task.isBeingSolved ? <InProgress /> : <NotStarted />)}
-              {task.isSolved && <Done />}
-            </div>
+              <p><FontAwesomeIcon icon={faTags} />Tags:</p>
+              <div className="tags">
+                {task.registeredStudent ? <Taken /> : <Free />}
+                {!task.isSolved && (task.isBeingSolved ? <InProgress /> : <NotStarted />)}
+                {task.isSolved && <Done />}
+              </div>
 
-            <p>
-              <FontAwesomeIcon icon={faLink} />Link to open-source project:
+              <p>
+                <FontAwesomeIcon icon={faLink} />Link to open-source project:
               <a href={task.link} target="_blank" rel="noopener noreferrer">&nbsp;
                 {task.link}
-              </a>
-            </p>
-
-            <p>
-              <FontAwesomeIcon icon={faUserTie} />Mentor:&nbsp;
-              {task.creator && (
-                <a href={`mailto: ${task.creator.email}`}>{task.creator.email}</a>
-              )}
-            </p>
-
-            <p>
-              <FontAwesomeIcon icon={faUser} />Registered student:&nbsp;
-              {task.registeredStudent
-                ? (<a href={`mailto: ${task.registeredStudent.email}`}>
-                  {task.registeredStudent.email}
                 </a>
-                ) : ""}
-            </p>
+              </p>
 
-            <p><FontAwesomeIcon icon={faFileAlt} />Description:</p>
-            <p>{task.details}</p>
+              <p>
+                <FontAwesomeIcon icon={faUserTie} />Mentor:&nbsp;
+              {task.creator && (
+                  <a href={`mailto: ${task.creator.email}`}>{task.creator.email}</a>
+                )}
+              </p>
+
+              <p>
+                <FontAwesomeIcon icon={faUser} />Registered student:&nbsp;
+              {task.registeredStudent
+                  ? (<a href={`mailto: ${task.registeredStudent.email}`}>
+                    {task.registeredStudent.email}
+                  </a>
+                  ) : ""}
+              </p>
+
+              <p><FontAwesomeIcon icon={faFileAlt} />Description:</p>
+              <p>{task.details}</p>
+            </div>
           </div>
-        </div>
+        </React.Fragment>
       )
     );
   }

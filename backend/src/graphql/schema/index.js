@@ -12,6 +12,13 @@ module.exports = buildSchema(`
     registeredStudent: Student
   }
 
+  input UpdateInput {
+    _id: ID!
+    title: String!
+    details: String!
+    link: String!
+  }
+
   input TaskInput {
     title: String!
     details: String!
@@ -84,6 +91,7 @@ module.exports = buildSchema(`
     registerTask(studentId: ID!, taskId: ID!): Task!
     unregisterTask(studentId: ID!, taskId: ID!): Task!
     deleteTask(taskId: ID!): Task
+    updateTask(taskInput: UpdateInput!): Task!
     unregisterAllStudents: [UnregData]!
     changeMentorRights(
       mentorId: ID!, isVerified: Boolean!, isAdmin: Boolean!

@@ -129,6 +129,47 @@ module.exports = {
     }
   },
   /**
+   * Update all fields of the Task
+   * 
+   * @param {Object} args.taskInput
+   */
+  updateTask: async (args, req) => {
+    if (!req.isAuth) {
+      throw new Error('Unauthenticated!');
+    }
+
+    if (!req.isMentor) {
+      throw new Error('Only Mentors can update Tasks!');
+    }
+
+    try {
+      const taskInput = args.taskInput;
+      const resultTask = await Task.findById(taskInput._id);
+
+      if (!req.isAdmin &&
+        resultTask.creator.toString() !== req.userId.toString()) {
+        throw new Error(
+          `You aren't creator of this Task and don't have Admin rights.`
+        );
+      }
+
+      await resultTask.updateOne({
+        title: taskInput.title,
+        link: taskInput.link,
+        details: taskInput.details
+      });
+
+      return {
+        ...resultTask._doc,
+        title: taskInput.title,
+        link: taskInput.link,
+        details: taskInput.details
+      };
+    } catch (err) {
+      throw err;
+    }
+  },
+  /**
    * Register Task defined by taskId to Student defined by studentId.
    * Restricted to authenticated Students and Admins.
    * Student can register Task only for himself.
