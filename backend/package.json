@@ -15,7 +15,8 @@
     "react-scripts": "^3.4.1"
   },
   "scripts": {
-    "start": "nodemon app.js",
+    "start": "node src/index.js",
+    "startDev": "nodemon src/index.js",
     "build": "react-scripts build",
     "test": "jest --runInBand ./test",
     "eject": "react-scripts eject"

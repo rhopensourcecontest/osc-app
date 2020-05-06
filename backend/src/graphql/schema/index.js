@@ -12,9 +12,17 @@ module.exports = buildSchema(`
     registeredStudent: Student
   }
 
+  input UpdateInput {
+    _id: ID!
+    title: String!
+    details: String!
+    link: String!
+  }
+
   input TaskInput {
     title: String!
     details: String!
+    link: String!
   }
 
   type Student {
@@ -59,6 +67,7 @@ module.exports = buildSchema(`
 
   type RootQuery {
     mentor(mentorId: ID!): Mentor!
+    task(taskId: ID!): Task!
     student(studentId: ID!): Student!
     allTasks: [Task!]!
     freeTasks: [Task!]!
@@ -66,6 +75,7 @@ module.exports = buildSchema(`
     students: [Student!]!
     mentors: [Mentor!]!
     login(email: String!, uid: String!, isMentor: Boolean!): AuthData
+    verify: AuthData
     studentEmails(mentorId: ID!): [String]!
     allStudentEmails: [String]!
     allMentorEmails: [String]!
@@ -81,10 +91,14 @@ module.exports = buildSchema(`
     registerTask(studentId: ID!, taskId: ID!): Task!
     unregisterTask(studentId: ID!, taskId: ID!): Task!
     deleteTask(taskId: ID!): Task
+    updateTask(taskInput: UpdateInput!): Task!
     unregisterAllStudents: [UnregData]!
     changeMentorRights(
       mentorId: ID!, isVerified: Boolean!, isAdmin: Boolean!
     ): Mentor!
+    editTaskProgress(
+      taskId: ID!, isSolved: Boolean!, isBeingSolved: Boolean!
+    ): Task!
   }
 
   schema {

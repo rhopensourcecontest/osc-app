@@ -7,3 +7,20 @@
   display: flex;
   align-items: center;
 }
+
+.task-box p a {
+  text-decoration: none;
+}
+
+.task-box p a:hover {
+  text-decoration: underline;
+}
+
+svg {
+  margin-right: 5px;
+}
+
+.tags {
+  display: flex;
+  flex-direction: row;
+}

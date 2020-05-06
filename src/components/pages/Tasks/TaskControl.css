@@ -2,5 +2,6 @@
   text-align: center;
   margin: -1rem auto;
   width: 90%;
+  max-width: 1000px;
   min-width: min-content;
 }

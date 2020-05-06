@@ -8,8 +8,10 @@ const graphQlResolvers = require('./graphql/resolvers/index');
 const isAuth = require('./middleware/is-auth');
 
 const app = express();
+const PORT = process.env.PORT || 5000;
 
 app.use(bodyParser.json());
+app.use(express.static('public'));
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -47,7 +49,7 @@ mongoose
     }@cluster0-wzo9i.mongodb.net/${process.env.MONGO_DB}?retryWrites=true&w=majority`
   )
   .then(() => {
-    app.listen(5000);
+    app.listen(PORT, console.log(`Server starting at ${PORT}`));
   })
   .catch(err => {
     console.log(err);

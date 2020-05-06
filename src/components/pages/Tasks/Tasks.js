@@ -7,7 +7,8 @@ import TaskList from './TaskList';
 import TaskControl from './TaskControl';
 import { TASKS } from '../../../constants/tasks';
 import Notification from '../../Notification/Notification';
-import { fetchAuth, fetchNoAuth } from '../../api-calls/Fetch';
+import { fetchAuth } from '../../api-calls/Fetch';
+import { fetchTasks } from '../../api-calls/Tasks';
 
 import './Tasks.css';
 
@@ -28,6 +29,7 @@ class TasksPage extends Component {
   constructor(props) {
     super(props);
     this.titleRef = React.createRef();
+    this.linkRef = React.createRef();
     this.detailsRef = React.createRef();
   }
 
@@ -55,16 +57,24 @@ class TasksPage extends Component {
   modalConfirmHandler = () => {
     this.setState({ creating: false });
     const title = this.titleRef.current.value;
+    const link = this.linkRef.current.value;
     const details = this.detailsRef.current.value.split(/\r?\n/).join("\\n");
 
     if (title.trim().length === 0 || details.trim().length === 0) {
       return;
     }
 
+    if (link.trim().length === 0) {
+      alert("You have to provide link to project!");
+      return;
+    }
+
     const requestBody = {
       query: `
         mutation {
-          createTask(taskInput: {title: "${title}", details: "${details}"}) {
+          createTask(taskInput: {
+            title: "${title}", details: "${details}", link: "${link}"
+          }) {
             _id
             title
             details
@@ -94,7 +104,8 @@ class TasksPage extends Component {
   };
 
   /**
-   * Reset flags that handle state of modals.
+   * Reset state of modals by changing state.creating to false 
+   * and state.selectedTask to null
    */
   modalCancelHandler = () => {
     this.setState({ creating: false, selectedTask: null });
@@ -218,35 +229,14 @@ class TasksPage extends Component {
    * @param {string} queryName
    */
   fetchTasks = (queryName) => {
-    const requestBody = {
-      query: `
-        query {
-          ${queryName} {
-            _id
-            title
-            details
-            link
-            isSolved
-            isBeingSolved
-            registeredStudent{
-              _id
-              email
-            }
-            creator {
-              _id
-              email
-            }
-          }
-        }
-      `
-    };
-
-    fetchNoAuth(requestBody)
+    fetchTasks(queryName)
       .then(resData => {
         // get object with key queryName
         const tasks = resData.data[queryName];
         this.setState({ allTasks: tasks });
-        this.filterTasks(this.context.isMentor ? TASKS.MINE : TASKS.ALL);
+        this.filterTasks(
+          this.context.token && this.context.isMentor && this.context.isVerified
+            ? TASKS.MINE : TASKS.ALL);
       })
       .catch(err => {
         console.log(err);
@@ -256,7 +246,7 @@ class TasksPage extends Component {
   render() {
     return (
       <React.Fragment>
-        {(this.context.isMentor && !this.context.isVerified) && (
+        {this.context.token && this.context.isMentor && !this.context.isVerified && (
           <Notification msg="You are not verified yet." type="info" />
         )}
         <h1>The Tasks Page</h1>
@@ -275,7 +265,11 @@ class TasksPage extends Component {
                 <input type="text" id="title" ref={this.titleRef}></input>
               </div>
               <div className="form-control">
-                <label htmlFor="details">Details</label>
+                <label htmlFor="link">Link to open-source project</label>
+                <input type="text" id="link" ref={this.linkRef}></input>
+              </div>
+              <div className="form-control">
+                <label htmlFor="details">Description</label>
                 <textarea id="details" rows="10" ref={this.detailsRef}></textarea>
               </div>
             </form>
@@ -303,7 +297,7 @@ class TasksPage extends Component {
             <p>
               {this.state.selectedTask.registeredStudent
                 ? "Registered student: " + this.state.selectedTask.registeredStudent.email
-                : "Free"}
+                : ""}
             </p>
             <p></p>
           </Modal>

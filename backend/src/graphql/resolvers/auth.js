@@ -1,8 +1,6 @@
-const Task = require('../../models/task');
 const Mentor = require('../../models/mentor');
 const Student = require('../../models/student');
 
-const { transformTask, singleTask, tasks, mentor, student } = require('./merge');
 const jwt = require('jsonwebtoken');
 
 module.exports = {
@@ -44,5 +42,27 @@ module.exports = {
       isAdmin: isMentor ? user.isAdmin : null,
       isVerified: isMentor ? user.isVerified : null
     };
+  },
+  /**
+   * Verify validity of the token
+   * @param {Object} args arguments
+   * @param {Object} req request
+   * @throws {Error}
+   * @returns {Object} auth data
+   */
+  verify: async (args, req) => {
+    if (!req.isAuth) {
+      throw new Error('Unauthenticated!');
+    } else {
+      const authHeader = req.get('Authorization');
+      const token = authHeader.split(' ')[1]; // Bearer vmdsawllnvslvsvonb
+      return {
+        userId: req.userId,
+        token: token,
+        isMentor: req.isMentor,
+        isAdmin: req.isAdmin,
+        isVerified: req.isVerified
+      };
+    }
   }
 };

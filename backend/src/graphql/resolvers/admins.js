@@ -2,7 +2,6 @@ const Task = require('../../models/task');
 const Mentor = require('../../models/mentor');
 const Student = require('../../models/student');
 
-const { transformTask, singleTask, tasks, mentor, student } = require('./merge');
 const { EMAILS } = require('../../constants/emails');
 const { sendVerificationEmail } = require('./emails');
 
@@ -13,7 +12,7 @@ module.exports = {
    *
    * @returns {{studentId: string, taskId: string}} unregData
    */
-  unregisterAllStudents: async (req) => {
+  unregisterAllStudents: async (args, req) => {
     if (!req.isAuth) {
       throw new Error('Unauthenticated!');
     }
@@ -24,11 +23,12 @@ module.exports = {
 
     try {
       const students = await Student.find();
-      unregData = [];
+      let unregData = [];
 
       for (const student of students) {
-        if (taskId = student.registeredTask) {
-          studentId = student._id;
+        const taskId = student.registeredTask;
+        if (taskId) {
+          const studentId = student._id;
           student.registeredTask = null;
           await Task.findByIdAndUpdate(
             taskId, { registeredStudent: null }

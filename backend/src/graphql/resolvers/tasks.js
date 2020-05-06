@@ -2,11 +2,25 @@ const Task = require('../../models/task');
 const Mentor = require('../../models/mentor');
 const Student = require('../../models/student');
 
-const { transformTask, singleTask, tasks, mentor, student } = require('./merge');
+const { transformTask, mentor, student, singleTask } = require('./merge');
 const { sendEmail } = require('./emails');
 const { EMAILS } = require('../../constants/emails');
 
 module.exports = {
+  /**
+   * Get task with pre-loaded registeredStudent.
+   * 
+   * @param {string} args.taskId
+   * @throws {Error}
+   * @returns {Mentor}
+   */
+  task: async (args) => {
+    try {
+      return await singleTask(args.taskId);
+    } catch (err) {
+      throw err;
+    }
+  },
   /**
    * Returns all Tasks.
    * Tasks can be used in recursive calls.
@@ -64,6 +78,7 @@ module.exports = {
    *
    * @param {string} args.taskInput.title
    * @param {string} args.taskInput.details
+   * @param {string} args.taskInput.link
    * @param {Object} req
    * @throws {Error} 
    * 1. If user is not authenticated
@@ -84,7 +99,7 @@ module.exports = {
     const task = new Task({
       title: args.taskInput.title,
       details: args.taskInput.details,
-      link: null,
+      link: args.taskInput.link,
       isSolved: false,
       isBeingSolved: false,
       creator: req.userId,
@@ -109,6 +124,47 @@ module.exports = {
       creator.createdTasks.push(task);
       await creator.save();
       return createdTask;
+    } catch (err) {
+      throw err;
+    }
+  },
+  /**
+   * Update all fields of the Task
+   * 
+   * @param {Object} args.taskInput
+   */
+  updateTask: async (args, req) => {
+    if (!req.isAuth) {
+      throw new Error('Unauthenticated!');
+    }
+
+    if (!req.isMentor) {
+      throw new Error('Only Mentors can update Tasks!');
+    }
+
+    try {
+      const taskInput = args.taskInput;
+      const resultTask = await Task.findById(taskInput._id);
+
+      if (!req.isAdmin &&
+        resultTask.creator.toString() !== req.userId.toString()) {
+        throw new Error(
+          `You aren't creator of this Task and don't have Admin rights.`
+        );
+      }
+
+      await resultTask.updateOne({
+        title: taskInput.title,
+        link: taskInput.link,
+        details: taskInput.details
+      });
+
+      return {
+        ...resultTask._doc,
+        title: taskInput.title,
+        link: taskInput.link,
+        details: taskInput.details
+      };
     } catch (err) {
       throw err;
     }
@@ -170,6 +226,13 @@ module.exports = {
         resultTask.title
       );
 
+      await sendEmail(
+        resultStudent.email,
+        EMAILS.STUDENT_REGISTRATION,
+        null,
+        resultTask.title
+      );
+
       return {
         ...resultTask._doc,
         creator: mentor.bind(this, resultTask._doc.creator),
@@ -222,7 +285,18 @@ module.exports = {
           ` doesn't have registered Student ${args.studentId}`);
       }
       await resultStudent.updateOne({ registeredTask: null });
-      await resultTask.updateOne({ registeredStudent: null });
+      await resultTask.updateOne({
+        registeredStudent: null, isSolved: false, isBeingSolved: false
+      });
+
+      const creator = await Mentor.findById(resultTask.creator);
+
+      await sendEmail(
+        creator.email,
+        EMAILS.STUDENT_UNREGISTRATION,
+        resultStudent.email,
+        resultTask.title
+      );
 
       return {
         ...resultTask._doc,
@@ -295,5 +369,41 @@ module.exports = {
     } catch (err) {
       throw err;
     }
+  },
+  /**
+   * Edit isSolved and isBeingSolved values of Task
+   * 
+   * @param {string} args.taskId
+   * @param {bool} args.isSolved
+   * @param {bool} args.isBeingSolved
+   * @throws {Error}
+   * 1. For unauthenticated users
+   * 2. For Students attempting to edit Task that they are not registered to
+   */
+  editTaskProgress: async (args, req) => {
+    if (!req.isAuth) {
+      throw new Error('Unauthenticated!');
+    }
+    if (req.isMentor) {
+      throw new Error('Only for Students.');
+    }
+
+    const student = await Student.findById(req.userId);
+    if (!student.registeredTask ||
+      student.registeredTask.toString() !== args.taskId.toString()) {
+      throw new Error('You are not registered to this Task!');
+    }
+
+    const resultTask = await Task.findById(args.taskId);
+    await resultTask.updateOne(
+      { isSolved: args.isSolved, isBeingSolved: args.isBeingSolved }
+    );
+
+    return {
+      ...resultTask._doc,
+      creator: mentor.bind(this, resultTask._doc.creator),
+      isSolved: args.isSolved,
+      isBeingSolved: args.isBeingSolved
+    };
   }
 };

@@ -56,7 +56,7 @@ describe('admin', () => {
    * Unauthenticated Admin
    */
   it('unregisterAllStudents() throws error', async () => {
-    await expect(adminService.unregisterAllStudents(NAUTH_REQ))
+    await expect(adminService.unregisterAllStudents({}, NAUTH_REQ))
       .rejects.toThrow('Unauthenticated!');
   });
 
@@ -64,7 +64,7 @@ describe('admin', () => {
    * Authenticated Mentor without Admin rights
    */
   it('unregisterAllStudents() throws error', async () => {
-    await expect(adminService.unregisterAllStudents(NADMIN_REQ))
+    await expect(adminService.unregisterAllStudents({}, NADMIN_REQ))
       .rejects.toThrow('You do not have admin rights!');
   });
 
@@ -72,7 +72,7 @@ describe('admin', () => {
    * Authenticated Admin
    */
   it('unregisterAllStudents() does not throw error', async () => {
-    await expect(adminService.unregisterAllStudents(ADMIN_REQ))
+    await expect(adminService.unregisterAllStudents({}, ADMIN_REQ))
       .resolves.not.toThrow();
   });
 
@@ -83,7 +83,7 @@ describe('admin', () => {
     let expected = [];
     const students = await Student.find();
     const tasks = await Task.find();
-    const actual = await adminService.unregisterAllStudents(ADMIN_REQ);
+    const actual = await adminService.unregisterAllStudents({}, ADMIN_REQ);
     const editedStudents = await Student.find();
     const editedTasks = await Task.find();
 

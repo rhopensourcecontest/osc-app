@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import AuthContext from '../../context/auth-context';
 import MentorItem from './MentorItem';
 import { fetchMentors } from '../../api-calls/Mentors';
+import { fetchNoAuth, fetchAuth } from '../../api-calls/Fetch';
+import Notification from '../../Notification/Notification';
+import Backdrop from '../../Backdrop/Backdrop';
+import Modal from '../../Modal/Modal';
 
 import './Admin.css';
 
@@ -12,7 +16,11 @@ class AdminPage extends Component {
   static contextType = AuthContext;
 
   state = {
-    mentors: []
+    mentors: [],
+    queryName: 'allMentorEmails',
+    confirming: false,
+    notify: null,
+    error: null
   };
 
   componentDidMount = () => {
@@ -27,13 +35,135 @@ class AdminPage extends Component {
       });
   }
 
+  /**
+   * Copies emails from query to clipboard
+   * 
+   * @param {string} queryName
+   */
+  copyEmails = (queryName) => {
+    const requestBody = { query: `query { ${queryName} }` };
+    this.setState({ notify: null, error: null });
+
+    fetchNoAuth(requestBody)
+      .then(resData => {
+        const emails = resData.data[queryName];
+        var temporaryElement = document.createElement('textarea');
+        document.body.appendChild(temporaryElement);
+        temporaryElement.value = emails;
+        temporaryElement.select();
+        document.execCommand('copy');
+        document.body.removeChild(temporaryElement);
+
+        let notification = { type: 'success', msg: 'Emails copied to clipboard.' };
+        this.setState({ notify: notification });
+      })
+      .catch(err => {
+        this.setState({ error: true });
+        console.log(err);
+      });
+  };
+
+  /**
+   * Unregisters all Students from all Tasks.
+   * Displays notification with count of cancelled registrations.
+   */
+  unregisterAllStudents = () => {
+    // clear object to be able to notify
+    this.setState({ notify: null });
+    const requestBody = {
+      query: `mutation { unregisterAllStudents { studentId taskId } }`
+    };
+
+    const token = this.context.token;
+
+    fetchAuth(token, requestBody)
+      .then(resData => {
+        const response = resData.data.unregisterAllStudents;
+        let notification = { type: 'success', msg: `Removed ${response.length} registrations.` };
+        this.setState({ confirming: false, notify: notification });
+      })
+      .catch(err => {
+        this.setState({ error: true });
+        console.log(err);
+      });
+  }
+
+  /**
+   * Change state.queryName to selected value after selected option changed
+   * 
+   * @param {Object} event
+   */
+  handleOptionChange = (event) => {
+    const val = event.target.value;
+    this.setState({ queryName: val });
+  }
+
+  /**
+   * Cancel modal by changing state.confirming to false
+   */
+  modalCancelHandler = () => {
+    this.setState({ confirming: false });
+  }
+
   render() {
     return (
       <React.Fragment>
+        {this.state.notify && (
+          <Notification msg={this.state.notify.msg} type={this.state.notify.type} />
+        )}
+        {this.state.error && (
+          <Notification msg="Something went wrong." type="error" />
+        )}
+        {this.state.confirming && (
+          <React.Fragment>
+            <Backdrop />
+            <Modal
+              title="Are you sure?"
+              canCancel
+              canConfirm
+              onCancel={this.modalCancelHandler}
+              onConfirm={this.unregisterAllStudents}
+            >
+              Do you really want to unregister all Students from all Tasks?
+            </Modal>
+          </React.Fragment>
+        )}
         <div className="">
           <h1>Administration Page</h1>
-          <p>Here you can add / remove Mentor rights.</p>
+          <div className="admin-box">
+            <div className="col left">
+              <label>Get emails: </label>
+              <select
+                defaultValue={this.state.queryName}
+                onChange={this.handleOptionChange.bind(this)}
+              >
+                <option value="allStudentEmails">All student emails</option>
+                <option value="allMentorEmails">All mentor emails</option>
+              </select>
+              <button
+                className="btn"
+                title="Copy to clipboard"
+                onClick={() => this.copyEmails(this.state.queryName)}
+              >
+                Copy
+              </button>
+            </div>
+
+            <div className="col">
+              <label style={{ color: "red", fontWeight: "bold" }}>
+                Unregister all Students from all Tasks
+              </label>
+              <button
+                className="btn"
+                onClick={() => this.setState({ confirming: true })}
+              >
+                Unregister
+              </button>
+            </div>
+          </div>
+
           <ul className="task__list">
+            <p>Here you can add / remove Mentor rights.</p>
             {this.state.mentors.map(mentor => {
               return (
                 <MentorItem

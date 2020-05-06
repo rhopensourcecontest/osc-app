@@ -232,7 +232,8 @@ describe('task', () => {
     expect(resultTask._id).toEqual(response._id);
     expect(resultTask.title).toBe(NEX_ARGS.taskInput.title);
     expect(resultTask.details).toBe(NEX_ARGS.taskInput.details);
-    expect(resultTask.link).toBeNull();
+    expect(resultTask.link).not.toBeNull();
+    expect(resultTask.link).toBe(NEX_ARGS.taskInput.link);
     expect(resultTask.isSolved).toBe(false);
     expect(resultTask.isBeingSolved).toBe(false);
     expect(resultTask.creator).not.toBeNull();
@@ -487,6 +488,33 @@ describe('task', () => {
     expect(resultTask.registeredStudent).toBeNull();
   });
 
+  /**
+   * Authenticated Admin.
+   */
+  it('unregisterTask() clears task progress', async () => {
+    const admin = await Mentor.findOne({ isAdmin: true });
+    const student = await Student.findOne({ registeredTask: { $ne: null } });
+    const task = await Task.findOne({
+      registeredStudent: { $ne: null }, isBeingSolved: true
+    });
+    const args = { studentId: student._id, taskId: task._id };
+    const req = { ...ADMIN_REQ, userId: admin._id };
+
+    expect(task.registeredStudent).not.toBeNull();
+    expect(student.registeredTask).toEqual(task._id);
+    expect(task.registeredStudent).toEqual(student._id);
+    await expect(taskService.unregisterTask(args, req)).resolves.not.toThrow();
+
+    const resultTask = await Task.findById(task._id);
+    const resultStudent = await Student.findById(student._id);
+
+    // task progress should reset
+    expect(resultTask.isSolved).toBe(false);
+    expect(resultTask.isBeingSolved).toBe(false);
+    expect(resultStudent.registeredTask).toBeNull();
+    expect(resultTask.registeredStudent).toBeNull();
+  });
+
   // ------------------------------------------------------------------------ \\
 
   /**
@@ -586,6 +614,173 @@ describe('task', () => {
       `You aren't creator of this Task and don't have Admin rights.`
     );
     expect((await Task.find()).length).toBe(TASKS.length);
+  });
+
+  // ------------------------------------------------------------------------ \\
+
+  /**
+   * Unauthenticated Mentor.
+   */
+  it('editTaskProgress() throws error', async () => {
+    await expect(taskService.editTaskProgress({}, NAUTH_REQ))
+      .rejects.toThrow('Unauthenticated!');
+  });
+
+  /**
+   * Unauthenticated Student.
+   */
+  it('editTaskProgress() throws error', async () => {
+    await expect(taskService.editTaskProgress({}, NAUTH_S_REQ))
+      .rejects.toThrow('Unauthenticated!');
+  });
+
+  /**
+   * Authenticated Student.
+   */
+  it('editTaskProgress() works correctly', async () => {
+    const student = await Student.findOne({ registeredTask: { $ne: null } });
+    const task = await Task.findOne({ registeredStudent: student });
+    const args = { taskId: task._id, isSolved: true, isBeingSolved: false };
+    await expect(taskService.editTaskProgress(
+      args, { ...AUTH_S_REQ, userId: student._id }))
+      .resolves.not.toThrow();
+    const resultTask = await Task.findById(task._id);
+
+    const expectedTask = {
+      ...task._doc, isSolved: args.isSolved, isBeingSolved: args.isBeingSolved
+    };
+    // other fields did not change
+    expect(resultTask._doc).toEqual(expectedTask);
+  });
+
+  /**
+   * Authenticated Student.
+   */
+  it('editTaskProgress() returns correct data', async () => {
+    const student = await Student.findOne({ registeredTask: { $ne: null } });
+    const task = await Task.findOne({ registeredStudent: student });
+    const args = { taskId: task._id, isSolved: false, isBeingSolved: true };
+    const response = await taskService.editTaskProgress(
+      args, { ...AUTH_S_REQ, userId: student._id }
+    );
+
+    expect(response.isSolved).toBe(args.isSolved);
+    expect(response.isBeingSolved).toBe(args.isBeingSolved);
+  });
+
+  /**
+   * Authenticated Student not registered to Task
+   */
+  it('editTaskProgress() throws error', async () => {
+    const student = await Student.findOne({ registeredTask: null });
+    const task = await Task.findOne({ registeredStudent: { $ne: null } });
+    const args = { taskId: task._id, isSolved: false, isBeingSolved: true };
+    await expect(taskService.editTaskProgress(args, { ...AUTH_S_REQ, userId: student._id }))
+      .rejects.toThrow('You are not registered to this Task!');
+    const resultTask = await Task.findById(task._id);
+    expect(resultTask.isSolved).toBe(task.isSolved);
+    expect(resultTask.isBeingSolved).toBe(task.isBeingSolved);
+  });
+
+  // ------------------------------------------------------------------------ \\
+
+  /**
+   * Unauthenticated Mentor.
+   */
+  it('updateTask() throws error', async () => {
+    await expect(taskService.updateTask({}, NAUTH_REQ))
+      .rejects.toThrow('Unauthenticated!');
+  });
+
+  /**
+   * Authenticated Student.
+   */
+  it('updateTask() throws error', async () => {
+    const student = await Student.findOne();
+    const req = { ...AUTH_S_REQ, userId: student._id };
+    await expect(taskService.updateTask({}, req))
+      .rejects.toThrow('Only Mentors can update Tasks!');
+  });
+
+  /**
+   * Authenticated Mentor without Admin rights trying to update Task not 
+   * created by him.
+   */
+  it('updateTask() throws error', async () => {
+    const mentor = await Mentor.findOne({
+      isAdmin: false, createdTasks: { $ne: [] }
+    });
+    const task = await Task.findOne({ creator: { $ne: mentor } });
+    const args = {
+      taskInput: {
+        _id: task._id, title: 'Edited', details: 'Edited', link: task.link
+      }
+    };
+    await expect(taskService.updateTask(
+      args, { ...NADMIN_REQ, userId: mentor._id })).rejects.toThrow(
+        `You aren't creator of this Task and don't have Admin rights.`
+      );
+  });
+
+  /**
+   * Authenticated creator of the Task without Admin rights.
+   */
+  it('updateTask() works correctly', async () => {
+    const mentor = await Mentor.findOne({
+      isAdmin: false, createdTasks: { $ne: [] }
+    });
+    const task = await Task.findOne({ creator: mentor });
+    const args = {
+      taskInput: {
+        _id: task._id, title: 'Edited', details: 'Edited', link: task.link
+      }
+    };
+    const response = await taskService.updateTask(
+      args, { ...NADMIN_REQ, userId: mentor._id }
+    );
+
+    // correct response
+    expect(response.title).toBe(args.taskInput.title);
+    expect(response.details).toBe(args.taskInput.details);
+    expect(response.link).toBe(task.link);
+
+    // correct data in the db
+    const resultTask = await Task.findById(task._id);
+    expect(resultTask.title).toBe(args.taskInput.title);
+    expect(resultTask.details).toBe(args.taskInput.details);
+    expect(resultTask.link).toBe(task.link);
+  });
+
+  /**
+   * Authenticated Admin who did not create the Task
+   */
+  it('updateTask() works correctly', async () => {
+    const admin = await Mentor.findOne({
+      isAdmin: true, createdTasks: { $ne: [] }
+    });
+    const task = await Task.findOne({ creator: admin });
+    const args = {
+      taskInput: {
+        _id: task._id,
+        title: 'Edited',
+        details: task.details,
+        link: 'www.edited.com'
+      }
+    };
+    const response = await taskService.updateTask(
+      args, { ...NADMIN_REQ, userId: admin._id }
+    );
+
+    // correct response
+    expect(response.title).toBe(args.taskInput.title);
+    expect(response.details).toBe(task.details);
+    expect(response.link).toBe(args.taskInput.link);
+
+    // correct data in the db
+    const resultTask = await Task.findById(task._id);
+    expect(resultTask.title).toBe(args.taskInput.title);
+    expect(resultTask.details).toBe(task.details);
+    expect(resultTask.link).toBe(args.taskInput.link);
   });
 
 });
