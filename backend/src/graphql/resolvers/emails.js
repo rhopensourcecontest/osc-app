@@ -1,6 +1,23 @@
 const nodemailer = require('nodemailer');
+const { google } = require('googleapis');
 const { EMAILS } = require('../../constants/emails');
 const Mentor = require('../../models/mentor');
+
+const OAuth2 = google.auth.OAuth2;
+
+const oauth2Client = new OAuth2(
+  process.env.GMAIL_CLIENT_ID,
+  process.env.GMAIL_CLIENT_SECRET,
+  process.env.GMAIL_REDIRECT_URL
+);
+
+oauth2Client.setCredentials({
+  refresh_token: process.env.GMAIL_REFRESH_TOKEN
+});
+
+const accessToken = oauth2Client
+  .getAccessToken()
+  .catch(err => console.log(err));
 
 /**
  * Email transporter object
@@ -10,8 +27,11 @@ const transporter = nodemailer.createTransport({
   secure: true, // 465
   auth: {
     type: 'OAuth2',
-    user: process.env.NODEMAILER_EMAIL_ADDRESS,
-    accessToken: process.env.NODEMAILER_ACCESS_TOKEN
+    user: process.env.GMAIL_ADDRESS,
+    clientId: process.env.GMAIL_CLIENT_ID,
+    clientSecret: process.env.GMAIL_CLIENT_SECRET,
+    refreshToken: process.env.GMAIL_REFRESH_TOKEN,
+    accessToken: accessToken
   }
 });
 
@@ -70,7 +90,7 @@ const getMailOptions = (recipient, emailType, email, taskTitle, text) => {
     default: break;
   }
   return {
-    from: '"Open Source Contest" <' + process.env.NODEMAILER_EMAIL_ADDRESS + '>',
+    from: '"Open Source Contest" <' + process.env.GMAIL_ADDRESS + '>',
     to: recipient,
     subject: subject,
     html: `
@@ -108,8 +128,7 @@ module.exports = {
       let info = await transporter.sendMail(mailOptions);
       console.log('Email sent: ' + info.response);
     } catch (err) {
-      console.log('Sending email failed. NODEMAILER_EMAIL_ADDRESS: '
-        + process.env.NODEMAILER_EMAIL_ADDRESS);
+      console.log(err);
     }
   },
   /**

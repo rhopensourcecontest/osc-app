@@ -3,8 +3,11 @@
     "MONGO_USER": "your-mongo-user",
     "MONGO_PASSWORD": "your-mongo-user-password",
     "MONGO_DB": "your-mongo-db",
-    "NODEMAILER_EMAIL_ADDRESS": "your-email-address",
-    "NODEMAILER_ACCESS_TOKEN": "your-email-access-token",
+    "GMAIL_ADDRESS": "your-gmail-address",
+    "GMAIL_CLIENT_ID": "your-gmail-client-id",
+    "GMAIL_CLIENT_SECRET": "your-gmail-client-secret",
+    "GMAIL_REDIRECT_URL": "your-redirect-url",
+    "GMAIL_REFRESH_TOKEN": "your-gmail-refresh-token",
     "JWT_SECRET_KEY": "somesupersecretkey"
   }
 }
