@@ -27,9 +27,8 @@ const mainNavigation = props => (
                   <NavLink to="/auth">Sign in</NavLink>
                 </li>
               )}
-              <li>
-                <NavLink to="/tasks">Tasks</NavLink>
-              </li>
+              <li><NavLink to="/tasks">Tasks</NavLink></li>
+              <li><NavLink to="/about">About</NavLink></li>
               {context.token && context.isMentor && !context.isVerified && (
                 <li><NavLink to="/verification">Verification</NavLink></li>
               )}

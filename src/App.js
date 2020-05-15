@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 
 import HomePage from './components/pages/Home';
 import AuthPage from './components/pages/Auth';
+import AboutPage from './components/pages/About';
 import TasksPage from './components/pages/Tasks/Tasks';
 import TaskPage from './components/pages/Tasks/Task';
 import VerificationPage from './components/pages/Verification';
@@ -175,6 +176,7 @@ class App extends Component {
                 <Route path="/tasks" render={(props) => (
                   <TasksPage {...props} />)}
                 />
+                <Route path="/about" component={AboutPage} />
                 {/* Restricted for not verified Mentors */}
                 {this.state.isMentor && !this.state.isVerified && !this.state.isAdmin && (
                   <Route exact path="/verification" component={VerificationPage} />

@@ -120,7 +120,7 @@ class HomePage extends Component {
             </p>
             <a
               className="home-link"
-              href="https://research.redhat.com/red-hat-open-source-contest/"
+              href="https://research.redhat.com/open-source-contest/"
               target="_blank"
               rel="noopener noreferrer"
             >
