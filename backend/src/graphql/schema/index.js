@@ -60,6 +60,17 @@ module.exports = buildSchema(`
     isVerified: Boolean
   }
 
+  type Run {
+    _id: ID!
+    title: String!
+    deadline: String!
+  }
+
+  input RunInput {
+    title: String!
+    deadline: String!
+  }
+
   type UnregData {
     studentId: ID!
     taskId: ID!
@@ -74,6 +85,7 @@ module.exports = buildSchema(`
     takenTasks: [Task!]!
     students: [Student!]!
     mentors: [Mentor!]!
+    run: Run
     login(email: String!, uid: String!, isMentor: Boolean!): AuthData
     verify: AuthData
     studentEmails(mentorId: ID!): [String]!
@@ -92,6 +104,7 @@ module.exports = buildSchema(`
     unregisterTask(studentId: ID!, taskId: ID!): Task!
     deleteTask(taskId: ID!): Task
     updateTask(taskInput: UpdateInput!): Task!
+    setRun(runInput: RunInput!): Run!
     unregisterAllStudents: [UnregData]!
     changeMentorRights(
       mentorId: ID!, isVerified: Boolean!, isAdmin: Boolean!

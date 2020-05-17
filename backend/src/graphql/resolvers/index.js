@@ -4,6 +4,7 @@ const mentorsResolver = require('./mentors');
 const studentsResolver = require('./students');
 const adminsResolver = require('./admins');
 const emailsResolver = require('./emails');
+const runsResolver = require('./runs');
 
 /**
  * Connects all graphql resolvers
@@ -14,7 +15,8 @@ const rootResolver = {
   ...mentorsResolver,
   ...studentsResolver,
   ...adminsResolver,
-  ...emailsResolver
+  ...emailsResolver,
+  ...runsResolver
 };
 
 module.exports = rootResolver;
