@@ -19,8 +19,14 @@ p {
   max-width: 100%;
 }
 
-.form-control label {
+.form-control label,
+.form-control input {
   margin-bottom: 0.5rem;
+}
+
+.form-control input {
+  font-size: inherit;
+  font-family: inherit;
 }
 
 .form-control {

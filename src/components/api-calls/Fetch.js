@@ -46,3 +46,21 @@ export const fetchAuth = (token, requestBody) => {
       return res.json();
     });
 };
+
+/**
+ * Fetch current run
+ * 
+ * @param { function(Object) : void } setRunState sets run object after fetch
+ * @returns {Promise}
+ */
+export const fetchRun = (setRunState) => {
+  const requestBody = { query: `query { run { title deadline } }` };
+  return fetchNoAuth(requestBody)
+    .then(resData => {
+      setRunState(resData.data.run);
+    })
+    .catch(err => {
+      alert(err);
+      console.log(err);
+    })
+};
