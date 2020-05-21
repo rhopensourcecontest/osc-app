@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import logo from '../../logo.svg';
 
 import AuthContext from '../context/auth-context';
+import { fetchRun } from '../api-calls/Fetch';
 import './About.css'
 
 const Intro = () => {
@@ -14,6 +15,7 @@ const Intro = () => {
   );
 };
 
+/** Element with information about the concept of OSC */
 const Process = () => {
   return (
     <div>
@@ -28,18 +30,19 @@ const Process = () => {
   );
 };
 
-const Dates = () => {
+/** Element with important dates */
+const Dates = (props) => {
   return (
     <div className="about-row">
-      <h3>IMPORTANT DATES</h3>
       <div className="about-text">
+        <h3>IMPORTANT DATES</h3>
         <ol>
-          <li>Project list available: February 17, 2020</li>
-          <li>Registration for students opens: February 23, 2020</li>
-          <li>Kick-off meeting: March 2, 2020</li>
-          <li>Finish projects: June 1, 2020</li>
-          <li>Presentation meeting: June 2020 (TBD)</li>
-          <li>Announcing the winner: June 2020 (TBD)</li>
+          <li>Finish projects: {
+            props.run && props.run.deadline
+              ? new Date(props.run.deadline).toDateString() : "TBD"
+          }</li>
+          <li>Presentation meeting: TBD</li>
+          <li>Announcing the winner: TBD</li>
         </ol>
       </div>
       <img src={logo} className="home-logo" alt="logo" />
@@ -47,6 +50,7 @@ const Dates = () => {
   );
 };
 
+/** Element with information about rewards */
 const Rewards = () => {
   return (
     <div>
@@ -69,9 +73,16 @@ const Rewards = () => {
  * Page with info about the contest
  */
 class AboutPage extends Component {
-  state = {};
+  state = {
+    run: null
+  };
 
   static contextType = AuthContext;
+
+  componentDidMount() { fetchRun(this.setRunState); }
+
+  /** Set state.run */
+  setRunState = (run) => { this.setState({ run }); }
 
   render() {
     return (
@@ -81,7 +92,7 @@ class AboutPage extends Component {
             <h1>Red Hat Open Source Contest</h1>
             <Intro />
             <Process />
-            <Dates />
+            <Dates run={this.state.run} />
             <Rewards />
           </div>
         </div>
