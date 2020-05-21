@@ -302,19 +302,15 @@ class TasksPage extends Component {
             <p></p>
           </Modal>
         )}
-        {/* TODO */}
         {this.context.token && this.context.isAdmin && (
           <p>Admin content</p>
         )}
-        {/* TODO */}
         {this.context.token && this.context.isMentor && !this.context.isAdmin && (
           <p>Mentor content</p>
         )}
-        {/* TODO */}
         {this.context.token && !this.context.isMentor && (
           <p>Student content</p>
         )}
-        {/* TODO */}
         {!this.context.token && (
           <p>Public content</p>
         )}
