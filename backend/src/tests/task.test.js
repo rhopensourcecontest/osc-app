@@ -98,6 +98,27 @@ describe('task', () => {
     }
   });
 
+  it('task() does not throw error for invalid ID', async () => {
+    await expect(taskService.task({ taskId: "5" })).resolves.not.toThrow();
+  });
+
+  it('task() returns null for invalid ID', async () => {
+    await expect(taskService.task({ taskId: "acb" })).resolves.toBeNull();
+  });
+
+  it('task() works correctly with valid ID', async () => {
+    const task = await Task.findOne();
+    const response = await taskService.task({ taskId: task._id });
+    expect(response).not.toBeNull();
+    expect(response._id).toEqual(task._id);
+    expect(response.title).toEqual(task.title);
+    expect(response.details).toEqual(task.details);
+
+    // non-existing Task with correct ID
+    await expect(taskService.task({ taskId: mongoose.Types.ObjectId() }))
+      .resolves.toBeNull();
+  });
+
   it('allTasks() returns correct data', async () => {
     const actual = await taskService.allTasks();
     const tasks = await Task.find();

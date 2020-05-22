@@ -249,7 +249,7 @@ class TasksPage extends Component {
         {this.context.token && this.context.isMentor && !this.context.isVerified && (
           <Notification msg="You are not verified yet." type="info" />
         )}
-        <h1>The Tasks Page</h1>
+        <h1>Tasks Page</h1>
         {(this.state.creating || this.state.selectedTask) && <Backdrop />}
         {this.state.creating && (
           <Modal

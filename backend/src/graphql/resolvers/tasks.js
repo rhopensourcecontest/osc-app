@@ -14,9 +14,14 @@ module.exports = {
    * @throws {Error}
    * @returns {Mentor}
    */
-  task: async (args) => {
+  task: async ({ taskId }, req) => {
+    // validate ID
+    var ObjectId = require('mongoose').Types.ObjectId;
+    if (!ObjectId.isValid(taskId)) {
+      return null;
+    }
     try {
-      return await singleTask(args.taskId);
+      return await singleTask(taskId);
     } catch (err) {
       throw err;
     }

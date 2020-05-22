@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import AuthContext from '../../context/auth-context';
-import { fetchTasks, fetchTask } from '../../api-calls/Tasks';
+import { fetchTask } from '../../api-calls/Tasks';
 import { fetchAuth } from '../../api-calls/Fetch';
 import { Taken, Free, InProgress, NotStarted, Done } from '../../Tags/Tags';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -28,7 +28,7 @@ class TaskPage extends Component {
   state = {
     task: null,
     editing: false,
-    error: null
+    notFound: null
   }
 
   componentDidMount() {
@@ -43,25 +43,7 @@ class TaskPage extends Component {
     fetchTask(taskId)
       .then(resData => {
         const task = resData.data.task;
-        this.setState({ task: task });
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }
-
-  /**
-   * Fetch Tasks based on queryName
-   * 
-   * @param {string} queryName
-   */
-  fetchTasks = (queryName) => {
-    fetchTasks(queryName)
-      .then(resData => {
-        // get object with key queryName
-        const tasks = resData.data[queryName];
-        const task = tasks.find(e => e._id === this.props.match.params.taskId);
-        task ? this.setState({ task: task }) : this.setState({ error: true });
+        task ? this.setState({ task: task }) : this.setState({ notFound: true });
       })
       .catch(err => {
         console.log(err);
@@ -203,10 +185,10 @@ class TaskPage extends Component {
   render() {
     const task = this.state.task;
 
-    if (this.state.error) {
+    if (this.state.notFound) {
       return (
         <center>
-          <h1>Error #404: Page not found</h1>
+          <h1>Error #404: Task not found</h1>
         </center>
       );
     }
