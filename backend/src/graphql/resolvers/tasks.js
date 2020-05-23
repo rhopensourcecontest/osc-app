@@ -8,11 +8,11 @@ const { EMAILS } = require('../../constants/emails');
 
 module.exports = {
   /**
-   * Get task with pre-loaded registeredStudent.
+   * Returns Task with pre-loaded registeredStudent. Validates taskId.
    * 
    * @param {string} args.taskId
    * @throws {Error}
-   * @returns {Mentor}
+   * @returns {Task}
    */
   task: async ({ taskId }, req) => {
     // validate ID
@@ -224,14 +224,14 @@ module.exports = {
       await resultStudent.updateOne({ registeredTask: args.taskId });
       await resultTask.updateOne({ registeredStudent: args.studentId });
       const creator = await Mentor.findById({ _id: resultTask.creator });
-      await sendEmail(
+      sendEmail(
         creator.email,
         EMAILS.TASK_REGISTRATION,
         resultStudent.email,
         resultTask.title
       );
 
-      await sendEmail(
+      sendEmail(
         resultStudent.email,
         EMAILS.STUDENT_REGISTRATION,
         null,
@@ -296,7 +296,7 @@ module.exports = {
 
       const creator = await Mentor.findById(resultTask.creator);
 
-      await sendEmail(
+      sendEmail(
         creator.email,
         EMAILS.STUDENT_UNREGISTRATION,
         resultStudent.email,
@@ -311,6 +311,69 @@ module.exports = {
     } catch (err) {
       throw err;
     }
+  },
+  /**
+   * Unregister Task defined by taskId from Student defined by 
+   * registeredStudentId and register it to another Student defined by 
+   * nonRegisteredStudentId. Restricted to authenticated Admins.
+   *
+   * @param {string} args.registeredStudentId
+   * @param {string} args.nonRegisteredStudentId
+   * @param {string} args.taskId
+   * @param {Object} req
+   * @throws {Error} if user doesn't have admin rights
+   * @returns {Task} Task with pre-loaded creator and registeredStudent
+   */
+  swapRegistration: async (args, req) => {
+    if (!req.isAuth) {
+      throw new Error("Unauthenticated!");
+    }
+    if (!req.isAdmin) {
+      throw new Error("Only admin can swap registration.");
+    }
+    try {
+      await module.exports.unregisterTask({
+        studentId: args.registeredStudentId,
+        taskId: args.taskId
+      }, req);
+      const response = await module.exports.registerTask({
+        studentId: args.nonRegisteredStudentId,
+        taskId: args.taskId
+      }, req);
+      return response;
+    } catch (err) {
+      throw err;
+    }
+  },
+  /**
+   * Changes creator of the task. Removes taskId from createdTasks of oldMentor
+   * and adds taskId to createdTasks of newMentor
+   * 
+   * @param {string} args.taskId
+   * @param {string} args.oldMentorId
+   * @param {string} args.newMentorId
+   * @throws {Error} if user doesn't have admin rights
+   * @param {Task} Task with pre-loaded creator and registeredStudent
+   */
+  changeCreator: async (args, req) => {
+    if (!req.isAuth) {
+      throw new Error("Unauthenticated!");
+    }
+    if (!req.isAdmin) {
+      throw new Error("Only admin can change creator.");
+    }
+    // remove Task from createdTasks of creator
+    await Mentor.updateOne(
+      { _id: args.oldMentorId },
+      { $pullAll: { createdTasks: [args.taskId] } }
+    );
+    await Mentor.updateOne(
+      { _id: args.newMentorId }, { $push: { createdTasks: args.taskId } }
+    );
+    const task = await Task.findByIdAndUpdate(
+      args.taskId, { creator: args.newMentorId }, { new: true }
+    );
+    return transformTask(task);
   },
   /**
    * Deletes Task defined by taskId.

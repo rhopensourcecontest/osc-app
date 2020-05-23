@@ -102,6 +102,10 @@ module.exports = buildSchema(`
     createMentor(mentorInput: MentorInput): Mentor
     registerTask(studentId: ID!, taskId: ID!): Task!
     unregisterTask(studentId: ID!, taskId: ID!): Task!
+    swapRegistration(
+      registeredStudentId: ID!, nonRegisteredStudentId: ID!, taskId: ID!
+    ): Task!
+    changeCreator(taskId: ID!, oldMentorId: ID!, newMentorId: ID!): Task!
     deleteTask(taskId: ID!): Task
     updateTask(taskInput: UpdateInput!): Task!
     setRun(runInput: RunInput!): Run!
