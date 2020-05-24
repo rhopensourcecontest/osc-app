@@ -18,7 +18,7 @@
   "scripts": {
     "start": "node src/index.js",
     "startDev": "nodemon src/index.js",
-    "build": "react-scripts build",
+    "build": "webpack",
     "test": "jest --runInBand ./test",
     "eject": "react-scripts eject"
   },
@@ -39,7 +39,9 @@
   },
   "devDependencies": {
     "mongodb-memory-server": "^6.5.2",
-    "nodemon": "^2.0.1"
+    "nodemon": "^2.0.1",
+    "webpack-cli": "^3.3.11",
+    "webpack-node-externals": "^1.7.2"
   },
   "jest": {
     "testEnvironment": "node"
