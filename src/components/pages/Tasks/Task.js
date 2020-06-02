@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import AuthContext from '../../context/auth-context';
-import { fetchTasks, fetchTask } from '../../api-calls/Tasks';
-import { fetchAuth } from '../../api-calls/Fetch';
+import { fetchTask } from '../../api-calls/Tasks';
+import { fetchMentors } from '../../api-calls/Mentors';
+import { fetchAuth, fetchNoAuth } from '../../api-calls/Fetch';
 import { Taken, Free, InProgress, NotStarted, Done } from '../../Tags/Tags';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -12,9 +13,7 @@ import Modal from '../../Modal/Modal';
 
 import './Task.css';
 
-/**
- * Task component with containg details
- */
+/** Task component with containg details */
 class TaskPage extends Component {
   static contextType = AuthContext;
 
@@ -28,61 +27,86 @@ class TaskPage extends Component {
   state = {
     task: null,
     editing: false,
-    error: null
+    notFound: false,
+    students: [],
+    mentors: [],
+    selectedStudent: null,
+    selectedMentor: null
   }
 
   componentDidMount() {
     // fetch Task with id from url
     this.fetchTask(this.props.match.params.taskId);
+    this.fetchStudents();
+    this.fetchMentors();
   }
 
-  /**
-   * Fetch single Task
+  /** 
+   * Fetch Task defined by taskId and set state.task. 
+   * Set state.notFound if the Task doesn't exist.
+   * 
+   * @param {string} taskId
    */
   fetchTask = (taskId) => {
     fetchTask(taskId)
       .then(resData => {
         const task = resData.data.task;
-        this.setState({ task: task });
+        task ? this.setState({ task: task }) : this.setState({ notFound: true });
       })
       .catch(err => {
         console.log(err);
       });
   }
 
-  /**
-   * Fetch Tasks based on queryName
-   * 
-   * @param {string} queryName
-   */
-  fetchTasks = (queryName) => {
-    fetchTasks(queryName)
+  /** Fetch all Students and set state.students */
+  fetchStudents = () => {
+    const requestBody = {
+      query: `
+          query{
+            students{
+              _id
+              email
+              registeredTask{ _id }
+            }
+          }
+        `
+    };
+    fetchNoAuth(requestBody)
       .then(resData => {
-        // get object with key queryName
-        const tasks = resData.data[queryName];
-        const task = tasks.find(e => e._id === this.props.match.params.taskId);
-        task ? this.setState({ task: task }) : this.setState({ error: true });
+        this.setState({ students: resData.data.students });
       })
       .catch(err => {
         console.log(err);
-      });
+      })
+  }
+
+  /** Fetch all Mentors and set state.mentors */
+  fetchMentors = () => {
+    fetchMentors()
+      .then(resData => {
+        this.setState({ mentors: resData.data.mentors });
+      })
+      .catch(err => {
+        console.log(err);
+      })
   }
 
   /**
-   * Register Student to selectedTask if wasRegistered === false.
-   * Unregister Student from selectedTask if wasRegistered === true.
+   * Register Student to state.task if wasRegistered === false.
+   * Unregister Student from state.task if wasRegistered === true.
    * 
    * @param {boolean} wasRegistered
+   * @param {string} studentId
    * - States whether the current user was registered before calling the function.
    */
-  taskRegistrationHandler = (wasRegistered) => {
+  taskRegistrationHandler = (wasRegistered, studentId) => {
     const task = this.state.task;
 
     const requestBody = {
       query: `
         mutation {
           ${wasRegistered ? `unregisterTask` : `registerTask`}
-            (taskId: "${task._id}", studentId: "${this.context.userId}") {
+            (taskId: "${task._id}", studentId: "${studentId}") {
               registeredStudent {
                 _id
                 email
@@ -99,21 +123,85 @@ class TaskPage extends Component {
         var editedTask = task;
         if (wasRegistered) {
           editedTask.registeredStudent = null;
-          this.context.setRegisteredTask(null);
+          if (!this.context.isMentor) this.context.setRegisteredTask(null);
           alert("Task " + task.title + " was unregistered successfully.");
         } else {
           editedTask.registeredStudent = resData.data.registerTask.registeredStudent;
-          this.context.setRegisteredTask(editedTask);
+          if (!this.context.isMentor) this.context.setRegisteredTask(editedTask);
           alert("Task " + task.title + " was registered successfully.");
         }
         this.setState({ task: editedTask });
         this.fetchTask(editedTask._id);
+        this.fetchStudents();
       })
       .catch(err => {
         alert((wasRegistered ? "Unregistration" : "Registration") + " failed.");
         console.log(err);
       });
   };
+
+  /**
+   * Unregisters registeredStudent and registers nonRegisteredStudent to this Task
+   * @param {string} registeredStudentId
+   * @param {string} nonRegisteredStudentId
+   */
+  swapRegistrationHandler = (registeredStudentId, nonRegisteredStudentId) => {
+    const token = this.context.token;
+    const requestBody = {
+      query: `
+        mutation {
+          swapRegistration (
+            registeredStudentId: "${registeredStudentId}", 
+            nonRegisteredStudentId: "${nonRegisteredStudentId}"
+            taskId: "${this.state.task._id}"
+          ) { registeredStudent { _id email } }
+        }
+      `
+    };
+    fetchAuth(token, requestBody)
+      .then(resData => {
+        let editedTask = this.state.task;
+        editedTask.registeredStudent = resData.data.swapRegistration.registeredStudent;
+        this.setState({ task: editedTask });
+        this.fetchTask(editedTask._id);
+        this.fetchStudents();
+      })
+      .catch(err => {
+        alert("Changing the registered Student failed.");
+        console.log(err);
+      })
+  }
+
+  /**
+   * Chamges creator (mentor) of the Task in state.task
+   * @param {string} newMentorId
+   */
+  changeCreatorHandler = (newMentorId) => {
+    const token = this.context.token;
+    const requestBody = {
+      query: `
+        mutation {
+          changeCreator (
+            taskId: "${this.state.task._id}"
+            oldMentorId: "${this.state.task.creator._id}"
+            newMentorId: "${newMentorId}"
+          ) { creator { _id email } }
+        }
+      `
+    };
+    fetchAuth(token, requestBody)
+      .then(resData => {
+        let editedTask = this.state.task;
+        editedTask.creator = resData.data.changeCreator.creator;
+        this.setState({ task: editedTask });
+        this.fetchTask(editedTask._id);
+        this.fetchMentors();
+      })
+      .catch(err => {
+        alert("Changing the Mentors failed.");
+        console.log(err);
+      })
+  }
 
   /**
    * Edit task progress
@@ -149,17 +237,32 @@ class TaskPage extends Component {
       })
   }
 
-  /**
-   * Reset state of modal by changing state.editing to false 
-   */
+  /** Reset state of modal by changing state.editing to false  */
   modalCancelHandler = () => {
     this.setState({ editing: false });
   }
 
+  /** Edits Task fields with values from the form */
   editTask = () => {
     const title = this.titleRef.current.value;
     const link = this.linkRef.current.value;
     const details = this.detailsRef.current.value.split(/\r?\n/).join("\\n");
+
+    if (this.state.selectedStudent) {
+      if (this.state.selectedStudent === "none") {
+        this.taskRegistrationHandler(true, this.state.task.registeredStudent._id);
+      } else if (!this.state.task.registeredStudent) {
+        this.taskRegistrationHandler(false, this.state.selectedStudent);
+      } else {
+        this.swapRegistrationHandler(
+          this.state.task.registeredStudent._id, this.state.selectedStudent
+        );
+      }
+    }
+
+    if (this.state.selectedMentor) {
+      this.changeCreatorHandler(this.state.selectedMentor);
+    }
 
     const requestBody = {
       query: `mutation { 
@@ -187,13 +290,17 @@ class TaskPage extends Component {
           details: result.details
         };
         this.setState({ task: resultTask, editing: false });
+        alert("Task " + resultTask.title + " was successfully updated.");
       })
       .catch(err => {
         console.log(err);
       })
   }
 
-  /** Decide whether the User is a Student registered to displayed Task */
+  /** 
+   * Decide whether the current User is a Student registered to displayed Task
+   * @returns {boolean}
+   */
   isRegisteredToTask = () => {
     return this.context.token && !this.context.isMentor
       && this.state.task.registeredStudent
@@ -203,10 +310,10 @@ class TaskPage extends Component {
   render() {
     const task = this.state.task;
 
-    if (this.state.error) {
+    if (this.state.notFound) {
       return (
         <center>
-          <h1>Error #404: Page not found</h1>
+          <h1>Error #404: Task not found</h1>
         </center>
       );
     }
@@ -228,7 +335,7 @@ class TaskPage extends Component {
                   <label htmlFor="title">Title</label>
                   <input
                     type="text"
-                    id="title"
+                    id="edit-title"
                     ref={this.titleRef}
                     defaultValue={task.title}
                   />
@@ -237,15 +344,53 @@ class TaskPage extends Component {
                   <label htmlFor="link">Link to open-source project</label>
                   <input
                     type="text"
-                    id="link"
+                    id="edit-link"
                     ref={this.linkRef}
                     defaultValue={task.link}
                   />
                 </div>
+                {this.context.isAdmin && (
+                  <div className="form-control inline">
+                    <div>
+                      <label>Mentor</label>
+                      <select
+                        defaultValue={task.creator ? task.creator._id : "none"}
+                        onChange={(e) => {
+                          this.setState({ selectedMentor: e.target.value });
+                        }}
+                      >
+                        {this.state.mentors.map(mentor => {
+                          return <option value={mentor._id} key={mentor._id}>{mentor.email}</option>
+                        })}
+                      </select>
+                    </div>
+                    <div>
+                      <label>Registered Student</label>
+                      <select
+                        defaultValue={task.registeredStudent ? task.registeredStudent._id : "none"}
+                        onChange={(e) => {
+                          this.setState({ selectedStudent: e.target.value });
+                        }}
+                      >
+                        {task.registeredStudent &&
+                          <option
+                            value={task.registeredStudent._id}
+                            key={task.registeredStudent._id}
+                          >{task.registeredStudent.email}</option>
+                        }
+                        {this.state.students.filter(student => !student.registeredTask)
+                          .map(student => {
+                            return <option value={student._id} key={student._id}>{student.email}</option>
+                          })}
+                        <option value="none" key="none">none</option>
+                      </select>
+                    </div>
+                  </div>
+                )}
                 <div className="form-control">
                   <label htmlFor="details">Description</label>
                   <textarea
-                    id="details"
+                    id="edit-details"
                     rows="10"
                     ref={this.detailsRef}
                     defaultValue={task.details}
@@ -274,7 +419,7 @@ class TaskPage extends Component {
                 (this.context.user && !this.context.user.registeredTask) && (
                   <button
                     className="btn"
-                    onClick={() => this.taskRegistrationHandler(false)}
+                    onClick={() => this.taskRegistrationHandler(false, this.context.userId)}
                   >
                     Register
                 </button>
@@ -282,7 +427,7 @@ class TaskPage extends Component {
               {this.isRegisteredToTask() && (
                 <button
                   className="btn"
-                  onClick={() => this.taskRegistrationHandler(true)}
+                  onClick={() => this.taskRegistrationHandler(true, this.context.userId)}
                 >
                   Unregister
               </button>

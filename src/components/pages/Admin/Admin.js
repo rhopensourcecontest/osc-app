@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import AuthContext from '../../context/auth-context';
 import MentorItem from './MentorItem';
 import { fetchMentors } from '../../api-calls/Mentors';
-import { fetchNoAuth, fetchAuth } from '../../api-calls/Fetch';
+import { fetchNoAuth, fetchAuth, fetchRun } from '../../api-calls/Fetch';
 import Notification from '../../Notification/Notification';
 import Backdrop from '../../Backdrop/Backdrop';
 import Modal from '../../Modal/Modal';
@@ -18,12 +18,28 @@ class AdminPage extends Component {
   state = {
     mentors: [],
     queryName: 'allMentorEmails',
+    run: null,
     confirming: false,
     notify: null,
     error: null
   };
 
+  constructor(props) {
+    super(props);
+    this.dateRef = React.createRef();
+    this.titleRef = React.createRef();
+  }
+
   componentDidMount = () => {
+    this.fetchMentors();
+    fetchRun(this.setRunState);
+  }
+
+  /** Set state.run */
+  setRunState = (run) => { this.setState({ run }); }
+
+  /** Fetch all mentors and save them to state.mentors */
+  fetchMentors = () => {
     fetchMentors()
       .then(resData => {
         const mentors = resData.data.mentors;
@@ -79,7 +95,9 @@ class AdminPage extends Component {
     fetchAuth(token, requestBody)
       .then(resData => {
         const response = resData.data.unregisterAllStudents;
-        let notification = { type: 'success', msg: `Removed ${response.length} registrations.` };
+        let notification = {
+          type: 'success', msg: `Removed ${response.length} registrations.`
+        };
         this.setState({ confirming: false, notify: notification });
       })
       .catch(err => {
@@ -93,7 +111,7 @@ class AdminPage extends Component {
    * 
    * @param {Object} event
    */
-  handleOptionChange = (event) => {
+  handleEmailChange = (event) => {
     const val = event.target.value;
     this.setState({ queryName: val });
   }
@@ -105,7 +123,51 @@ class AdminPage extends Component {
     this.setState({ confirming: false });
   }
 
+  /**
+   * Validates input data and sets the current run of the contest.
+   * Changes the current run if it exists already or creates a new one otherwise
+   * 
+   * @param {Object} event
+   */
+  setRun = (event) => {
+    event.preventDefault();
+    if (!this.titleRef.current.value) {
+      alert("Please, choose a title.");
+      return;
+    }
+    if (!this.dateRef.current.value) {
+      alert("Please, choose a deadline.");
+      return;
+    }
+    let runInput = {
+      title: this.titleRef.current.value,
+      deadline: new Date(this.dateRef.current.value)
+    };
+    const token = this.context.token;
+
+    const requestBody = {
+      query: `mutation {
+        setRun (
+          runInput: {
+            title: "${runInput.title}",
+            deadline: "${runInput.deadline}"
+          }
+        ) { title deadline }
+      }`
+    };
+
+    fetchAuth(token, requestBody)
+      .then(resData => {
+        alert(`Edited ${resData.data.setRun.title}`);
+      })
+      .catch(err => {
+        alert(err);
+        console.log(err);
+      })
+  }
+
   render() {
+    const run = this.state.run;
     return (
       <React.Fragment>
         {this.state.notify && (
@@ -131,11 +193,11 @@ class AdminPage extends Component {
         <div className="">
           <h1>Administration Page</h1>
           <div className="admin-box">
-            <div className="col left">
-              <label>Get emails: </label>
+            <div className="col left form-control">
+              <label>Get emails</label>
               <select
                 defaultValue={this.state.queryName}
-                onChange={this.handleOptionChange.bind(this)}
+                onChange={this.handleEmailChange.bind(this)}
               >
                 <option value="allStudentEmails">All student emails</option>
                 <option value="allMentorEmails">All mentor emails</option>
@@ -159,6 +221,37 @@ class AdminPage extends Component {
               >
                 Unregister
               </button>
+            </div>
+
+            <div className="col">
+              <form className="form-control">
+                <h3>Set current run</h3><br />
+                <label htmlFor="title">Run title</label>
+                <input
+                  type="text"
+                  id="title"
+                  ref={this.titleRef}
+                  defaultValue={run ? run.title : ""}
+                  title="e.g. 'Spring 2020'"
+                />
+                <label htmlFor="date">Deadline for finishing tasks</label>
+                <input
+                  type="date"
+                  id="date"
+                  ref={this.dateRef}
+                  defaultValue={
+                    run
+                      ? new Date(run.deadline).toISOString().split('T')[0]
+                      : ""
+                  }
+                />
+                <button
+                  className="btn"
+                  onClick={this.setRun.bind(this)}
+                >
+                  Submit
+                </button>
+              </form>
             </div>
           </div>
 

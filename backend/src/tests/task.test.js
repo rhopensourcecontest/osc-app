@@ -98,6 +98,27 @@ describe('task', () => {
     }
   });
 
+  it('task() does not throw error for invalid ID', async () => {
+    await expect(taskService.task({ taskId: "5" })).resolves.not.toThrow();
+  });
+
+  it('task() returns null for invalid ID', async () => {
+    await expect(taskService.task({ taskId: "acb" })).resolves.toBeNull();
+  });
+
+  it('task() works correctly with valid ID', async () => {
+    const task = await Task.findOne();
+    const response = await taskService.task({ taskId: task._id });
+    expect(response).not.toBeNull();
+    expect(response._id).toEqual(task._id);
+    expect(response.title).toEqual(task.title);
+    expect(response.details).toEqual(task.details);
+
+    // non-existing Task with correct ID
+    await expect(taskService.task({ taskId: mongoose.Types.ObjectId() }))
+      .resolves.toBeNull();
+  });
+
   it('allTasks() returns correct data', async () => {
     const actual = await taskService.allTasks();
     const tasks = await Task.find();
@@ -781,6 +802,71 @@ describe('task', () => {
     expect(resultTask.title).toBe(args.taskInput.title);
     expect(resultTask.details).toBe(task.details);
     expect(resultTask.link).toBe(args.taskInput.link);
+  });
+
+
+  /** Unauthenticated Mentor */
+  it('swapRegistration() throws error', async () => {
+    await expect(taskService.swapRegistration({}, NAUTH_REQ))
+      .rejects.toThrow('Unauthenticated!');
+  });
+
+  /** Authenticated Mentor */
+  it('swapRegistration() throws error', async () => {
+    await expect(taskService.swapRegistration({}, NADMIN_REQ))
+      .rejects.toThrow('Only admin can swap registration.');
+  });
+
+  /** Authenticated Admin */
+  it('swapRegistration() works correctly', async () => {
+    const registeredStudent = await Student.findOne({ registeredTask: { $ne: null } });
+    const task = await Task.findOne({ registeredStudent: registeredStudent._id });
+    const newStudent = await Student.findOne({ registeredTask: null });
+
+    const args = {
+      registeredStudentId: registeredStudent._id,
+      nonRegisteredStudentId: newStudent._id,
+      taskId: task._id
+    };
+    await expect(taskService.swapRegistration(args, ADMIN_REQ))
+      .resolves.not.toThrow();
+
+    expect((await Student.findById(registeredStudent._id)).registeredTask).toBeNull();
+    expect((await Student.findById(newStudent._id)).registeredTask).toEqual(task._id);
+    expect((await Task.findById(task._id)).registeredStudent).toEqual(newStudent._id);
+  });
+
+  /** Unauthenticated Mentor */
+  it('changeCreator() throws error', async () => {
+    await expect(taskService.changeCreator({}, NAUTH_REQ))
+      .rejects.toThrow('Unauthenticated!');
+  });
+
+  /** Authenticated Mentor */
+  it('changeCreator() throws error', async () => {
+    await expect(taskService.changeCreator({}, NADMIN_REQ))
+      .rejects.toThrow('Only admin can change creator.');
+  });
+
+  /** Authenticated Admin */
+  it('changeCreator() works correctly', async () => {
+    const oldMentor = await Mentor.findOne({ isAdmin: true });
+    const task = await Task.findOne({ creator: oldMentor._id });
+    const newMentor = await Mentor.findOne({ _id: { $ne: oldMentor._id } });
+    expect(task.creator).not.toBeNull();
+    expect(newMentor.createdTasks).not.toContainEqual(task._id);
+
+    const args = {
+      taskId: task._id, oldMentorId: oldMentor._id, newMentorId: newMentor._id
+    };
+    await expect(taskService.changeCreator(args, ADMIN_REQ))
+      .resolves.not.toThrow();
+
+    expect((await Task.findById(task._id)).creator._id).toEqual(newMentor._id);
+    expect((await Mentor.findById(oldMentor._id)).createdTasks)
+      .not.toContainEqual(task._id);
+    expect((await Mentor.findById(newMentor._id)).createdTasks)
+      .toContainEqual(task._id);
   });
 
 });

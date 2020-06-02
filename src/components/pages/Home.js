@@ -5,6 +5,7 @@ import { Redirect } from 'react-router-dom';
 import Modal from '../Modal/Modal';
 import Backdrop from '../Backdrop/Backdrop';
 import AuthContext from '../context/auth-context';
+import { fetchRun } from '../api-calls/Fetch';
 import './Home.css'
 
 /**
@@ -13,11 +14,19 @@ import './Home.css'
 class HomePage extends Component {
   state = {
     choosing: false,
+    run: null,
     selectedOption: "student",
     redirect: false
   }
 
   static contextType = AuthContext;
+
+  componentDidMount() {
+    fetchRun(this.setRunState);
+  }
+
+  /** Set state.run */
+  setRunState = (run) => { this.setState({ run }); }
 
   /**
    * Sets state.choosing to true
@@ -62,6 +71,7 @@ class HomePage extends Component {
   }
 
   render() {
+    const run = this.state.run;
     return (
       <React.Fragment>
         {this.state.choosing && <Backdrop />}
@@ -111,16 +121,23 @@ class HomePage extends Component {
         { this.renderRedirect() }
         <div className="home">
           <header className="home-header">
+            <p>
+              Current run: {run ? run.title : "TBD"}<br />
+              Deadline for finishing tasks:&nbsp;
+              {run ? new Date(run.deadline).toDateString() : "TBD"}<br />
+            </p>
             <img src={logo} className="home-logo" alt="logo" />
             {this.context.isMentor === null && (
-              <button className="btn" onClick={this.startChooseRoleHandler}>Choose your role</button>
+              <button className="btn" onClick={this.startChooseRoleHandler}>
+                Choose your role
+              </button>
             )}
             <p>
               This application is currently under development.
             </p>
             <a
               className="home-link"
-              href="https://research.redhat.com/red-hat-open-source-contest/"
+              href="https://research.redhat.com/open-source-contest/"
               target="_blank"
               rel="noopener noreferrer"
             >

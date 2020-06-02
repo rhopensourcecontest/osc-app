@@ -60,6 +60,17 @@ module.exports = buildSchema(`
     isVerified: Boolean
   }
 
+  type Run {
+    _id: ID!
+    title: String!
+    deadline: String!
+  }
+
+  input RunInput {
+    title: String!
+    deadline: String!
+  }
+
   type UnregData {
     studentId: ID!
     taskId: ID!
@@ -67,13 +78,14 @@ module.exports = buildSchema(`
 
   type RootQuery {
     mentor(mentorId: ID!): Mentor!
-    task(taskId: ID!): Task!
+    task(taskId: ID!): Task
     student(studentId: ID!): Student!
     allTasks: [Task!]!
     freeTasks: [Task!]!
     takenTasks: [Task!]!
     students: [Student!]!
     mentors: [Mentor!]!
+    run: Run
     login(email: String!, uid: String!, isMentor: Boolean!): AuthData
     verify: AuthData
     studentEmails(mentorId: ID!): [String]!
@@ -90,8 +102,13 @@ module.exports = buildSchema(`
     createMentor(mentorInput: MentorInput): Mentor
     registerTask(studentId: ID!, taskId: ID!): Task!
     unregisterTask(studentId: ID!, taskId: ID!): Task!
+    swapRegistration(
+      registeredStudentId: ID!, nonRegisteredStudentId: ID!, taskId: ID!
+    ): Task!
+    changeCreator(taskId: ID!, oldMentorId: ID!, newMentorId: ID!): Task!
     deleteTask(taskId: ID!): Task
     updateTask(taskInput: UpdateInput!): Task!
+    setRun(runInput: RunInput!): Run!
     unregisterAllStudents: [UnregData]!
     changeMentorRights(
       mentorId: ID!, isVerified: Boolean!, isAdmin: Boolean!

@@ -24,3 +24,18 @@ svg {
   display: flex;
   flex-direction: row;
 }
+
+form .inline {
+  display: inline-flex;
+  flex-wrap: wrap;
+  margin-bottom: 0;
+}
+
+.inline div {
+  margin-right: 1.5rem;
+}
+
+select {
+  margin-bottom: 1rem;
+  font-size: initial;
+}

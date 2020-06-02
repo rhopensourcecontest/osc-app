@@ -3,6 +3,11 @@ const { MongoMemoryServer } = require('mongodb-memory-server');
 
 const mongodb = new MongoMemoryServer();
 
+jest.mock('../graphql/resolvers/emails', () => ({
+  sendEmail: jest.fn(),
+  sendVerificationEmail: jest.fn()
+}));
+
 /**
  * Connect to the in-memory database.
  */

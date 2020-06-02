@@ -249,7 +249,7 @@ class TasksPage extends Component {
         {this.context.token && this.context.isMentor && !this.context.isVerified && (
           <Notification msg="You are not verified yet." type="info" />
         )}
-        <h1>The Tasks Page</h1>
+        <h1>Tasks Page</h1>
         {(this.state.creating || this.state.selectedTask) && <Backdrop />}
         {this.state.creating && (
           <Modal
@@ -302,19 +302,15 @@ class TasksPage extends Component {
             <p></p>
           </Modal>
         )}
-        {/* TODO */}
         {this.context.token && this.context.isAdmin && (
           <p>Admin content</p>
         )}
-        {/* TODO */}
         {this.context.token && this.context.isMentor && !this.context.isAdmin && (
           <p>Mentor content</p>
         )}
-        {/* TODO */}
         {this.context.token && !this.context.isMentor && (
           <p>Student content</p>
         )}
-        {/* TODO */}
         {!this.context.token && (
           <p>Public content</p>
         )}
