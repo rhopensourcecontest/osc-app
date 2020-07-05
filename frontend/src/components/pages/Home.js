@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import logo from '../../logo.svg';
+import background from '../../osc-background.svg';
 
 import { Redirect } from 'react-router-dom';
 import Modal from '../Modal/Modal';
@@ -51,7 +52,7 @@ class HomePage extends Component {
   modalCancelHandler = () => {
     this.setState({ choosing: false });
   };
-  
+
   /**
    * Sets state.selectedOption according to user choice in the modal
    */
@@ -80,7 +81,7 @@ class HomePage extends Component {
             title="Choose your role"
             canCancel
             canConfirm
-            onCancel={this.modalCancelHandler} 
+            onCancel={this.modalCancelHandler}
             onConfirm={this.modalConfirmHandler}
           >
             <form>
@@ -118,8 +119,10 @@ class HomePage extends Component {
             </form>
           </Modal>
         )}
-        { this.renderRedirect() }
-        <div className="home">
+        {this.renderRedirect()}
+        <div className="home" style={{
+          backgroundImage: "url(" + background + ")"
+        }}>
           <header className="home-header">
             <p>
               Current run: {run ? run.title : "TBD"}<br />
@@ -128,7 +131,11 @@ class HomePage extends Component {
             </p>
             <img src={logo} className="home-logo" alt="logo" />
             {this.context.isMentor === null && (
-              <button className="btn" onClick={this.startChooseRoleHandler}>
+              <button
+                className="btn"
+                id="role-choice"
+                onClick={this.startChooseRoleHandler}
+              >
                 Choose your role
               </button>
             )}

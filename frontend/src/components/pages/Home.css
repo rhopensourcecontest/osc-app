@@ -1,6 +1,18 @@
 .home {
   text-align: center;
   margin: -3.5rem -1rem;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+#role-choice {
+  background: rgb(253, 46, 38);
+  border: 1px solid rgb(253, 46, 38);
+}
+
+#role-choice:hover,
+#role-choice:active {
+  color: black;
 }
 
 .home-logo {
@@ -8,7 +20,6 @@
 }
 
 .home-header {
-  background-color: #A00;
   min-height: 100vh;
   display: flex;
   flex-direction: column;

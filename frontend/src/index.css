@@ -41,22 +41,23 @@ p {
 }
 
 .btn {
-  background: rgb(253, 46, 38);
+  background: #1A1A1A;
   font: inherit;
-  border: 1px solid rgb(253, 46, 38);
+  border: 1px solid #1A1A1A;
   border-radius: 5px;
   padding: 0.25rem 1rem;
   margin: 1rem 0.25rem;
   color: white;
   outline: none;
+  font-weight: bold;
 }
 
 .btn:hover,
 .btn:active {
-  color: black;
+  color: rgb(253, 46, 38);
   cursor: pointer;
 }
 
 .active {
-  color:black;
+  color: rgb(253, 46, 38);
 }
