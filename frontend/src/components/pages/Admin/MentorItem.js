@@ -71,20 +71,20 @@ class MentorItem extends Component {
                 <b>{this.props.mentor.email}</b>
               </div>
               <div className="flex-col">
-                <label>Verified:</label>
                 <input
                   name="isVerified"
                   type="checkbox"
                   checked={this.state.isVerified}
                   onChange={this.handleVerifiedChange} />
+                <label>Verified</label>
               </div>
               <div className="flex-col">
-                <label>Admin rights:</label>
                 <input
                   name="isAdmin"
                   type="checkbox"
                   checked={this.state.isAdmin}
                   onChange={this.handleAdminChange} />
+                <label>Admin rights</label>
               </div>
             </div>
           </div>
