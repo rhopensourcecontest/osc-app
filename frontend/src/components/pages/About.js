@@ -89,11 +89,13 @@ class AboutPage extends Component {
       <React.Fragment>
         <div className="about">
           <div>
-            <h1>Red Hat Open Source Contest</h1>
-            <Intro />
-            <Process />
-            <Dates run={this.state.run} />
-            <Rewards />
+            <h1>About page</h1>
+            <div className="about-content">
+              <Intro />
+              <Process />
+              <Dates run={this.state.run} />
+              <Rewards />
+            </div>
           </div>
         </div>
       </React.Fragment>
