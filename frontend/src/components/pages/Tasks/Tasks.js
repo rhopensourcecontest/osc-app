@@ -249,7 +249,7 @@ class TasksPage extends Component {
         {this.context.token && this.context.isMentor && !this.context.isVerified && (
           <Notification msg="You are not verified yet." type="info" />
         )}
-        <h1>Tasks Page</h1>
+        <h1>Tasks page</h1>
         {(this.state.creating || this.state.selectedTask) && <Backdrop />}
         {this.state.creating && (
           <Modal
@@ -275,6 +275,7 @@ class TasksPage extends Component {
             </form>
           </Modal>
         )}
+
         {this.state.selectedTask && (
           <Modal
             title={this.state.selectedTask.title}
@@ -302,18 +303,7 @@ class TasksPage extends Component {
             <p></p>
           </Modal>
         )}
-        {this.context.token && this.context.isAdmin && (
-          <p>Admin content</p>
-        )}
-        {this.context.token && this.context.isMentor && !this.context.isAdmin && (
-          <p>Mentor content</p>
-        )}
-        {this.context.token && !this.context.isMentor && (
-          <p>Student content</p>
-        )}
-        {!this.context.token && (
-          <p>Public content</p>
-        )}
+
         <TaskControl
           key={this.state.regsCount + this.state.allTasks.length}
           filterTasks={this.filterTasks}

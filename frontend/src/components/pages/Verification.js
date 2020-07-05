@@ -80,7 +80,7 @@ class VerificationPage extends Component {
     return (
       <React.Fragment>
         <div className="verif-flex-container">
-          <h1>Mentor Verification Page</h1>
+          <h1>Mentor Verification page</h1>
           <center>
             <b>
               To become a verified Mentor you have to create a request to the

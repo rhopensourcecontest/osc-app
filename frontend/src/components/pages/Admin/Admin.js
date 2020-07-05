@@ -191,7 +191,7 @@ class AdminPage extends Component {
           </React.Fragment>
         )}
         <div className="">
-          <h1>Administration Page</h1>
+          <h1>Administration page</h1>
           <div className="admin-box">
             <div className="col left form-control">
               <label>Get emails</label>

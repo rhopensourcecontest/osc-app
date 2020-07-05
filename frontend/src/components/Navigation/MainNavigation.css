@@ -39,6 +39,7 @@
   font: inherit;
   background: transparent;
   cursor: pointer;
+  font-weight: bold;
 }
 
 .main-navigation h1:hover,
