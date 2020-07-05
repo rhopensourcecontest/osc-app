@@ -185,9 +185,15 @@ class AuthPage extends Component {
                 <br />
                 <div className="form-actions">
                   <center>
-                    <button className="btn" onClick={this.switchModeHandler}>
-                      Switch to {this.state.isLogin ? 'Sign up' : 'Sign in'}
-                    </button>
+                    <div className="auth-switcher">
+                      {this.state.isLogin
+                        ? "Don't have an account yet?"
+                        : "Already have an accout?"
+                      }&nbsp;
+                      <b onClick={this.switchModeHandler}>
+                        <u>{this.state.isLogin ? "Sign up" : "Sign in"}</u>
+                      </b>
+                    </div>
                   </center>
                 </div>
               </React.Fragment>

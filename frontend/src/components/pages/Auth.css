@@ -3,3 +3,7 @@
   max-width: 80%;
   margin: 5rem auto;
 }
+
+.auth-switcher b {
+  cursor: pointer;
+}
