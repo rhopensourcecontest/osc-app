@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import logo from '../../logo.svg';
 
 import AuthContext from '../context/auth-context';
 import './MainNavigation.css'
@@ -14,8 +15,9 @@ const mainNavigation = props => (
     {(context) => {
       return (
         <header className="main-navigation">
-          <div className="main-navigation__logo">
-            <NavLink to="/">
+          <div>
+            <NavLink to="/" className="main-navigation__logo">
+              <img src={logo} id="menu-logo" alt="logo" />&nbsp;&nbsp;
               <h1>Red Hat Open Source Contest</h1>
             </NavLink>
           </div>

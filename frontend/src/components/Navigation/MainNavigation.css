@@ -26,6 +26,15 @@
   margin: 0 1rem;
 }
 
+.main-navigation__logo {
+  display: flex;
+  flex-direction: row;
+}
+
+#menu-logo {
+  max-width: 40px;
+}
+
 .main-navigation__logo h1 {
   font-size: 1.5rem;
 }
