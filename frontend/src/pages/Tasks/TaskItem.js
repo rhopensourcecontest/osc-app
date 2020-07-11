@@ -74,6 +74,18 @@ class TaskItem extends Component {
     this.setState({ confirming: false });
   }
 
+  /**
+   * Adjust length of the details text displayed in TaskItem
+   * 
+   * @param {string} text
+   * @returns {string}
+   */
+  adjustDetails = (text) => {
+    return text.indexOf('\n') <= 50
+      ? text.slice(0, text.indexOf('\n'))
+      : (text.slice(0, 50) + "...")
+  }
+
   render() {
     const task = this.props.task;
     const taskItem = (
@@ -102,19 +114,9 @@ class TaskItem extends Component {
                 }
               }}
               >
-                {/* Display maximum of 40 chars of title */}
-                <h3>
-                  {task.title.length > 40
-                    ? (task.title.slice(0, 40) + "...")
-                    : task.title}
-                </h3>
+                <h3>{task.title}</h3>
               </NavLink>
-              {/* Show only the first line of details if it has multiple lines, 
-                50 chars otherwise */}
-              {task.details.indexOf('\n', 0) <= 50
-                ? task.details.slice(0, task.details.indexOf('\n', 0))
-                : (task.details.slice(0, 50) + "...")
-              }
+              {this.adjustDetails(task.details)}
             </div>
             <div className="">
               <div>

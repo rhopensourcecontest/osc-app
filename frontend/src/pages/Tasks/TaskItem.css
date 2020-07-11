@@ -35,3 +35,8 @@
 .title:hover {
   color: gray;
 }
+
+.task-container .left h3{
+  max-width: 575px;
+  white-space: pre-wrap;
+}
