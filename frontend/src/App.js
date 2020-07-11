@@ -10,9 +10,9 @@ import VerificationPage from './components/pages/Verification';
 import AdminPage from './components/pages/Admin/Admin';
 import MainNavigation from './components/Navigation/MainNavigation';
 import AuthContext from './components/context/auth-context';
-import { fetchMentor } from './components/api-calls/Mentors';
-import { fetchStudent } from './components/api-calls/Students';
-import { fetchAuth } from './components/api-calls/Fetch';
+import { fetchMentor } from './api-calls/Mentors';
+import { fetchStudent } from './api-calls/Students';
+import { fetchAuth } from './api-calls/Fetch';
 
 import firebase from 'firebase/app';
 import 'firebase/auth';

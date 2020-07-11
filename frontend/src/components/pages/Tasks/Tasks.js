@@ -7,8 +7,8 @@ import TaskList from './TaskList';
 import TaskControl from './TaskControl';
 import { TASKS } from '../../../constants/tasks';
 import Notification from '../../Notification/Notification';
-import { fetchAuth } from '../../api-calls/Fetch';
-import { fetchTasks } from '../../api-calls/Tasks';
+import { fetchAuth } from '../../../api-calls/Fetch';
+import { fetchTasks } from '../../../api-calls/Tasks';
 
 import './Tasks.css';
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import AuthContext from '../../context/auth-context';
-import { fetchAuth } from '../../api-calls/Fetch';
+import { fetchAuth } from '../../../api-calls/Fetch';
 
 import './MentorItem.css';
 

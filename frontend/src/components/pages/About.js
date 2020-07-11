@@ -2,12 +2,13 @@ import React, { Component } from 'react';
 import logo from '../../logo.svg';
 
 import AuthContext from '../context/auth-context';
-import { fetchRun } from '../api-calls/Fetch';
+import { fetchRun } from '../../api-calls/Fetch';
 import './About.css'
 
 const Intro = () => {
   return (
     <div>
+      <h3>WHAT’S OPEN SOURCE CONTEST?</h3>
       <p>
         Open Source Contest is a competition for students during which we want to show students how easy it is to participate in open source projects. Students can also get feedback on their code and get it included in a real project. By participating in the Red Hat Open Source Contest students can win nice prizes.
       </p>

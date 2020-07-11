@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import AuthContext from '../../context/auth-context';
 import MentorItem from './MentorItem';
-import { fetchMentors } from '../../api-calls/Mentors';
-import { fetchNoAuth, fetchAuth, fetchRun } from '../../api-calls/Fetch';
+import { fetchMentors } from '../../../api-calls/Mentors';
+import { fetchNoAuth, fetchAuth, fetchRun } from '../../../api-calls/Fetch';
 import Notification from '../../Notification/Notification';
 import Backdrop from '../../Backdrop/Backdrop';
 import Modal from '../../Modal/Modal';

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import AuthContext from '../context/auth-context';
-import { fetchMentors } from '../api-calls/Mentors';
-import { fetchAuth } from '../api-calls/Fetch';
+import { fetchMentors } from '../../api-calls/Mentors';
+import { fetchAuth } from '../../api-calls/Fetch';
 
 import './Verification.css';
 

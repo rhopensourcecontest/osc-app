@@ -3,7 +3,7 @@ import { TASKS } from '../../../constants/tasks';
 import AuthContext from '../../context/auth-context';
 import { NavLink } from 'react-router-dom';
 import { Free, Taken, NotStarted, InProgress, Done } from '../../Tags/Tags';
-import { fetchAuth } from '../../api-calls/Fetch';
+import { fetchAuth } from '../../../api-calls/Fetch';
 import Backdrop from '../../Backdrop/Backdrop';
 import Modal from '../../Modal/Modal';
 
@@ -141,7 +141,7 @@ class TaskItem extends Component {
                     this.setState({ confirming: true });
                   }}>
                     Delete
-                </button>
+                  </button>
                 )}
             </div>
           </div>

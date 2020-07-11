@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import AuthContext from '../../context/auth-context';
-import { fetchTask } from '../../api-calls/Tasks';
-import { fetchMentors } from '../../api-calls/Mentors';
-import { fetchAuth, fetchNoAuth } from '../../api-calls/Fetch';
+import { fetchTask } from '../../../api-calls/Tasks';
+import { fetchMentors } from '../../../api-calls/Mentors';
+import { fetchAuth, fetchNoAuth } from '../../../api-calls/Fetch';
 import { Taken, Free, InProgress, NotStarted, Done } from '../../Tags/Tags';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -411,7 +411,7 @@ class TaskPage extends Component {
                     onClick={() => this.setState({ editing: true })}
                   >
                     Edit
-                </button>
+                  </button>
                 )}
               {/* Display Register button for authenticated Student on free Tasks 
               only if he doesn't have any Task registered yet */}
@@ -422,7 +422,7 @@ class TaskPage extends Component {
                     onClick={() => this.taskRegistrationHandler(false, this.context.userId)}
                   >
                     Register
-                </button>
+                  </button>
                 )}
               {this.isRegisteredToTask() && (
                 <button
@@ -430,7 +430,7 @@ class TaskPage extends Component {
                   onClick={() => this.taskRegistrationHandler(true, this.context.userId)}
                 >
                   Unregister
-              </button>
+                </button>
               )}
               {this.isRegisteredToTask() && task.isBeingSolved && (
                 <button
