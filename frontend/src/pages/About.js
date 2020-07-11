@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import logo from '../../images/logo.svg';
+import logo from '../images/logo.svg';
 
-import AuthContext from '../context/auth-context';
-import { fetchRun } from '../../api-calls/Fetch';
+import AuthContext from '../components/context/auth-context';
+import { fetchRun } from '../api-calls/Fetch';
 import './About.css'
 
 const Intro = () => {

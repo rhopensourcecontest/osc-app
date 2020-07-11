@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import AuthContext from '../context/auth-context';
+import AuthContext from '../components/context/auth-context';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase from 'firebase/app';
 import 'firebase/auth';
-import { fetchNoAuth } from '../../api-calls/Fetch';
+import { fetchNoAuth } from '../api-calls/Fetch';
 
 import "./Auth.css";
 import 'firebaseui/dist/firebaseui.css';

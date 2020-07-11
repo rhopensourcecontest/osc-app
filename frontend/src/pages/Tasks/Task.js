@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
-import AuthContext from '../../context/auth-context';
-import { fetchTask } from '../../../api-calls/Tasks';
-import { fetchMentors } from '../../../api-calls/Mentors';
-import { fetchAuth, fetchNoAuth } from '../../../api-calls/Fetch';
-import { Taken, Free, InProgress, NotStarted, Done } from '../../Tags/Tags';
+import AuthContext from '../../components/context/auth-context';
+import { fetchTask } from '../../api-calls/Tasks';
+import { fetchMentors } from '../../api-calls/Mentors';
+import { fetchAuth, fetchNoAuth } from '../../api-calls/Fetch';
+import { Taken, Free, InProgress, NotStarted, Done } from '../../components/Tags/Tags';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faLink, faFileAlt, faUserTie, faUser, faEdit, faTags
 } from "@fortawesome/free-solid-svg-icons";
-import Backdrop from '../../Backdrop/Backdrop';
-import Modal from '../../Modal/Modal';
+import Backdrop from '../../components/Backdrop/Backdrop';
+import Modal from '../../components/Modal/Modal';
 
 import './Task.css';
 

@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import logo from '../../images/logo.svg';
-import background from '../../images/osc-background.svg';
+import logo from '../images/logo.svg';
+import background from '../images/osc-background.svg';
 
 import { Redirect } from 'react-router-dom';
-import Modal from '../Modal/Modal';
-import Backdrop from '../Backdrop/Backdrop';
-import AuthContext from '../context/auth-context';
-import { fetchRun } from '../../api-calls/Fetch';
+import Modal from '../components/Modal/Modal';
+import Backdrop from '../components/Backdrop/Backdrop';
+import AuthContext from '../components/context/auth-context';
+import { fetchRun } from '../api-calls/Fetch';
 import './Home.css'
 
 /**

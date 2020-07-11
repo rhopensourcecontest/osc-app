@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 
-import HomePage from './components/pages/Home';
-import AuthPage from './components/pages/Auth';
-import AboutPage from './components/pages/About';
-import TasksPage from './components/pages/Tasks/Tasks';
-import TaskPage from './components/pages/Tasks/Task';
-import VerificationPage from './components/pages/Verification';
-import AdminPage from './components/pages/Admin/Admin';
+import HomePage from './pages/Home';
+import AuthPage from './pages/Auth';
+import AboutPage from './pages/About';
+import TasksPage from './pages/Tasks/Tasks';
+import TaskPage from './pages/Tasks/Task';
+import VerificationPage from './pages/Verification';
+import AdminPage from './pages/Admin/Admin';
 import MainNavigation from './components/Navigation/MainNavigation';
 import AuthContext from './components/context/auth-context';
 import { fetchMentor } from './api-calls/Mentors';
