@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import logo from '../../logo.svg';
-import background from '../../osc-background.svg';
+import logo from '../../images/logo.svg';
+import background from '../../images/osc-background.svg';
 
 import { Redirect } from 'react-router-dom';
 import Modal from '../Modal/Modal';
