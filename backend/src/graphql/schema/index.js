@@ -63,7 +63,7 @@ module.exports = buildSchema(`
   type Run {
     _id: ID!
     title: String!
-    deadline: String!
+    deadline: String
   }
 
   input RunInput {

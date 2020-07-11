@@ -7,6 +7,7 @@ import Modal from '../components/Modal/Modal';
 import Backdrop from '../components/Backdrop/Backdrop';
 import AuthContext from '../components/context/auth-context';
 import { fetchRun } from '../api-calls/Fetch';
+import { formatDateOutput } from '../components/Shared';
 import './Home.css'
 
 /**
@@ -127,7 +128,7 @@ class HomePage extends Component {
             <p>
               Current run: {run ? run.title : "TBD"}<br />
               Deadline for finishing tasks:&nbsp;
-              {run ? new Date(run.deadline).toDateString() : "TBD"}<br />
+              {run ? formatDateOutput(run.deadline) : "TBD"}<br />
             </p>
             <img src={logo} className="home-logo" alt="logo" />
             {this.context.isMentor === null && (

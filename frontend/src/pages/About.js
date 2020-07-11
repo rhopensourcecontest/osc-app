@@ -3,6 +3,7 @@ import logo from '../images/logo.svg';
 
 import AuthContext from '../components/context/auth-context';
 import { fetchRun } from '../api-calls/Fetch';
+import { formatDateOutput } from '../components/Shared';
 import './About.css'
 
 const Intro = () => {
@@ -40,7 +41,7 @@ const Dates = (props) => {
         <ol>
           <li>Finish projects: {
             props.run && props.run.deadline
-              ? new Date(props.run.deadline).toDateString() : "TBD"
+              ? formatDateOutput(props.run.deadline) : "TBD"
           }</li>
           <li>Presentation meeting: TBD</li>
           <li>Announcing the winner: TBD</li>

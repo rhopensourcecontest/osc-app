@@ -135,13 +135,10 @@ class AdminPage extends Component {
       alert("Please, choose a title.");
       return;
     }
-    if (!this.dateRef.current.value) {
-      alert("Please, choose a deadline.");
-      return;
-    }
+    const deadline = this.dateRef.current.value;
     let runInput = {
       title: this.titleRef.current.value,
-      deadline: new Date(this.dateRef.current.value)
+      deadline: deadline === "" ? "" : new Date(this.dateRef.current.value)
     };
     const token = this.context.token;
 
