@@ -25,6 +25,10 @@
   margin-top: 0.5rem;
 }
 
+.admin-box .col label {
+  font-weight: bold;
+}
+
 .admin-box .col {
   display: flex;
   flex-direction: column;

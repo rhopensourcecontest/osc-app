@@ -3,6 +3,8 @@ import AuthContext from '../../components/context/auth-context';
 import MentorItem from './MentorItem';
 import { fetchMentors } from '../../api-calls/Mentors';
 import { fetchNoAuth, fetchAuth, fetchRun } from '../../api-calls/Fetch';
+import { fetchTasks } from '../../api-calls/Tasks';
+import { TASKS } from '../../constants/tasks';
 import Notification from '../../components/Notification/Notification';
 import Backdrop from '../../components/Backdrop/Backdrop';
 import Modal from '../../components/Modal/Modal';
@@ -70,7 +72,7 @@ class AdminPage extends Component {
     this.setState({ notify: notification });
     setTimeout(() => {
       this.setState({ notify: null });
-    }, 1500);
+    }, 1000);
   }
 
   /**
@@ -177,6 +179,54 @@ class AdminPage extends Component {
       })
   }
 
+  resolveProgress = (task) => {
+    if (task.isSolved) { return "Done"; }
+    if (task.isBeingSolved) { return "In progress"; }
+    return "Not started";
+  }
+
+  /**
+   * Export tasks from the current run as a .csv file
+   */
+  exportCurrentRun = () => {
+    let tasks;
+    fetchTasks(TASKS.ALL)
+      .then(resData => {
+        tasks = resData.data[TASKS.ALL];
+        let output = [
+          ["title", "progress", "link", "mentor", "registered student", "description"],
+          ["", "", "", "", "", ""]
+        ];
+
+        for (const task of tasks) {
+          output.push([
+            task.title,
+            this.resolveProgress(task),
+            task.link,
+            task.creator.email,
+            task.registeredStudent ? task.registeredStudent.email : "-",
+            // add quotes to correctly insert whole description with new lines
+            '"' + task.details + '"'
+          ]);
+        }
+
+        let csvContent = "data:text/csv;charset=utf-8,"
+          + output.map(e => e.join(",")).join("\n");
+
+        let encodedUri = encodeURI(csvContent);
+        let link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "osc_tasks.csv");
+        document.body.appendChild(link); // Required for Firefox
+
+        link.click(); // This will download the data file named "osc_tasks.csv".
+      })
+      .catch(err => {
+        alert(err);
+        console.log(err);
+      })
+  }
+
   render() {
     const run = this.state.run;
     return (
@@ -223,14 +273,38 @@ class AdminPage extends Component {
             </div>
 
             <div className="col">
-              <label style={{ color: "red", fontWeight: "bold" }}>
-                Unregister all Students from all Tasks
+              <label>Export current run</label>
+              <button
+                className="btn"
+                title="Download all tasks and their progress as a .csv file"
+                onClick={() => this.exportCurrentRun()}
+              >
+                Export
+              </button><br />
+
+              <label>Reset current run</label>
+              <label style={{ color: "red" }}>
+                Unregisters all Students from all Tasks
               </label>
               <button
                 className="btn"
+                title="Make sure that you already exported tasks"
                 onClick={() => this.setState({ confirming: true })}
               >
-                Unregister
+                Reset
+              </button>
+            </div>
+
+            <div className="col">
+              <label>Get API token</label>
+              <button
+                className="btn"
+                title="Copy to clipboard"
+                onClick={() => this.copyToClipboard(
+                  'Token copied to clipboard.', this.context.token
+                )}
+              >
+                Copy
               </button>
             </div>
 
@@ -263,19 +337,6 @@ class AdminPage extends Component {
                   Submit
                 </button>
               </form>
-            </div>
-
-            <div className="col form-control">
-              <label>Get API token</label>
-              <button
-                className="btn"
-                title="Copy to clipboard"
-                onClick={() => this.copyToClipboard(
-                  'Token copied to clipboard.', this.context.token
-                )}
-              >
-                Copy
-              </button>
             </div>
           </div>
 

@@ -3,6 +3,7 @@ import { fetchNoAuth } from './Fetch';
 /**
  * Fetch Tasks
  * 
+ * @param {string} queryName value from TASKS enum
  * @returns {Promise} response data
  */
 export const fetchTasks = (queryName) => {
