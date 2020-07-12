@@ -52,7 +52,29 @@ class AdminPage extends Component {
   }
 
   /**
-   * Copies emails from query to clipboard
+   * Copies content to clipboard and displays notification with msg
+   * 
+   * @param {string} msg
+   * @param {any} content
+   */
+  copyToClipboard = (msg, content) => {
+    this.setState({ notify: null });
+    var temporaryElement = document.createElement('textarea');
+    document.body.appendChild(temporaryElement);
+    temporaryElement.value = content;
+    temporaryElement.select();
+    document.execCommand('copy');
+    document.body.removeChild(temporaryElement);
+
+    let notification = { type: 'success', msg: msg };
+    this.setState({ notify: notification });
+    setTimeout(() => {
+      this.setState({ notify: null });
+    }, 1500);
+  }
+
+  /**
+   * Copies emails from query to clipboard and displays notification
    * 
    * @param {string} queryName
    */
@@ -63,15 +85,7 @@ class AdminPage extends Component {
     fetchNoAuth(requestBody)
       .then(resData => {
         const emails = resData.data[queryName];
-        var temporaryElement = document.createElement('textarea');
-        document.body.appendChild(temporaryElement);
-        temporaryElement.value = emails;
-        temporaryElement.select();
-        document.execCommand('copy');
-        document.body.removeChild(temporaryElement);
-
-        let notification = { type: 'success', msg: 'Emails copied to clipboard.' };
-        this.setState({ notify: notification });
+        this.copyToClipboard('Emails copied to clipboard.', emails);
       })
       .catch(err => {
         this.setState({ error: true });
@@ -249,6 +263,19 @@ class AdminPage extends Component {
                   Submit
                 </button>
               </form>
+            </div>
+
+            <div className="col form-control">
+              <label>Get API token</label>
+              <button
+                className="btn"
+                title="Copy to clipboard"
+                onClick={() => this.copyToClipboard(
+                  'Token copied to clipboard.', this.context.token
+                )}
+              >
+                Copy
+              </button>
             </div>
           </div>
 
