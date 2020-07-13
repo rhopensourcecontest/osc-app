@@ -1,0 +1,42 @@
+.task__list-item {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid black;
+  white-space: pre;
+  min-width: min-content;
+}
+
+.task-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.left {
+  width: 60%;
+  min-width: max-content;
+}
+
+.button-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.button-col button {
+  margin: 0.25rem;
+}
+
+.title {
+  text-decoration: none;
+  color: black;
+}
+
+.title:hover {
+  color: gray;
+}
+
+.task-container .left h3{
+  max-width: 575px;
+  white-space: pre-wrap;
+}

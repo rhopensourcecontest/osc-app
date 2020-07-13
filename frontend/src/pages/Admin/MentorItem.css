@@ -1,0 +1,14 @@
+.flex-row {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.flex-row .flex-col {
+  display: block;
+}
+
+.flex-row label {
+  margin-left: 10px;
+}

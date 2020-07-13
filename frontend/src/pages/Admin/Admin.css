@@ -1,0 +1,55 @@
+.flex-col {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 10rem;
+}
+
+.flex-col input {
+  cursor: pointer;
+}
+
+.header {
+  padding-bottom: 0.5rem;
+}
+
+.admin-box {
+  display: flex;
+  width: 90%;
+  max-width: 1000px;
+  margin: auto;
+}
+
+.admin-box .col button {
+  margin-top: 0.5rem;
+}
+
+.admin-box .col label {
+  font-weight: bold;
+}
+
+.admin-box .col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: max-content;
+  align-items: center;
+  margin-right: 1rem;
+  border: 1px solid black;
+  padding: 1rem;
+}
+
+.admin-box .left {
+  align-items: flex-start;
+}
+
+.admin-box * {
+  margin: 0.2rem 0;
+}
+
+.admin-box select {
+  font-size: inherit;
+  padding: 2px;
+  cursor: pointer;
+}

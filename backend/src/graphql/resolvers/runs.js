@@ -37,20 +37,22 @@ module.exports = {
       throw Error('You do not have admin rights!');
     }
 
+    const deadline = args.runInput.deadline;
+
     try {
       // don't create run if it alredy exists
       const run = await Run.findOneAndUpdate(
         {},
         {
           title: args.runInput.title,
-          deadline: new Date(args.runInput.deadline)
+          deadline: deadline ? new Date(deadline) : null
         },
         { new: true, upsert: true }
       );
       return {
         ...run._doc,
         title: args.runInput.title,
-        deadline: new Date(args.runInput.deadline).toISOString()
+        deadline: deadline ? new Date(deadline).toISOString() : null
       };
     } catch (err) {
       throw err;

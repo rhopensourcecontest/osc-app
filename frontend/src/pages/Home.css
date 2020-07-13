@@ -1,0 +1,43 @@
+.home {
+  text-align: center;
+  margin: -3.5rem -1rem;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+#role-choice {
+  background: rgb(253, 46, 38);
+  border: 1px solid rgb(253, 46, 38);
+}
+
+#role-choice:hover,
+#role-choice:active {
+  color: black;
+}
+
+.home-logo {
+  height: 40vmin;
+}
+
+.home-header {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.home-link {
+  color: #09d3ac;
+}
+
+.home button {
+  font-size: calc(2vmin);
+  margin: 2rem;
+}
+
+.form-check label {
+  cursor: pointer;
+}
