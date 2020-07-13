@@ -9,7 +9,7 @@ An Express.js server that exposes a GraphQL API.
   $ npm install
   ```
 * Set up environment variables in `nodemon.json` needed to run all the modules
-  * **MongoDB**
+  * **Remote MongoDB**
     * Create an account at https://www.mongodb.com/cloud/atlas
     * Set up a cluster
     * You may need to setup a database user account in Atlas under `Security/Database Access`
@@ -18,6 +18,9 @@ An Express.js server that exposes a GraphQL API.
       * `MONGO_USER`
       * `MONGO_PASSWORD`
       * `MONGO_DB`
+  * **Local MongoDB**
+    * Local MongoDB installation guide is [here](https://docs.mongodb.com/manual/installation/)
+    * How to connect Express to local MongoDB is described [here](https://stackoverflow.com/questions/54573548/how-to-connect-to-mongodb-in-local-network-with-express-and-mongoose)
   * **Nodemailer**
     * Create OAuth credentials following the steps [here](https://medium.com/@nickroach_50526/sending-emails-with-node-js-using-smtp-gmail-and-oauth2-316fe9c790a1)
     * Retrieve the following values:
@@ -33,10 +36,13 @@ An Express.js server that exposes a GraphQL API.
 
 In the `backend` directory, you can run:
 
-### `npm start`
+### `npm run startDev`
 
 Runs the app in the development mode.<br>
 Open [http://localhost:5000](http://localhost:5000) to view it in the browser.
+
+### `npm start`
+Runs the app in the production mode.<br><br>
 
 GraphiQL user interface of the API will be accessible at [http://localhost:5000/graphql](http://localhost:5000/graphql).
 
