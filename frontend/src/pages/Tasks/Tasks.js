@@ -60,12 +60,18 @@ class TasksPage extends Component {
     const link = this.linkRef.current.value;
     const details = this.detailsRef.current.value.split(/\r?\n/).join("\\n");
 
-    if (title.trim().length === 0 || details.trim().length === 0) {
+    if (title.trim().length === 0) {
+      alert("You have to provide title!");
+      return;
+    }
+
+    if (details.trim().length === 0) {
+      alert("You have to provide details!");
       return;
     }
 
     if (link.trim().length === 0) {
-      alert("You have to provide link to project!");
+      alert("You have to provide link to the project!");
       return;
     }
 
