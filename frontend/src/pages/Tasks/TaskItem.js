@@ -75,15 +75,23 @@ class TaskItem extends Component {
   }
 
   /**
-   * Adjust length of the details text displayed in TaskItem
+   * Adjust length of the task details displayed in TaskItem.
+   * Display first 50 chars or split with first newline.
    * 
    * @param {string} text
    * @returns {string}
    */
   adjustDetails = (text) => {
-    return text.indexOf('\n') <= 50
-      ? text.slice(0, text.indexOf('\n'))
-      : (text.slice(0, 50) + "...")
+    const pos = text.indexOf('\n');
+    const maxLength = 50;
+
+    if (pos === -1) {
+      return text.length < maxLength ? text : text.slice(0, maxLength) + "...";
+    } else {
+      return pos < maxLength
+        ? text.slice(0, pos)
+        : text.slice(0, maxLength) + "...";
+    }
   }
 
   render() {
