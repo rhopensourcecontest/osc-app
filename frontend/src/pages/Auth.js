@@ -49,10 +49,23 @@ class AuthPage extends Component {
     this.unregisterAuthObserver();
   }
 
+  /** 
+   * Switch Firebase button text between 'Sign in' and 'Sign up' 
+   */
+  switchFirebaseButtonText = () => {
+    const elements = document.getElementsByClassName("firebaseui-idp-text-long");
+    for (const element of elements) {
+      element.textContent.includes("Sign in")
+        ? element.textContent = element.textContent.replace("Sign in", "Sign up")
+        : element.textContent = element.textContent.replace("Sign up", "Sign in");
+    }
+  }
+
   /**
    * Switch between login and registration
    */
   switchModeHandler = () => {
+    this.switchFirebaseButtonText();
     this.setState(prevState => {
       return { isLogin: !prevState.isLogin };
     });
