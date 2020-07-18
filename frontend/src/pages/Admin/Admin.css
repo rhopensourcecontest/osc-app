@@ -19,6 +19,8 @@
   width: 90%;
   max-width: 1000px;
   margin: auto;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .admin-box .col button {
