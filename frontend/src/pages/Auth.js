@@ -148,12 +148,7 @@ class AuthPage extends Component {
           } else if (resData.data.createStudent) {
             alert("Created student " + resData.data.createStudent.email);
           }
-
-          // Login user after the account is created
-          if (!this.state.isLogin) {
-            this.switchModeHandler();
-            this.handleFirebase(firebase.auth().currentUser);
-          }
+          window.location.reload();
         }
         if (resData.errors) {
           alert(resData.errors[0].message);
