@@ -7,3 +7,53 @@
 .auth-switcher b {
   cursor: pointer;
 }
+
+.auth-box {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-bottom: 3rem;
+  font-weight: bold;
+}
+
+.auth-box svg {
+  margin-top: 1rem;
+  font-size: xx-large;
+}
+
+.labl {
+    display : block;
+}
+
+/* Hide radio */
+.labl > input{
+    visibility: hidden;
+    /* Remove from document flow */
+    position: absolute;
+}
+
+/* Div styles on hover */
+.labl > input + div:hover {
+  background: #1A1A1A;
+  color: white;
+}
+
+/* Div styles */
+.labl > input + div{
+    cursor:pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    margin: 0.5rem;
+    width: 10rem;
+    height: 8rem;
+    border: 1px solid #1A1A1A;
+}
+
+/* Checked radio div styles */
+.labl > input:checked + div{
+    /* color: rgb(253, 46, 38); */
+    border: 3px solid rgb(253, 46, 38);
+}
