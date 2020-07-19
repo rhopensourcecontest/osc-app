@@ -39,3 +39,28 @@
   max-width: 575px;
   white-space: pre-wrap;
 }
+
+.collapsible {
+  background-color: inherit;
+  color: black;
+  cursor: pointer;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 16px;
+}
+
+.collapsible.active, .collapsible:hover {
+  background-color: #555;
+  color: white;
+}
+
+button.collapsible {
+  padding: 0;
+}
+
+.content {
+  padding: 0 18px;
+  display: none;
+  overflow: hidden;
+}
