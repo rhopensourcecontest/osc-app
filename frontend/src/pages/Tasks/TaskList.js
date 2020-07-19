@@ -15,7 +15,7 @@ const taskList = props => {
         key={task._id}
         task={task}
         fetchTasks={props.fetchTasks}
-        onDetail={props.onDetail}
+        taskRegistrationHandler={props.taskRegistrationHandler}
       />
     );
   });

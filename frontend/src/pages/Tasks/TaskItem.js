@@ -6,6 +6,10 @@ import { Free, Taken, NotStarted, InProgress, Done } from '../../components/Tags
 import { fetchAuth } from '../../api-calls/Fetch';
 import Backdrop from '../../components/Backdrop/Backdrop';
 import Modal from '../../components/Modal/Modal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faLink, faFileAlt, faUserTie, faUser
+} from "@fortawesome/free-solid-svg-icons";
 
 import './TaskItem.css';
 
@@ -18,6 +22,30 @@ class TaskItem extends Component {
   state = {
     confirming: false
   };
+
+  componentDidMount() {
+    this.handleTaskDetailsCollapse();
+  }
+
+  /**
+   * Finds the corresponding element based on id and hides/displays it based 
+   * on current classes of the element
+   */
+  handleTaskDetailsCollapse = () => {
+    var coll = document.getElementsByClassName("collapsible");
+
+    for (let i = 0; i < coll.length; i++) {
+      coll[i].addEventListener("click", function () {
+        this.classList.toggle("active");
+        var content = document.getElementById(`cnt-${this.id.substring(3)}`);
+        if (content.style.display === "block") {
+          content.style.display = "none";
+        } else {
+          content.style.display = "block";
+        }
+      });
+    }
+  }
 
   /**
    * Delete task from db.
@@ -75,15 +103,42 @@ class TaskItem extends Component {
   }
 
   /**
-   * Adjust length of the details text displayed in TaskItem
+   * Adjust length of the task details displayed in TaskItem.
+   * Display first 50 chars or split with first newline.
    * 
    * @param {string} text
    * @returns {string}
    */
   adjustDetails = (text) => {
-    return text.indexOf('\n') <= 50
-      ? text.slice(0, text.indexOf('\n'))
-      : (text.slice(0, 50) + "...")
+    const pos = text.indexOf('\n');
+    const maxLength = 50;
+
+    if (pos === -1) {
+      return text.length < maxLength ? text : text.slice(0, maxLength) + "...";
+    } else {
+      return pos < maxLength
+        ? text.slice(0, pos)
+        : text.slice(0, maxLength) + "...";
+    }
+  }
+
+  /**
+   * Decides whether the user is a mentor who did not create this task
+   * 
+   * @param {Object} task
+   * @returns {boolean}
+   */
+  isNotStudentAndNotCreator = (task) => {
+    if (!this.context.isMentor || this.context.isAdmin) return false;
+    let found = false;
+    if (this.context.isMentor && this.context.user) {
+      for (const t of this.context.user.createdTasks) {
+        if (t._id === task._id) {
+          found = true;
+        }
+      }
+    }
+    return !found;
   }
 
   render() {
@@ -116,7 +171,14 @@ class TaskItem extends Component {
               >
                 <h3>{task.title}</h3>
               </NavLink>
-              {this.adjustDetails(task.details)}
+              <button
+                type="button"
+                className="collapsible"
+                id={`cl-${task._id}`}
+                title="Toglle task detail"
+              >
+                {this.adjustDetails(task.details)}
+              </button>
             </div>
             <div className="">
               <div>
@@ -129,12 +191,12 @@ class TaskItem extends Component {
               </div>
             </div>
             <div className="button-col">
-              <button
-                className="btn"
-                onClick={this.props.onDetail.bind(this, task._id)}
-              >
-                Details
-              </button>
+              {/* Fill the blank space */}
+              {this.isNotStudentAndNotCreator(task) && (
+                <button className="btn" style={{ visibility: "hidden" }}>
+                  Delete
+                </button>
+              )}
               {/* Display Delete button only to creator and admin */}
               {((this.context.token && this.context.isMentor &&
                 this.context.userId === task.creator._id) ||
@@ -146,6 +208,44 @@ class TaskItem extends Component {
                   </button>
                 )}
             </div>
+          </div>
+
+          <div className="content" id={`cnt-${task._id}`}>
+            <p>
+              <FontAwesomeIcon icon={faLink} />Link to open-source project:&nbsp;
+              <a href={task.link} target="_blank" rel="noopener noreferrer">
+                {task.link}
+              </a>
+            </p>
+
+            <p>
+              <FontAwesomeIcon icon={faUserTie} />Mentor:&nbsp;
+              {task.creator && (
+                <a href={`mailto: ${task.creator.email}`}>{task.creator.email}</a>
+              )}
+            </p>
+
+            <p>
+              <FontAwesomeIcon icon={faUser} />Registered student:&nbsp;
+              {task.registeredStudent
+                ? (<a href={`mailto: ${task.registeredStudent.email}`}>
+                  {task.registeredStudent.email}
+                </a>)
+                : ""}
+            </p>
+
+            <p><FontAwesomeIcon icon={faFileAlt} />Description:</p>
+            <p>{task.details}</p>
+
+            {this.context.token && !this.context.isMentor
+              && !task.registeredStudent && this.context.user
+              && !this.context.user.registeredTask && (
+                <button className="btn" onClick={() => {
+                  this.props.taskRegistrationHandler(false, task);
+                }}>
+                  Register
+                </button>
+              )}
           </div>
         </li>
       </>

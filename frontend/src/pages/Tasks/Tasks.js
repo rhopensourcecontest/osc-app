@@ -20,7 +20,6 @@ class TasksPage extends Component {
     creating: false,
     allTasks: [],
     tasks: [],
-    selectedTask: null,
     regsCount: 0
   };
 
@@ -60,12 +59,18 @@ class TasksPage extends Component {
     const link = this.linkRef.current.value;
     const details = this.detailsRef.current.value.split(/\r?\n/).join("\\n");
 
-    if (title.trim().length === 0 || details.trim().length === 0) {
+    if (title.trim().length === 0) {
+      alert("You have to provide title!");
+      return;
+    }
+
+    if (details.trim().length === 0) {
+      alert("You have to provide details!");
       return;
     }
 
     if (link.trim().length === 0) {
-      alert("You have to provide link to project!");
+      alert("You have to provide link to the project!");
       return;
     }
 
@@ -104,45 +109,21 @@ class TasksPage extends Component {
   };
 
   /**
-   * Reset state of modals by changing state.creating to false 
-   * and state.selectedTask to null
+   * Reset state of modals by changing state.creating to false
    */
   modalCancelHandler = () => {
-    this.setState({ creating: false, selectedTask: null });
+    this.setState({ creating: false });
   };
 
   /**
-   * Show detail of the task defined by taskId.
-   * 
-   * @param {string} taskId
-   */
-  showDetailHandler = (taskId) => {
-    // set registrations count for student
-    if (!this.context.isMentor) {
-      for (const task of this.state.tasks) {
-        if (task.registeredStudent &&
-          task.registeredStudent._id === this.context.userId) {
-          this.setState({ regsCount: 1 });
-          break;
-        }
-      }
-    }
-    this.setState(prevState => {
-      const selectedTask = prevState.tasks.find(e => e._id === taskId);
-      return { selectedTask: selectedTask };
-    });
-  };
-
-  /**
-   * Register Student to selectedTask if wasRegistered === false.
-   * Unregister Student from selectedTask if wasRegistered === true.
+   * Register Student to the task if wasRegistered === false.
+   * Unregister Student from the task if wasRegistered === true.
    * 
    * @param {boolean} wasRegistered
    * - States whether the current user was registered before calling the function.
+   * @param {Object} task
    */
-  taskRegistrationHandler = (wasRegistered) => {
-    const task = this.state.selectedTask;
-
+  taskRegistrationHandler = (wasRegistered, task) => {
     const requestBody = {
       query: `
         mutation {
@@ -179,7 +160,6 @@ class TasksPage extends Component {
           this.context.setRegisteredTask(editedTask);
           alert("Task " + task.title + " was registered successfully.");
         }
-        this.setState({ selectedTask: editedTask });
         this.fetchTasks(TASKS.ALL);
       })
       .catch(err => {
@@ -250,7 +230,7 @@ class TasksPage extends Component {
           <Notification msg="You are not verified yet." type="info" />
         )}
         <h1>Tasks page</h1>
-        {(this.state.creating || this.state.selectedTask) && <Backdrop />}
+        {this.state.creating && <Backdrop />}
         {this.state.creating && (
           <Modal
             title="Add Task"
@@ -276,34 +256,6 @@ class TasksPage extends Component {
           </Modal>
         )}
 
-        {this.state.selectedTask && (
-          <Modal
-            title={this.state.selectedTask.title}
-            canCancel
-            canRegister
-            onCancel={this.modalCancelHandler}
-            onRegister={() => this.taskRegistrationHandler(false)}
-            onUnregister={() => this.taskRegistrationHandler(true)}
-            context={this.context}
-            task={this.state.selectedTask}
-            regsCount={this.state.regsCount}
-          >
-            <p>{this.state.selectedTask.details}</p>
-            <p>
-              Link: <a href={this.state.selectedTask.link} target="_blank"
-                rel="noopener noreferrer">{this.state.selectedTask.link}</a>
-            </p>
-            <br />
-            <p>Mentor: {this.state.selectedTask.creator.email}</p>
-            <p>
-              {this.state.selectedTask.registeredStudent
-                ? "Registered student: " + this.state.selectedTask.registeredStudent.email
-                : ""}
-            </p>
-            <p></p>
-          </Modal>
-        )}
-
         <TaskControl
           key={this.state.regsCount + this.state.allTasks.length}
           filterTasks={this.filterTasks}
@@ -312,7 +264,7 @@ class TasksPage extends Component {
         <TaskList
           tasks={this.state.tasks}
           fetchTasks={this.fetchTasks}
-          onDetail={this.showDetailHandler}
+          taskRegistrationHandler={this.taskRegistrationHandler}
         />
       </React.Fragment >
     );

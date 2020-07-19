@@ -23,12 +23,10 @@ const mainNavigation = props => (
           </div>
           <nav className="main-navigation__items">
             <ul>
-              {/* Show "Sign in" button only if user isn't logged in */}
-              {!context.token && context.isMentor !== null && (
-                <li>
-                  <NavLink to="/auth">Sign in</NavLink>
-                </li>
-              )}
+              {/* Show "Sign in" button only if user isn't signed in */}
+              {!context.token &&
+                <li><NavLink to="/auth">Sign in</NavLink></li>
+              }
               <li><NavLink to="/tasks">Tasks</NavLink></li>
               <li><NavLink to="/about">About</NavLink></li>
               {context.token && context.isMentor && !context.isVerified && (
@@ -37,13 +35,14 @@ const mainNavigation = props => (
               {context.token && context.isAdmin && (
                 <li><NavLink to="/admin">Administration</NavLink></li>
               )}
-              {context.token && !context.isMentor && context.user && context.user.registeredTask && (
-                <li>
-                  <NavLink to={`/task/${context.user.registeredTask._id}`}>
-                    My Task
-                  </NavLink>
-                </li>
-              )}
+              {context.token && !context.isMentor && context.user &&
+                context.user.registeredTask && (
+                  <li>
+                    <NavLink to={`/task/${context.user.registeredTask._id}`}>
+                      My Task
+                    </NavLink>
+                  </li>
+                )}
               {context.token && (
                 <React.Fragment>
                   <li>

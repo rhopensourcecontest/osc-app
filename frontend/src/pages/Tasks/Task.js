@@ -466,8 +466,8 @@ class TaskPage extends Component {
 
               <p>
                 <FontAwesomeIcon icon={faLink} />Link to open-source project:
-              <a href={task.link} target="_blank" rel="noopener noreferrer">&nbsp;
-                {task.link}
+                <a href={task.link} target="_blank" rel="noopener noreferrer">&nbsp;
+                  {task.link}
                 </a>
               </p>
 

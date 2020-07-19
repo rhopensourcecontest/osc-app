@@ -4,6 +4,8 @@ import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import { fetchNoAuth } from '../api-calls/Fetch';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUserTie, faUser } from "@fortawesome/free-solid-svg-icons";
 
 import "./Auth.css";
 import 'firebaseui/dist/firebaseui.css';
@@ -18,7 +20,8 @@ firebase.initializeApp({
  */
 class AuthPage extends Component {
   state = {
-    isLogin: true
+    isLogin: true,
+    selectedOption: null
   }
 
   static contextType = AuthContext;
@@ -49,10 +52,23 @@ class AuthPage extends Component {
     this.unregisterAuthObserver();
   }
 
+  /** 
+   * Switch Firebase button text between 'Sign in' and 'Sign up' 
+   */
+  switchFirebaseButtonText = () => {
+    const elements = document.getElementsByClassName("firebaseui-idp-text-long");
+    for (const element of elements) {
+      element.textContent.includes("Sign in")
+        ? element.textContent = element.textContent.replace("Sign in", "Sign up")
+        : element.textContent = element.textContent.replace("Sign up", "Sign in");
+    }
+  }
+
   /**
    * Switch between login and registration
    */
   switchModeHandler = () => {
+    this.switchFirebaseButtonText();
     this.setState(prevState => {
       return { isLogin: !prevState.isLogin };
     });
@@ -135,12 +151,7 @@ class AuthPage extends Component {
           } else if (resData.data.createStudent) {
             alert("Created student " + resData.data.createStudent.email);
           }
-
-          // Login user after the account is created
-          if (!this.state.isLogin) {
-            this.switchModeHandler();
-            this.handleFirebase(firebase.auth().currentUser);
-          }
+          window.location.reload();
         }
         if (resData.errors) {
           alert(resData.errors[0].message);
@@ -152,50 +163,117 @@ class AuthPage extends Component {
       });
   }
 
+  /**
+   * Sets state.selectedOption according to user choice
+   */
+  handleOptionChange = changeEvent => {
+    this.setState({ selectedOption: changeEvent.target.value }, () => {
+      this.context.setIsMentor(this.state.selectedOption === "mentor")
+    });
+  };
+
+  /**
+   * Returns welcome element if currentUser exists
+   */
+  welcomeElement = () => {
+    const user = firebase.auth().currentUser;
+    return user ? (
+      <center>
+        <div>Signed in!</div>
+        <h1>
+          Welcome {
+            user.displayName
+            || user.providerData[0].displayName
+            || user.providerData[1].displayName
+          }
+        </h1>
+        <p>{user.email}</p>
+        <img
+          src={user.photoURL}
+          alt={user.displayName}
+          height="100px"
+        />
+      </center>
+    ) : <></>;
+  }
+
   render() {
+    if (this.state.isSignedIn && !firebase.auth().currentUser) {
+      window.location.reload();
+    }
     return (
       <React.Fragment>
         <div className="auth-form">
           {this.state.isSignedIn ? (
-            <center>
-              <div>Signed in!</div>
-
-              <h1>
-                Welcome {
-                  firebase.auth().currentUser.displayName
-                  || firebase.auth().currentUser.providerData[0].displayName
-                  || firebase.auth().currentUser.providerData[1].displayName
-                }
-              </h1>
-              <p>
-                {firebase.auth().currentUser.email}
-              </p>
-              <img
-                src={firebase.auth().currentUser.photoURL}
-                alt={firebase.auth().currentUser.displayName}
-                height="100px"
-              />
-            </center>
+            <this.welcomeElement />
           ) : (
               <React.Fragment>
-                <StyledFirebaseAuth
-                  uiConfig={this.uiConfig}
-                  firebaseAuth={firebase.auth()}
-                />
-                <br />
-                <div className="form-actions">
-                  <center>
-                    <div className="auth-switcher">
-                      {this.state.isLogin
-                        ? "Don't have an account yet?"
-                        : "Already have an accout?"
-                      }&nbsp;
-                      <b onClick={this.switchModeHandler}>
-                        <u>{this.state.isLogin ? "Sign up" : "Sign in"}</u>
-                      </b>
+                {!this.context.token && (
+                  <>
+                    <center><h2>Choose your role</h2></center>
+                    <form className="auth-box">
+                      <label
+                        className="labl"
+                        title="You will choose a task, and mentor
+                          responsible for this task will help you complete it."
+                      >
+                        <input
+                          type="radio"
+                          name="react-tips"
+                          value="student"
+                          checked={this.state.selectedOption === "student"}
+                          onChange={this.handleOptionChange}
+                          className="form-check-input"
+                        />
+                        <div>
+                          Student
+                          <FontAwesomeIcon icon={faUser} />
+                        </div>
+                      </label>
+
+                      <label
+                        className="labl"
+                        title="You will create tasks and help students 
+                          who will work on these tasks."
+                      >
+                        <input
+                          type="radio"
+                          name="react-tips"
+                          value="mentor"
+                          checked={this.state.selectedOption === "mentor"}
+                          onChange={this.handleOptionChange}
+                          className="form-check-input"
+                        />
+                        <div>
+                          Mentor<br />
+                          <FontAwesomeIcon icon={faUserTie} />
+                        </div>
+                      </label>
+                    </form>
+                  </>
+                )}
+                {this.state.selectedOption && (
+                  <>
+                    <StyledFirebaseAuth
+                      uiConfig={this.uiConfig}
+                      firebaseAuth={firebase.auth()}
+                    />
+                    <br />
+                    <div className="form-actions">
+                      <center>
+                        <div className="auth-switcher">
+                          {this.state.isLogin
+                            ? "Don't have an account yet?"
+                            : "Already have an accout?"
+                          }&nbsp;
+                          <b onClick={this.switchModeHandler}>
+                            <u>{this.state.isLogin ? "Sign up" : "Sign in"}</u>
+                          </b>
+                        </div>
+                      </center>
                     </div>
-                  </center>
-                </div>
+                  </>
+                )}
               </React.Fragment>
             )}
         </div>
