@@ -175,7 +175,7 @@ class TaskItem extends Component {
                 type="button"
                 className="collapsible"
                 id={`cl-${task._id}`}
-                title="Toglle task detail"
+                title="Toggle task detail"
               >
                 {this.adjustDetails(task.details)}
               </button>
