@@ -13,6 +13,7 @@ import AuthContext from './components/context/auth-context';
 import { fetchMentor } from './api-calls/Mentors';
 import { fetchStudent } from './api-calls/Students';
 import { fetchAuth } from './api-calls/Fetch';
+import CookieConsent from "react-cookie-consent";
 
 import firebase from 'firebase/app';
 import 'firebase/auth';
@@ -191,6 +192,7 @@ class App extends Component {
                 <Redirect to="/" />
               </Switch>
             </main>
+            <CookieConsent>This website uses cookies to enhance the user experience.</CookieConsent>
           </AuthContext.Provider>
         </React.Fragment>
       </BrowserRouter>
