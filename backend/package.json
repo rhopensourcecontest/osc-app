@@ -7,12 +7,12 @@
     "express": "^4.17.1",
     "express-graphql": "^0.9.0",
     "googleapis": "^50.0.0",
-    "graphql": "^14.5.8",
+    "graphql": "^14.7.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.7.13",
-    "nodemailer": "^6.4.6",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
+    "mongoose": "^5.13.3",
+    "nodemailer": "^6.6.3",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
     "react-scripts": "^4.0.3"
   },
   "scripts": {
@@ -38,9 +38,9 @@
     ]
   },
   "devDependencies": {
-    "mongodb-memory-server": "^6.5.2",
-    "nodemon": "^2.0.1",
-    "webpack-cli": "^3.3.11",
+    "mongodb-memory-server": "^6.9.6",
+    "nodemon": "^2.0.12",
+    "webpack-cli": "^3.3.12",
     "webpack-node-externals": "^1.7.2"
   },
   "jest": {
