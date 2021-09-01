@@ -12,7 +12,7 @@ jest.mock('../graphql/resolvers/emails', () => ({
  * Connect to the in-memory database.
  */
 connect = async () => {
-  const uri = await mongodb.getConnectionString();
+  const uri = await mongodb.getUri();
 
   const mongooseConfig = {
     poolSize: 10,
