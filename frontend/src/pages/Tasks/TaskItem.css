@@ -6,6 +6,11 @@
   min-width: min-content;
 }
 
+.task__list-item p {
+  white-space: pre-wrap;
+  max-width: 90%;
+}
+
 .task-container {
   display: flex;
   justify-content: space-between;
