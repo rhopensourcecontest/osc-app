@@ -9,6 +9,7 @@ import { TASKS } from '../../constants/tasks';
 import Notification from '../../components/Notification/Notification';
 import { fetchAuth } from '../../api-calls/Fetch';
 import { fetchTasks } from '../../api-calls/Tasks';
+import { escapeQuotes, replaceNewLines } from '../../components/Shared';
 
 import './Tasks.css';
 
@@ -55,9 +56,9 @@ class TasksPage extends Component {
    */
   modalConfirmHandler = () => {
     this.setState({ creating: false });
-    const title = this.titleRef.current.value;
-    const link = this.linkRef.current.value;
-    const details = this.detailsRef.current.value.split(/\r?\n/).join("\\n");
+    const title = escapeQuotes(this.titleRef.current.value);
+    const link = escapeQuotes(this.linkRef.current.value);
+    const details = escapeQuotes(replaceNewLines(this.detailsRef.current.value));
 
     if (title.trim().length === 0) {
       alert("You have to provide title!");

@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faLink, faFileAlt, faUserTie, faUser, faEdit, faTags
 } from "@fortawesome/free-solid-svg-icons";
+import { escapeQuotes, replaceNewLines } from '../../components/Shared';
 import Backdrop from '../../components/Backdrop/Backdrop';
 import Modal from '../../components/Modal/Modal';
 
@@ -244,9 +245,9 @@ class TaskPage extends Component {
 
   /** Edits Task fields with values from the form */
   editTask = () => {
-    const title = this.titleRef.current.value;
-    const link = this.linkRef.current.value;
-    const details = this.detailsRef.current.value.split(/\r?\n/).join("\\n");
+    const title = escapeQuotes(this.titleRef.current.value);
+    const link = escapeQuotes(this.linkRef.current.value);
+    const details = escapeQuotes(replaceNewLines(this.detailsRef.current.value));
 
     if (this.state.selectedStudent) {
       if (this.state.selectedStudent === "none") {

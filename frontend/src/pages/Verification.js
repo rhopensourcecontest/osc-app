@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import AuthContext from '../components/context/auth-context';
 import { fetchMentors } from '../api-calls/Mentors';
 import { fetchAuth } from '../api-calls/Fetch';
+import { htmlReplaceNewLines, escapeQuotes } from '../components/Shared';
 
 import './Verification.css';
 
@@ -51,7 +52,7 @@ class VerificationPage extends Component {
    */
   handleSubmit = (event) => {
     event.preventDefault();
-    const text = this.textRef.current.value.split(/\r?\n/).join('<br/>');
+    const text = escapeQuotes(htmlReplaceNewLines(this.textRef.current.value));
 
     const requestBody = {
       query: `
