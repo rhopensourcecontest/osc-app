@@ -5,6 +5,7 @@ import { fetchMentors } from '../../api-calls/Mentors';
 import { fetchNoAuth, fetchAuth, fetchRun } from '../../api-calls/Fetch';
 import { fetchTasks } from '../../api-calls/Tasks';
 import { TASKS } from '../../constants/tasks';
+import { escapeQuotes } from '../../components/Shared';
 import Notification from '../../components/Notification/Notification';
 import Backdrop from '../../components/Backdrop/Backdrop';
 import Modal from '../../components/Modal/Modal';
@@ -153,7 +154,7 @@ class AdminPage extends Component {
     }
     const deadline = this.dateRef.current.value;
     let runInput = {
-      title: this.titleRef.current.value,
+      title: escapeQuotes(this.titleRef.current.value),
       deadline: deadline === "" ? "" : new Date(this.dateRef.current.value)
     };
     const token = this.context.token;

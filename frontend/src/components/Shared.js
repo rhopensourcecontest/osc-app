@@ -9,3 +9,33 @@ export const formatDateOutput = (date) => {
     ? "TBD"
     : new Date(date).toDateString();
 };
+
+/**
+ * Replaces double quotes with '\\"'
+ * 
+ * @param {string} input
+ * @returns {string}
+ */
+export const escapeQuotes = (input) => {
+  return input.replace(/[""]/g, '\\"');
+}
+
+/**
+ * Replaces new line escapes with '\\n'
+ * 
+ * @param {string} input
+ * @returns {string}
+ */
+export const replaceNewLines = (input) => {
+  return input.split(/\r?\n/).join('\\n');
+}
+
+/**
+ * Replaces new line escapes with '<br/>'
+ * 
+ * @param {string} input
+ * @returns {string}
+ */
+export const htmlReplaceNewLines = (input) => {
+  return input.split(/\r?\n/).join('<br/>');
+}

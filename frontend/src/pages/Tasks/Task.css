@@ -1,4 +1,5 @@
 .task-box {
+  max-width: 80%;
   text-align: left;
 }
 
@@ -6,6 +7,10 @@
   flex-direction: column;
   display: flex;
   align-items: center;
+}
+
+.task-box p {
+  white-space: pre-wrap;
 }
 
 .task-box p a {
